@@ -16,4 +16,10 @@ const router = new VueRouter({
     ]
 })
 //全局前置路由守卫————初始化的时候、每次路由切换之前被调用
+// 添加标题
+router.afterEach((to) => {
+    if (to.meta.title) {
+        document.title = to.meta.title
+    }
+})
 export default router

@@ -19,10 +19,10 @@ let requests = axios.create({
 requests.interceptors.request.use((config) => {
   console.log(config);
   //需要携带token带给服务器
-  if(store.state.token){
+  if (store.state.token) {
     config.headers.token = store.state.token;
   }
-  nprogress.start() 
+  nprogress.start()
   return config;
 });
 
