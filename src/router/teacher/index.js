@@ -8,6 +8,8 @@ import classList from '@/pages/teacher/classList'
 import studentList from '@/pages/teacher/studentList'
 // 作业管理(详情页面包括已交,未交，图表统计，作业内容)
 import operationList from '@/pages/teacher/operationList'
+// 附件管理
+import attachmentList from '@/pages/teacher/attachmentList'
 // 
 export default [
     {
@@ -40,6 +42,13 @@ export default [
                 component: operationList,
                 meta: {
                     title: "作业管理"
+                }
+            },
+            {
+                path: "attachmentList",
+                component: attachmentList,
+                meta: {
+                    title: "附件管理"
                 }
             }
         ]

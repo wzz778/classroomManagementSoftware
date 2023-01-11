@@ -1,14 +1,18 @@
 <template>
   <div>
-    <a
-      href="https://p.ananas.chaoxing.com/star3/240_130c/669ca80d6a0c5f74835bb936a41aabca.jpg"
-      download
-    >下载</a>
-    <myTop
-      :inputInfoObj="myTopConfiguration.inputInfoObj"
-      :searchFn="searchFn"
-      :buttonInfo="myTopConfiguration.buttonInfo"
-    ></myTop>
+    <el-upload
+      class="upload-demo"
+      ref="upload"
+      action=""
+      :on-preview="handlePreview"
+      :on-remove="handleRemove"
+      :file-list="fileList"
+      :on-change="handelChange"
+      name="cover"
+      :auto-upload="false"
+    >
+      <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+    </el-upload>
     <!-- 列表 -->
     <myList
       :tableData="myListConfiguration.tableData"
@@ -51,26 +55,16 @@
 <script>
 import myPaging from "@/components/teacher/utilComponents/myPaging.vue";
 import myList from "@/components/teacher/utilComponents/myList.vue";
-import myTop from "@/components/teacher/utilComponents/myTop.vue";
+import { Upload } from "element-ui";
 export default {
   name: "attachmentList",
   components: {
     myPaging,
     myList,
-    myTop,
+    [Upload.name]: Upload,
   },
   data() {
     return {
-      myTopConfiguration: {
-        inputInfoObj: {
-          showName: "班级名称:",
-          transferName: "name",
-        },
-        buttonInfo: {
-          type: "success",
-          clickFn: this.addFn,
-        },
-      },
       myListConfiguration: {
         allType: [
           {
@@ -119,9 +113,51 @@ export default {
       searchObj: null,
       dialogVisible: false,
       className: "",
+      fileList: [],
     };
   },
   methods: {
+    handelChange(file, fileList) {
+      let f = new FileReader();
+      f.readAsDataURL(file.raw);
+      f.onload = () => {
+        this.picSrc = f.result;
+      };
+      fileList = fileList.slice(-1);
+      this.fileList = fileList;
+      console.log("文件修改执行的函数", file, fileList);
+    },
+    handleRemove(file, fileList) {
+      console.log("移除文件执行的函数", file, fileList);
+      this.filesList = fileList;
+      this.picSrc = "";
+    },
+    handlePreview(file) {
+      console.log("点击已经上传的文件", file);
+    },
+    handleExceed(files, fileList) {
+      this.$message.warning(
+        `当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${
+          files.length + fileList.length
+        } 个文件`
+      );
+    },
+    beforeRemove(file, fileList) {
+      console.log("移除之前执行的函数", fileList);
+      return this.$confirm(`确定移除 ${file.name}？`);
+    },
+    handelSend() {
+      console.log("上传文件", this.fileList);
+      //   这里需要判断一下文件大小或者类型
+      //   自定义上传就需要我们使用fromdata对象来上传文件
+      let formdata = new FormData();
+      for (let i = 0; i < this.fileList.length; i++) {
+        // 我们上传的文件保存在每个文件对象的raw里边
+        formdata.append("file", this.fileList[i].raw);
+      }
+      //   添加其他属性
+      // 发送请求
+    },
     pageChangeFn(val) {
       this.nowPage = val;
     },

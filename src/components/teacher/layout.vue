@@ -30,6 +30,10 @@
           <i class="el-icon-setting"></i>
           <span slot="title">作业管理</span>
         </el-menu-item>
+        <el-menu-item index="/teacher/attachmentList">
+          <i class="el-icon-setting"></i>
+          <span slot="title">附件管理</span>
+        </el-menu-item>
       </el-menu>
     </div>
     <div class="main">
