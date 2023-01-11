@@ -12,6 +12,23 @@
           </el-form-item>
         </el-form>
       </el-col>
+      <el-col
+        :span="5"
+        v-if="seletcInfoObjOne"
+      >
+        <el-form label-width="80px">
+          <el-form-item :label="seletcInfoObjOne.showName">
+            <el-select v-model="value" clearable placeholder="请选择">
+              <el-option
+                v-for="(item, index) in gradeArr"
+                :key="item"
+                :label="item"
+                :value="index + 1"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+        </el-form>
+      </el-col>
       <el-col :span="5">
         <el-form label-width="80px">
           <el-button type="primary" @click="sureSerach">查询</el-button>
@@ -40,7 +57,7 @@ export default {
   select对象
       每个是否显现,显现的名字，显现的是啥，请求的接口名字
   */
-  props: ["inputInfoObj", "searchFn", "buttonInfo"],
+  props: ["inputInfoObj", "searchFn", "buttonInfo", "seletcInfoObjOne"],
   components: {
     [Col.name]: Col,
     [Row.name]: Row,
@@ -53,6 +70,7 @@ export default {
     return {
       value: "",
       value1: "",
+      gradeArr: [],
     };
   },
   methods: {

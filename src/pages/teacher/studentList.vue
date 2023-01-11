@@ -3,6 +3,7 @@
     <myTop
       :inputInfoObj="myTopConfiguration.inputInfoObj"
       :searchFn="searchFn"
+      :seletcInfoObjOne="myTopConfiguration.seletcInfoObjOne"
       :buttonInfo="myTopConfiguration.buttonInfo"
     ></myTop>
     <!-- 列表 -->
@@ -20,27 +21,6 @@
       :pageChangeFn="pageChangeFn"
       :sizeChangeFn="sizeChangeFn"
     ></myPaging>
-    <el-dialog
-      title="提示"
-      :visible.sync="dialogVisible"
-      width="50%"
-      :before-close="handleClose"
-      :append-to-body="true"
-    >
-      <el-form label-width="80px">
-        <el-form-item label="班级名称:">
-          <el-input
-            v-model="className"
-            placeholder="请输入"
-            clearable
-          ></el-input>
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="submitFn">确 定</el-button>
-      </span>
-    </el-dialog>
   </div>
 </template>
 
@@ -49,7 +29,7 @@ import myPaging from "@/components/teacher/utilComponents/myPaging.vue";
 import myList from "@/components/teacher/utilComponents/myList.vue";
 import myTop from "@/components/teacher/utilComponents/myTop.vue";
 export default {
-  name: "classList",
+  name: "StudentList",
   components: {
     myPaging,
     myList,
@@ -58,38 +38,35 @@ export default {
   data() {
     return {
       myTopConfiguration: {
-        inputInfoObj: {
-          showName: "班级名称:",
-          transferName: "name",
-        },
-        buttonInfo: {
-          type: "success",
-          clickFn: this.addFn,
+        seletcInfoObjOne: {
+          showName: "班级",
         },
       },
       myListConfiguration: {
         allType: [
           {
-            // dateType表示的是数据
-            dateType: "id",
-            // 数据显示的名字
-            showName: "ID",
-          },
-          {
             dateType: "grade",
-            showName: "班级名称",
+            showName: "姓名",
           },
           {
             dateType: "code",
-            showName: "班级口令",
+            showName: "性别",
           },
           {
             dateType: "name",
-            showName: "班级人数",
+            showName: "专业",
           },
           {
             dateType: "createTime",
-            showName: "创建时间",
+            showName: "班级",
+          },
+          {
+            dateType: "createTime",
+            showName: "籍贯",
+          },
+          {
+            dateType: "createTime",
+            showName: "上学期成绩",
           },
         ],
         //   函数
@@ -113,8 +90,6 @@ export default {
       pageSize: 10,
       allNums: 0,
       searchObj: null,
-      dialogVisible: false,
-      className: "",
     };
   },
   methods: {
@@ -131,7 +106,8 @@ export default {
         cancelButtonText: "取消",
         type: "warning",
       })
-        .then(() => {})
+        .then(() => {
+        })
         .catch(() => {
           this.$message({
             type: "info",
@@ -145,17 +121,8 @@ export default {
     searchFn(obj) {
       this.searchObj = obj;
     },
-    getAllGradeFn() {},
-    submitFn() {},
-    handleClose(done) {
-      this.$confirm("确认关闭？")
-        .then(() => {
-          done();
-        })
-        .catch(() => {});
-    },
-    addFn() {
-      this.dialogVisible = true;
+    getAllGradeFn() {
+      
     },
   },
   mounted() {

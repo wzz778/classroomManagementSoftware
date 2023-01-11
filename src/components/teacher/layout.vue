@@ -10,17 +10,21 @@
         @open="handleOpen"
         @close="handleClose"
       >
-        <el-menu-item index="1">
+        <el-menu-item index="/teacher">
           <i class="el-icon-menu"></i>
           <span slot="title">教师端</span>
         </el-menu-item>
-        <el-menu-item index="3">
+        <el-menu-item index="/teacher/myClassroom">
           <i class="el-icon-document"></i>
           <span slot="title">我的课程</span>
         </el-menu-item>
         <el-menu-item index="/teacher/classList">
           <i class="el-icon-setting"></i>
-          <span slot="title">课堂管理</span>
+          <span slot="title">班级管理</span>
+        </el-menu-item>
+        <el-menu-item index="/teacher/studentList">
+          <i class="el-icon-setting"></i>
+          <span slot="title">学生管理</span>
         </el-menu-item>
       </el-menu>
     </div>
@@ -138,6 +142,6 @@ export default {
 }
 
 #body {
-    padding: 25px;
+  padding: 25px;
 }
 </style>
