@@ -1,22 +1,10 @@
 <template>
   <div>
-    <div class="top">
-      <el-upload
-        class="upload-demo"
-        ref="upload"
-        action=""
-        :on-preview="handlePreview"
-        :on-remove="handleRemove"
-        :file-list="fileList"
-        :on-change="handelChange"
-        name="cover"
-        :auto-upload="false"
-      >
-        <el-button slot="trigger" size="small" type="primary"
-          >上传附件</el-button
-        >
-      </el-upload>
-    </div>
+    <myTop
+      :inputInfoObj="myTopConfiguration.inputInfoObj"
+      :searchFn="searchFn"
+      :buttonInfo="myTopConfiguration.buttonInfo"
+    ></myTop>
     <!-- 列表 -->
     <myList
       :tableData="myListConfiguration.tableData"
@@ -39,13 +27,45 @@
       :before-close="handleClose"
       :append-to-body="true"
     >
-      <el-form label-width="80px">
-        <el-form-item label="添加作业:">
-          <el-input
-            v-model="className"
-            placeholder="请输入"
-            clearable
-          ></el-input>
+      <el-form label-width="180px">
+        <el-form-item label="开始时间:">
+          <el-date-picker
+            v-model="startTime"
+            value-format="yyyy-MM-dd HH:mm:ss"
+            style="width: 80%"
+            type="datetime"
+            placeholder="选择日期"
+          >
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="结束时间:">
+          <el-date-picker
+            v-model="endTime"
+            value-format="yyyy-MM-dd HH:mm:ss"
+            type="datetime"
+            style="width: 80%"
+            placeholder="选择日期"
+          >
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="超过时间是否运行签到:">
+          <el-switch v-model="isSign"></el-switch>
+        </el-form-item>
+        <el-form-item label="签到班级:">
+          <el-select
+            v-model="classAll"
+            multiple
+            style="width: 80%"
+            placeholder="请选择"
+          >
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            >
+            </el-option>
+          </el-select>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -59,16 +79,29 @@
 <script>
 import myPaging from "@/components/teacher/utilComponents/myPaging.vue";
 import myList from "@/components/teacher/utilComponents/myList.vue";
-import { Upload } from "element-ui";
+import myTop from "@/components/teacher/utilComponents/myTop.vue";
+import { DatePicker, Switch } from "element-ui";
 export default {
-  name: "attachmentList",
+  name: "signList",
   components: {
     myPaging,
     myList,
-    [Upload.name]: Upload,
+    myTop,
+    [DatePicker.name]: DatePicker,
+    [Switch.name]: Switch,
   },
   data() {
     return {
+      myTopConfiguration: {
+        inputInfoObj: {
+          showName: "签到名称:",
+          transferName: "name",
+        },
+        buttonInfo: {
+          type: "success",
+          clickFn: this.addFn,
+        },
+      },
       myListConfiguration: {
         allType: [
           {
@@ -117,46 +150,35 @@ export default {
       searchObj: null,
       dialogVisible: false,
       className: "",
-      fileList: [],
+      startTime: "",
+      endTime: "",
+      isSign: "",
+      classAll: [],
+      options: [
+        {
+          value: "选项1",
+          label: "黄金糕",
+        },
+        {
+          value: "选项2",
+          label: "双皮奶",
+        },
+        {
+          value: "选项3",
+          label: "蚵仔煎",
+        },
+        {
+          value: "选项4",
+          label: "龙须面",
+        },
+        {
+          value: "选项5",
+          label: "北京烤鸭",
+        },
+      ],
     };
   },
   methods: {
-    handelChange(file, fileList) {
-      fileList = fileList.slice(-1);
-      this.fileList = fileList;
-      console.log("文件修改执行的函数", file, fileList);
-    },
-    handleRemove(file, fileList) {
-      console.log("移除文件执行的函数", file, fileList);
-      this.filesList = fileList;
-      this.picSrc = "";
-    },
-    handlePreview(file) {
-      console.log("点击已经上传的文件", file);
-    },
-    handleExceed(files, fileList) {
-      this.$message.warning(
-        `当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${
-          files.length + fileList.length
-        } 个文件`
-      );
-    },
-    beforeRemove(file, fileList) {
-      console.log("移除之前执行的函数", fileList);
-      return this.$confirm(`确定移除 ${file.name}？`);
-    },
-    handelSend() {
-      console.log("上传文件", this.fileList);
-      //   这里需要判断一下文件大小或者类型
-      //   自定义上传就需要我们使用fromdata对象来上传文件
-      let formdata = new FormData();
-      for (let i = 0; i < this.fileList.length; i++) {
-        // 我们上传的文件保存在每个文件对象的raw里边
-        formdata.append("file", this.fileList[i].raw);
-      }
-      //   添加其他属性
-      // 发送请求
-    },
     pageChangeFn(val) {
       this.nowPage = val;
     },
@@ -185,7 +207,15 @@ export default {
       this.searchObj = obj;
     },
     getAllGradeFn() {},
-    submitFn() {},
+    submitFn() {
+      if (Date.parse(this.startTime) > Date.parse(this.endTime)) {
+        this.$message({
+          message: "结束时间不能先于开始时间",
+          type: "warning",
+        });
+        return;
+      }
+    },
     handleClose(done) {
       this.$confirm("确认关闭？")
         .then(() => {
@@ -201,8 +231,5 @@ export default {
 };
 </script>
 
-<style scped>
-.top {
-  margin-bottom: 20px;
-}
+<style>
 </style>
