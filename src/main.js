@@ -5,7 +5,7 @@ import VueRouter from 'vue-router'
 // 引入less
 import less from 'less'
 //引入element(常用:图标,按钮,表单,输入框,选择框,表格,分页,弹窗提示.菜单)
-import { MessageBox, Message, Icon, Button, Form, FormItem, Input, Select, Option, Table, TableColumn, Pagination, Dialog, Menu, MenuItem } from 'element-ui'
+import { MessageBox, Message, Icon, Button, Form, FormItem, Input, Select, Option, Table, TableColumn, Pagination, Dialog, Menu, MenuItem ,Submenu,Row,Col} from 'element-ui'
 
 // 引入路由器
 import router from './router/index'
@@ -36,10 +36,14 @@ Vue.use(Menu)
 Vue.use(MenuItem)
 // 配置自定义富文本
 Vue.use(myRichText)
+Vue.use(Submenu)
+Vue.use(Row)
+Vue.use(Col)
 
 //配置(可全局通过this调用)
 Vue.prototype.$confirm = MessageBox.confirm
 Vue.prototype.$message = Message
+Vue.prototype.$prompt = MessageBox.prompt
 
 new Vue({
   render: h => h(App),
