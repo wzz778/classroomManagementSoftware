@@ -1,6 +1,7 @@
 // 引入路由
 import IndexBase from '@/pages/user/IndexBase'
 import IndexCourse from '@/pages/user/IndexCourse'
+import ClassMembers from '@/pages/user/ClassMembers'
 // 
 export default [
     {
@@ -17,6 +18,14 @@ export default [
         component: IndexCourse,
         meta: {
             title: "课程介绍"
+        },
+    },
+    {
+        path: '/user/ClassMembers',
+        name: 'ClassMembers',
+        component: ClassMembers,
+        meta: {
+            title: "课程成员"
         },
     },
 ]
