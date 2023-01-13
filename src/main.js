@@ -12,6 +12,10 @@ import router from './router/index'
 //引入vuex配置文件
 import store from './store'
 
+// 引入自定义富文本
+import myRichText from "./myText/index"
+
+
 // 配置less
 Vue.use(less)
 //配置路由
@@ -30,6 +34,8 @@ Vue.use(Pagination)
 Vue.use(Dialog)
 Vue.use(Menu)
 Vue.use(MenuItem)
+// 配置自定义富文本
+Vue.use(myRichText)
 
 //配置(可全局通过this调用)
 Vue.prototype.$confirm = MessageBox.confirm
