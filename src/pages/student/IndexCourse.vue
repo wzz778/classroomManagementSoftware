@@ -9,7 +9,7 @@
           <div class="intro_text">
             <div class="teacher">
               <div class="course_name">论语</div>
-              <p><span>主讲人:叶子</span><span>教室团队：一人</span></p>
+              <p style="text-align:left;">主讲人:<span>叶子</span>教室团队：<span>一人</span></p>
             </div>
             <div class="infor">
               <ul>
@@ -20,7 +20,7 @@
                 <li>行政班级：计科213</li>
                 <li>编号：1111</li>
               </ul>
-              <el-button type="primary" round><router-link  to="/IndexBase">进入课程</router-link></el-button>
+              <el-button type="primary" round><router-link  to="/student/IndexBase">进入课程</router-link></el-button>
             </div>
           </div>
         </div>
@@ -75,18 +75,20 @@ export default {
 <style lang="less" scoped>
 .course_intro {
   box-shadow: 0px 1px 12px 0px #edeef0;
+  background: white;
   padding: 40px 0 30px;
   overflow: hidden;
   margin-bottom: 10px;
 }
 .text_course {
   box-shadow: 0px 1px 12px 0px #edeef0;
-  padding: 20px 40px 30px;
+  background: white;
+  padding: 20px 0px 30px;
   overflow: hidden;
-  margin: 50px 40px;
+  margin: 50px 0px;
   border-radius: 6px;
   .te {
-    width: 1100px;
+    width: 945px;
     min-height: 200px;
     margin: 0 auto;
   }
@@ -98,13 +100,13 @@ export default {
 }
 .intro {
   position: relative;
-  width: 1200px;
+  width: 1000px;
   margin: 0 auto;
 }
 .main,
 .intro_img {
   position: relative;
-  width: 544px;
+  width: 524px;
   height: 322px;
   border-radius: 6px;
 }
@@ -118,8 +120,8 @@ img {
   border-radius: 6px;
 }
 .intro_text {
-  width: 640px;
-  margin-left: 564px;
+  width: 450px;
+  margin-left: 544px;
 }
 .teacher {
   min-height: 100px;
@@ -129,21 +131,21 @@ img {
   line-height: 20px;
 }
 .course_name {
+text-align: left;
   font-size: 20px;
   color: #181e33;
   min-height: 60px;
   overflow: hidden;
 }
 span {
-  margin-right: 32px;
   font-size: 14px;
   line-height: 20px;
   margin: 8px 50px 0px 0px;
 }
 .infor {
   position: relative;
-  width: 640px;
-  height: 166px;
+  width: 450px;
+  height: 187px;
   background: #f5f7fa;
   border-radius: 6px;
   margin-top: 8px;
@@ -151,7 +153,7 @@ span {
     padding: 20px 25px 5px;
     overflow: hidden;
     li {
-      width: 267px;
+      width: 180px;
       margin-right: 10px;
       margin-bottom: 15px;
       font-size: 14px;
@@ -161,7 +163,7 @@ span {
   }
   button {
     float: right;
-    margin: -10px 20px;
+    margin: 7px 20px;
     a{
     color: white;
     }

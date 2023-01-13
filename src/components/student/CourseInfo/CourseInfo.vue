@@ -49,13 +49,13 @@
               <span slot="title"><i class="el-icon-notebook-2"></i>学习情况</span>
             </el-menu-item>
           </router-link>
-          <router-link to="/student/classStudents">
-            <el-menu-item index="/student/classStudents">
+          <router-link to="/student/ClassMembers">
+            <el-menu-item index="/student/ClassMembers">
               <span slot="title"><i class="el-icon-user"></i>课程成员</span>
             </el-menu-item>
           </router-link>
-          <router-link to="/student/aboutClass">
-            <el-menu-item index="/student/aboutClass">
+          <router-link to="/student/IndexCourse">
+            <el-menu-item index="/student/IndexCourse">
               <span slot="title"><i class="el-icon-collection"></i>关于课程</span>
             </el-menu-item>
           </router-link>
@@ -108,8 +108,6 @@ export default {
 .el-main {
   background-color: #e9eef3;
   color: #333;
-  text-align: center;
-  line-height: 160px;
 }
 
 body > .el-container {
