@@ -10,6 +10,12 @@ import studentList from '@/pages/teacher/studentList'
 import operationList from '@/pages/teacher/operationList'
 // 附件管理
 import attachmentList from '@/pages/teacher/attachmentList'
+// 作业详情
+import jobDetails from '@/pages/teacher/jobDetails'
+// 签到详情
+import signDetails from '@/pages/teacher/signDetails'
+// 签到管理
+import signList from '@/pages/teacher/signList'
 // 
 export default [
     {
@@ -49,6 +55,27 @@ export default [
                 component: attachmentList,
                 meta: {
                     title: "附件管理"
+                }
+            },
+            {
+                path: "jobDetails",
+                component: jobDetails,
+                meta: {
+                    title: "作业详情"
+                }
+            },
+            {
+                path: "signDetails",
+                component: signDetails,
+                meta: {
+                    title: "签到详情"
+                }
+            },
+            {
+                path: "signList",
+                component: signList,
+                meta: {
+                    title: "签到管理"
                 }
             }
         ]

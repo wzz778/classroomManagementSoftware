@@ -19,19 +19,23 @@
           <span slot="title">我的课程</span>
         </el-menu-item>
         <el-menu-item index="/teacher/classList">
-          <i class="el-icon-setting"></i>
+          <i class="el-icon-s-grid"></i>
           <span slot="title">班级管理</span>
         </el-menu-item>
         <el-menu-item index="/teacher/studentList">
-          <i class="el-icon-setting"></i>
+          <i class="el-icon-s-custom"></i>
           <span slot="title">学生管理</span>
         </el-menu-item>
+        <el-menu-item index="/teacher/signList">
+          <i class="el-icon-location"></i>
+          <span slot="title">签到管理</span>
+        </el-menu-item>
         <el-menu-item index="/teacher/operationList">
-          <i class="el-icon-setting"></i>
+          <i class="el-icon-s-order"></i>
           <span slot="title">作业管理</span>
         </el-menu-item>
         <el-menu-item index="/teacher/attachmentList">
-          <i class="el-icon-setting"></i>
+          <i class="el-icon-paperclip"></i>
           <span slot="title">附件管理</span>
         </el-menu-item>
       </el-menu>
@@ -49,7 +53,7 @@
                   <img src="@/assets/logo.png" alt="" />
                 </div>
                 <div class="userName">
-                  <span>李宁</span>
+                  <span>教师</span>
                   <i class="el-icon-arrow-down el-icon--right"></i>
                 </div>
               </div>
@@ -133,6 +137,7 @@ export default {
 .dropDown {
   display: flex;
   align-items: center;
+  cursor: pointer;
 }
 
 .userInfo {
