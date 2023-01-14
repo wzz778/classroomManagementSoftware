@@ -1,5 +1,5 @@
 <template>
-  <div class="mainBox">
+  <div class="allPage">
     <el-tabs :tab-position="tabPosition" style="height: 200px">
       <el-tab-pane label="基本信息">
         <ChangeInfo></ChangeInfo>
@@ -8,6 +8,9 @@
         <ForgetPassword></ForgetPassword>
       </el-tab-pane>
       <el-tab-pane label="忘记密码">
+        <ChangePassword></ChangePassword>
+      </el-tab-pane>
+      <el-tab-pane label="注销账号">
         <ChangePassword></ChangePassword>
       </el-tab-pane>
     </el-tabs>
@@ -40,7 +43,7 @@ export default {
 .el-tabs__content{
     display: none;
 }
-.mainBox{
+.allPage{
   display: inline-block;
   position: relative;
   width: 1200px;
