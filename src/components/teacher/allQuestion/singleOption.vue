@@ -190,7 +190,13 @@ export default {
         type: 1,
       };
       console.log(obj);
-      this.$store.commit("teacher/ADDQUESTION", obj);
+      this.$store.commit("teacher/ADDQUESTION", {
+        data: obj,
+        answer: {
+          answer: this.trueOptions.toString(),
+          type: 1,
+        },
+      });
       this.cancelFn();
       this.clearAll();
     },

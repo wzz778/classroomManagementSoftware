@@ -3,7 +3,8 @@ const actions = {}
 // 准备mutations(操作数据,键值一般大写)
 const mutations = {
     ADDQUESTION(state, data) {
-        state.questions.push(data)
+        state.questions.push(data.data)
+        state.answer.push(data.answer)
     },
     DELSMALLQUEST(state, data) {
         state.questions.splice(data.index, 1)
@@ -11,7 +12,8 @@ const mutations = {
 }
 // 准备state(存放数据)
 const state = {
-    questions: []
+    questions: [],
+    answer: []
 }
 // 准备getters
 const getters = {}

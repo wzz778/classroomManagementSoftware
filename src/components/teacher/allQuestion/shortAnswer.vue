@@ -106,7 +106,13 @@ export default {
         type: 5,
       };
       console.log(obj);
-      this.$store.commit("teacher/ADDQUESTION", obj);
+      this.$store.commit("teacher/ADDQUESTION", {
+        data: obj,
+        answer: {
+          answer: this.trueOptions.toString(),
+          type: 5,
+        },
+      });
       this.cancelFn();
       this.clearAll();
     },
