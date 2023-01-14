@@ -7,10 +7,11 @@ import StudyGroup from '@/pages/student/StudyGroup'
 import ClassDiscussion from '@/pages/student/ClassDiscussion'
 import ShareData from '@/pages/student/ShareData'
 import LearnDaily from '@/pages/student/LearnDaily'
-import ClassStudents from '@/pages/student/ClassStudents'
-import AboutClass from '@/pages/student/AboutClass'
+// import ClassStudents from '@/pages/student/ClassStudents'
+import IndexCourse from '@/pages/user/IndexCourse'
 import DoPaper from '@/pages/student/DoPaper'
 import UserInfo from '@/components/student/UserInfo/UserInfo'
+import ClassMembers from '@/pages/user/ClassMembers'
 
 // 
 export default [
@@ -48,11 +49,11 @@ export default [
             },
             {
                 path:'classStudents',
-                component:ClassStudents
+                component:ClassMembers
             },
             {
                 path:'aboutClass',
-                component:AboutClass
+                component:IndexCourse
             }
         ]
     },
