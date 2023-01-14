@@ -1,31 +1,53 @@
 // 引入路由
-import IndexBase from '@/pages/user/IndexBase'
-import IndexCourse from '@/pages/user/IndexCourse'
-import ClassMembers from '@/pages/user/ClassMembers'
+import IndexBase from '@/pages/student/IndexBase'
+import IndexCourse from '@/pages/student/IndexCourse'
+import ClassMembers from '@/pages/student/ClassMembers'
+import CourseInfo from '@/components/student/CourseInfo/CourseInfo'
+import UserTop from '@/components/student/UserTop'
 // 
 export default [
     {
-        path: '/IndexBase',
-        name: 'IndexBase',
-        component: IndexBase,
-        meta: {
-            title: "课程空间"
-        },
+        path:'/user',
+        component:UserTop,
+        children:[
+            {
+                path: 'IndexBase',
+                name: 'IndexBase',
+                component: IndexBase,
+                meta: {
+                    title: "课程空间"
+                },
+            },
+        ]
     },
+    // {
+    //     path: '/student/IndexBase',
+    //     name: 'IndexBase',
+    //     component: IndexBase,
+    //     meta: {
+    //         title: "课程空间"
+    //     },
+    // },
     {
-        path: '/user/IndexCourse',
-        name: 'IndexCourse',
-        component: IndexCourse,
-        meta: {
-            title: "课程介绍"
-        },
-    },
-    {
-        path: '/user/ClassMembers',
-        name: 'ClassMembers',
-        component: ClassMembers,
-        meta: {
-            title: "课程成员"
-        },
+        path:'/student',
+        component:CourseInfo,
+        children:[
+            {
+                path: 'IndexCourse',
+                name: 'IndexCourse',
+                component: IndexCourse,
+                meta: {
+                    title: "课程介绍"
+                },
+            },
+            {
+                path: 'ClassMembers',
+                name: 'ClassMembers',
+                component: ClassMembers,
+                meta: {
+                    title: "课程成员"
+                },
+            },
+        ]
     },
 ]
