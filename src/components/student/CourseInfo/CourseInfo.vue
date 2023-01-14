@@ -89,6 +89,9 @@ export default {
 </script>
 
 <style lang="less" scoped>
+body,html{
+  height: 100vh;
+}
 .el-header,
 .el-footer {
   background-color: #b3c0d1;
@@ -134,7 +137,38 @@ body > .el-container {
   }
   .mainContent {
     flex: 1;
+    .el-aside{
+      display: flex;
+      height: 100vh;
+      flex-direction: column;
+      .el-menu{
+        overflow: auto;
+      }
+      .el-menu{
+        flex: 1;
+      }
+    }
   }
+}
+
+/* 整个滚动条 */
+ ::-webkit-scrollbar {
+  /* 对应纵向滚动条的宽度 */
+  width: 4px;
+  /* 对应横向滚动条的宽度 */
+  height: 4px;
+}
+
+/* 滚动条上的滚动滑块 */
+ ::-webkit-scrollbar-thumb {
+  background-color: #49b1f5;
+  border-radius: 10px;
+}
+
+/* 滚动条轨道 */
+ ::-webkit-scrollbar-track {
+  background-color: #dbeffd;
+  border-radius: 32px;
 }
 
 .classInfo {

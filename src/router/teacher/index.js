@@ -16,6 +16,8 @@ import jobDetails from '@/pages/teacher/jobDetails'
 import signDetails from '@/pages/teacher/signDetails'
 // 签到管理
 import signList from '@/pages/teacher/signList'
+// 成绩管理
+import performanceManagement from '@/pages/teacher/performanceManagement'
 // 
 export default [
     {
@@ -76,6 +78,13 @@ export default [
                 component: signList,
                 meta: {
                     title: "签到管理"
+                }
+            },
+            {
+                path: "performanceManagement",
+                component: performanceManagement,
+                meta: {
+                    title: "成绩管理"
                 }
             }
         ]
