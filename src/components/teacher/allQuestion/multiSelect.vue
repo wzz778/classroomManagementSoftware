@@ -150,6 +150,20 @@ export default {
       this.showOptions.pop();
     },
     submitFn() {
+      if (this.questionStem.replace(/(^\s*)|(\s*$)/g, "") == "") {
+        this.$message({
+          message: "请输入题干",
+          type: "warning",
+        });
+        return;
+      }
+      if (this.trueOptions.length == 0) {
+        this.$message({
+          message: "请选择正确答案",
+          type: "warning",
+        });
+        return;
+      }
       for (let i = 0; i < this.showOptions.length; i++) {
         if (this.showOptions[i].value.replace(/(^\s*)|(\s*$)/g, "") == "") {
           this.$message({

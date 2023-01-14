@@ -81,6 +81,20 @@ export default {
       this.parsing = val;
     },
     submitFn() {
+      if (this.questionStem.replace(/(^\s*)|(\s*$)/g, "") == "") {
+        this.$message({
+          message: "请输入题干",
+          type: "warning",
+        });
+        return;
+      }
+      if (this.trueOptions.replace(/(^\s*)|(\s*$)/g, "") == "") {
+        this.$message({
+          message: "请输入正确答案",
+          type: "warning",
+        });
+        return;
+      }
       let obj = {
         questionContent: JSON.stringify({
           type: 5,

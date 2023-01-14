@@ -10,6 +10,10 @@
         <div class="cardImg">
           <div class="operator">
             <button class="delBtn">删除</button>
+            <button class="delBtn copyBtn" @click="copyFn('课程码')">
+              复制课程码
+            </button>
+            <button class="delBtn copyBtn changeBtn">修改</button>
           </div>
           <img src="@/assets/01.jpg" alt="" />
         </div>
@@ -50,6 +54,9 @@
           <el-form-item label="课程名称">
             <el-input v-model="name" clearable></el-input>
           </el-form-item>
+          <el-form-item label="课程简介">
+            <el-input type="textarea" v-model="desc" clearable></el-input>
+          </el-form-item>
           <el-form-item label="上传图片">
             <el-upload
               class="upload-demo"
@@ -67,6 +74,22 @@
               >
             </el-upload>
           </el-form-item>
+          <el-form-item label="上课班级">
+            <el-select
+              style="width: 100%"
+              v-model="classArr"
+              multiple
+              placeholder="请选择"
+            >
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
+          </el-form-item>
           <el-form-item label="图片预览">
             <div class="cardImg" v-show="picSrc">
               <img :src="picSrc" alt="" />
@@ -75,7 +98,12 @@
         </el-form>
       </div>
       <div class="dialogOperator">
-        <el-button @click="handelSend" type="success">提交</el-button>
+        <el-button @click="handelSend" type="success" v-if="!isChange"
+          >提交</el-button
+        >
+        <el-button @click="changeClass" type="warning" v-if="isChange"
+          >修改</el-button
+        >
         <el-button @click="dialogVisible = false" type="">取消</el-button>
       </div>
     </el-dialog>
@@ -92,6 +120,10 @@ export default {
       fileList: [],
       picSrc: "",
       name: "",
+      desc: "",
+      isChange: false,
+      classArr: [],
+      options: [],
     };
   },
   components: {
@@ -146,6 +178,15 @@ export default {
       //   添加其他属性
       // 发送请求
     },
+    copyFn(value) {
+      navigator.clipboard.writeText(value).then(() => {
+        this.$message({
+          message: "已复制",
+          type: "success",
+        });
+      });
+    },
+    changeClass() {},
   },
 };
 </script>
@@ -197,5 +238,14 @@ export default {
 
 .dialogOperator {
   text-align: center;
+}
+
+.copyBtn {
+  color: orange;
+  margin-left: 20px;
+}
+
+.changeBtn {
+  color: rgb(37, 134, 37);
 }
 </style>
