@@ -1,13 +1,13 @@
 <template>
     <div>
-        nihao
+        hello
     </div>
   
 </template>
 
 <script>
 export default {
-    name:'ChangeInfo'
+    name:'ForgetPassword'
 }
 </script>
 
