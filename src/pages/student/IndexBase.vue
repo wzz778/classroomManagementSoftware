@@ -1,22 +1,5 @@
 <template>
   <div class="base">
-    <el-menu
-      :default-active="activeIndex"
-      class="el-menu-demo"
-      mode="horizontal"
-      @select="handleSelect"
-      background-color="#545c64"
-      text-color="#fff"
-      active-text-color="#ffd04b"
-    >
-      <el-submenu index="1">
-        <template slot="title">用户名</template>
-        <el-menu-item index="2-1">账号管理</el-menu-item>
-        <el-menu-item index="2-2">退出登录</el-menu-item>
-      </el-submenu>
-      <el-menu-item index="2">消息中心</el-menu-item>
-      <el-menu-item index="3"> <el-button type="text" @click="open">输入邀请码</el-button></el-menu-item>
-    </el-menu>
     <div class="lesson">
       <div class="lesson_title">我学的课程</div>
       <div class="lesson_con">
@@ -24,139 +7,175 @@
           <el-col :span="6"
             ><div class="grid-content bg-purple">
               <div>
-                <img
-                  :src="adatar ? adatar : require('@/assets/bac01.jpeg')"
-                />
+                <router-link to="/student/classTask">
+                  <img
+                    :src="adatar ? adatar : require('@/assets/bac01.jpeg')"
+                  />
+                </router-link>
                 <h3>离散数学</h3>
                 <p>叶子</p>
                 <p>班级：1班</p>
-              </div></div
-          ></el-col>
-                    <el-col :span="6"
+              </div>
+            </div></el-col
+          >
+          <el-col :span="6"
             ><div class="grid-content bg-purple">
               <div>
-                <img
-                  :src="adatar ? adatar : require('@/assets/bac01.jpeg')"
-                />
+                <router-link to="/student/classTask">
+                  <img
+                    :src="adatar ? adatar : require('@/assets/bac01.jpeg')"
+                  />
+                </router-link>
                 <h3>离散数学</h3>
                 <p>叶子</p>
                 <p>班级：1班</p>
-              </div></div
-          ></el-col>
-                    <el-col :span="6"
+              </div>
+            </div></el-col
+          >
+          <el-col :span="6"
             ><div class="grid-content bg-purple">
               <div>
-                <img
-                  :src="adatar ? adatar : require('@/assets/bac01.jpeg')"
-                />
+                <router-link to="/student/classTask">
+                  <img
+                    :src="adatar ? adatar : require('@/assets/bac01.jpeg')"
+                  />
+                </router-link>
                 <h3>离散数学</h3>
                 <p>叶子</p>
                 <p>班级：1班</p>
-              </div></div
-          ></el-col>
-                    <el-col :span="6"
+              </div>
+            </div></el-col
+          >
+          <el-col :span="6"
             ><div class="grid-content bg-purple">
               <div>
-                <img
-                  :src="adatar ? adatar : require('@/assets/bac01.jpeg')"
-                />
+                <router-link to="/student/classTask">
+                  <img
+                    :src="adatar ? adatar : require('@/assets/bac01.jpeg')"
+                  />
+                </router-link>
                 <h3>离散数学</h3>
                 <p>叶子</p>
                 <p>班级：1班</p>
-              </div></div
-          ></el-col>
+              </div>
+            </div></el-col
+          >
         </el-row>
         <el-row :gutter="20">
           <el-col :span="6"
             ><div class="grid-content bg-purple">
               <div>
-                <img
-                  :src="adatar ? adatar : require('@/assets/bac01.jpeg')"
-                />
+                <router-link to="/student/classTask">
+                  <img
+                    :src="adatar ? adatar : require('@/assets/bac01.jpeg')"
+                  />
+                </router-link>
                 <h3>离散数学</h3>
                 <p>叶子</p>
                 <p>班级：1班</p>
-              </div></div
-          ></el-col>
-                    <el-col :span="6"
+              </div>
+            </div></el-col
+          >
+          <el-col :span="6"
             ><div class="grid-content bg-purple">
               <div>
-                <img
-                  :src="adatar ? adatar : require('@/assets/bac01.jpeg')"
-                />
+                <router-link to="/student/classTask">
+                  <img
+                    :src="adatar ? adatar : require('@/assets/bac01.jpeg')"
+                  />
+                </router-link>
                 <h3>离散数学</h3>
                 <p>叶子</p>
                 <p>班级：1班</p>
-              </div></div
-          ></el-col>
-                    <el-col :span="6"
+              </div>
+            </div></el-col
+          >
+          <el-col :span="6"
             ><div class="grid-content bg-purple">
               <div>
-                <img
-                  :src="adatar ? adatar : require('@/assets/bac01.jpeg')"
-                />
+                <router-link to="/student/classTask">
+                  <img
+                    :src="adatar ? adatar : require('@/assets/bac01.jpeg')"
+                  />
+                </router-link>
                 <h3>离散数学</h3>
                 <p>叶子</p>
                 <p>班级：1班</p>
-              </div></div
-          ></el-col>
-                    <el-col :span="6"
+              </div>
+            </div></el-col
+          >
+          <el-col :span="6"
             ><div class="grid-content bg-purple">
               <div>
-                <img
-                  :src="adatar ? adatar : require('@/assets/bac01.jpeg')"
-                />
+                <router-link to="/student/classTask">
+                  <img
+                    :src="adatar ? adatar : require('@/assets/bac01.jpeg')"
+                  />
+                </router-link>
                 <h3>离散数学</h3>
                 <p>叶子</p>
                 <p>班级：1班</p>
-              </div></div
-          ></el-col>
+              </div>
+            </div></el-col
+          >
         </el-row>
         <el-row :gutter="20">
           <el-col :span="6"
             ><div class="grid-content bg-purple">
               <div>
-                <img
-                  :src="adatar ? adatar : require('@/assets/bac01.jpeg')"
-                />
+                <router-link to="/student/classTask">
+                  <img
+                    :src="adatar ? adatar : require('@/assets/bac01.jpeg')"
+                  />
+                </router-link>
                 <h3>离散数学</h3>
                 <p>叶子</p>
                 <p>班级：1班</p>
-              </div></div
-          ></el-col>
-                    <el-col :span="6"
+              </div>
+            </div></el-col
+          >
+          <el-col :span="6"
             ><div class="grid-content bg-purple">
               <div>
-                <img
-                  :src="adatar ? adatar : require('@/assets/bac01.jpeg')"
-                />
+                <router-link to="/student/classTask">
+                  <img
+                    :src="adatar ? adatar : require('@/assets/bac01.jpeg')"
+                  />
+                </router-link>
                 <h3>离散数学</h3>
                 <p>叶子</p>
                 <p>班级：1班</p>
-              </div></div
-          ></el-col>
-                    <el-col :span="6"
+              </div>
+            </div></el-col
+          >
+          <el-col :span="6"
             ><div class="grid-content bg-purple">
               <div>
-                <img
-                  :src="adatar ? adatar : require('@/assets/bac01.jpeg')"
-                />
+                <router-link to="/student/classTask">
+                  <img
+                    :src="adatar ? adatar : require('@/assets/bac01.jpeg')"
+                  />
+                </router-link>
                 <h3>离散数学</h3>
                 <p>叶子</p>
                 <p>班级：1班</p>
-              </div></div
-          ></el-col>
-                    <el-col :span="6"
+              </div>
+            </div></el-col
+          >
+          <el-col :span="6"
             ><div class="grid-content bg-purple">
               <div>
-                <img
-                  :src="adatar ? adatar : require('@/assets/bac01.jpeg')"
-                />
+                <router-link to="/student/classTask">
+                  <img
+                    :src="adatar ? adatar : require('@/assets/bac01.jpeg')"
+                  />
+                </router-link>
                 <h3>离散数学</h3>
                 <p>叶子</p>
                 <p>班级：1班</p>
-              </div></div
-          ></el-col>
+              </div>
+            </div></el-col
+          >
         </el-row>
       </div>
     </div>
@@ -169,31 +188,10 @@ export default {
   data() {
     return {
       adatar: "",
-      activeIndex: "1",
     };
   },
   methods: {
-    open() {
-      this.$prompt("请输入班级邀请码", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        inputPattern: /^[a-zA-Z\d]{4}$/,
-        inputErrorMessage: "邀请码格式不正确",
-      })
-        .then(({ value }) => {
-         this.$message({
-            type: 'success',
-            message: '成功加入' + value
-          });
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "取消输入",
-          });
-        });
-    },
-    },
+  },
   // 组件内路由进入组件时
   beforeCreate() {
     document
@@ -210,11 +208,11 @@ export default {
 <style lang="less" scoped>
 .base {
   ul {
-  position: fixed;
-  top: 0px;
-  z-index: 5;
-  height: 60px;
-  width: 100%;
+    position: fixed;
+    top: 0px;
+    z-index: 5;
+    height: 60px;
+    width: 100%;
     li {
       float: right;
     }
@@ -223,7 +221,7 @@ export default {
   .lesson {
     width: 1160px;
     min-height: 400px;
-    margin: 90px auto 0px;
+    margin: 30px auto 0px;
     background-color: white;
     border-radius: 5px;
   }
@@ -256,12 +254,12 @@ export default {
   padding: 10px 0;
   background-color: #f9fafc;
 }
-img{
-width: 100%;
-max-height: 128px;
-border-radius: 6px;
+img {
+  width: 100%;
+  max-height: 128px;
+  border-radius: 6px;
 }
-p{
-color: #434446;
+p {
+  color: #434446;
 }
 </style>

@@ -20,7 +20,7 @@
                 <li>行政班级：计科213</li>
                 <li>编号：1111</li>
               </ul>
-              <el-button type="primary" round><router-link  to="/student/IndexBase">进入课程</router-link></el-button>
+              <el-button type="primary" round><router-link  to="/user/IndexBase">进入课程</router-link></el-button>
             </div>
           </div>
         </div>

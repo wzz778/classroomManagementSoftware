@@ -65,7 +65,7 @@ export default {
 
 <style lang="less" scoped>
 .work {
-  width: 90%;
+  width: 95%;
   min-height: 450px;
   margin-bottom: 50px;
   background: white;
