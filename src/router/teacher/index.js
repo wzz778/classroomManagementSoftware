@@ -18,7 +18,8 @@ import signDetails from '@/pages/teacher/signDetails'
 import signList from '@/pages/teacher/signList'
 // 成绩管理
 import performanceManagement from '@/pages/teacher/performanceManagement'
-// 
+// 讨论管理
+import classroomDiscussion from '@/pages/teacher/classroomDiscussion'
 export default [
     {
         path: "/teacher",
@@ -85,6 +86,13 @@ export default [
                 component: performanceManagement,
                 meta: {
                     title: "成绩管理"
+                }
+            },
+            {
+                path: "classroomDiscussion",
+                component: classroomDiscussion,
+                meta: {
+                    title: "讨论管理"
                 }
             }
         ]

@@ -42,6 +42,10 @@
           <i class="el-icon-paperclip"></i>
           <span slot="title">附件管理</span>
         </el-menu-item>
+        <el-menu-item index="/teacher/classroomDiscussion">
+          <i class="el-icon-paperclip"></i>
+          <span slot="title">讨论管理</span>
+        </el-menu-item>
       </el-menu>
     </div>
     <div class="main">
