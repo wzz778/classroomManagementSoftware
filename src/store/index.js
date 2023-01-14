@@ -16,7 +16,9 @@ const actions = {}
 // 准备mutations(操作数据,键值一般大写)
 const mutations = {}
 // 准备state(存放数据)
-const state = {}
+const state = {
+    token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2NzM2OTc4OTksInVzZXJuYW1lIjoiMTIzNDU2Nzg5IiwicG93ZXIiOiIwIiwiaWQiOjJ9.idTqmW-TbzUBHSKmMHvHWhtmrJHvBFAKeGiUX6pPKZs'
+}
 // 准备getters
 const getters = {}
 
