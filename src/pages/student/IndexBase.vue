@@ -210,15 +210,20 @@ export default {
 <style lang="less" scoped>
 .base {
   ul {
+  position: fixed;
+  top: 0px;
+  z-index: 5;
+  height: 60px;
+  width: 100%;
     li {
       float: right;
     }
   }
   padding-bottom: 20px;
   .lesson {
-    width: 1140px;
+    width: 1160px;
     min-height: 400px;
-    margin: 30px auto 0px;
+    margin: 90px auto 0px;
     background-color: white;
     border-radius: 5px;
   }
@@ -240,12 +245,6 @@ export default {
 .el-col {
   border-radius: 4px;
 }
-.bg-purple-dark {
-  // background: #99a9bf;
-}
-.bg-purple {
-  // background: #d3dce6;
-}
 .bg-purple-light {
   background: #e5e9f2;
 }
@@ -259,7 +258,7 @@ export default {
 }
 img{
 width: 100%;
-max-height: 100px;
+max-height: 128px;
 border-radius: 6px;
 }
 p{

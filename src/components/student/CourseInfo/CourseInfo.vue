@@ -103,6 +103,7 @@ export default {
   text-align: center;
   line-height: 200px;
   background-color: #fff;
+  overflow-y: hidden;
 }
 
 .el-main {
