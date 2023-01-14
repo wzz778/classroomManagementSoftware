@@ -1,79 +1,113 @@
 <template>
-  <div class="task">
-    <div class="taskTop">
-      <span>高等数学</span>
-    </div>
-    <div class="taskState">
-      <span>未开始(3)</span>
-    </div>
-    <div class="zuo">
-      <el-card class="box-card">
-        <div v-for="o in 3" :key="o" class="text item">
-          <div class="name">
-            <img :src="adatar ? adatar : require('@/assets/yxy/classPic.jpg')" />
+  <div>
+    <div class="task" v-show="check == '任务'">
+      <div class="taskTop">
+        <span>高等数学</span>
+      </div>
+      <div class="taskState">
+        <span>未开始(3)</span>
+      </div>
+      <div class="zuo">
+        <el-card class="box-card">
+          <div
+            v-for="o in 3"
+            :key="o"
+            class="text item"
+            @click="check = '签到'"
+          >
+            <div class="name">
+              <img
+                :src="adatar ? adatar : require('@/assets/yxy/classPic.jpg')"
+              />
+            </div>
+            <div class="name">
+              <span> {{ "任务尚未开始 " + o }}</span>
+              <span class="tasktime">开始时间：2023-1-20</span>
+            </div>
           </div>
-          <div class="name">
-            <span> {{ "作业尚未开始 " + o }}</span>
-            <span class="tasktime">开始时间：2023-1-20</span>
+        </el-card>
+      </div>
+      <div class="taskState">
+        <span>进行中(4)</span>
+      </div>
+      <div class="zuo">
+        <el-card class="box-card">
+          <div
+            v-for="o in 4"
+            :key="o"
+            class="text item"
+            @click="check = '签到'"
+          >
+            <div class="name">
+              <img
+                :src="adatar ? adatar : require('@/assets/yxy/classPic.jpg')"
+              />
+            </div>
+            <div class="name">
+              <span> {{ "任务进行中 " + o }}</span>
+              <span class="tasktime">截至时间：2023-1-22</span>
+            </div>
           </div>
-        </div>
-      </el-card>
+        </el-card>
+      </div>
+      <div class="taskState">
+        <span>已结束(5)</span>
+      </div>
+      <div class="zuo">
+        <el-card class="box-card">
+          <div
+            v-for="o in 5"
+            :key="o"
+            class="text item"
+            @click="check = '签到'"
+          >
+            <div class="name">
+              <img
+                :src="adatar ? adatar : require('@/assets/yxy/classPic.jpg')"
+              />
+            </div>
+            <div class="name">
+              <span> {{ "签到已结束 " + o }}</span>
+              <span class="tasktime">截止时间：2023-1-12</span>
+            </div>
+          </div>
+        </el-card>
+      </div>
     </div>
-        <div class="taskState">
-      <span>进行中(4)</span>
-    </div>
-    <div class="zuo">
-      <el-card class="box-card">
-        <div v-for="o in 4" :key="o" class="text item">
-          <div class="name">
-            <img :src="adatar ? adatar : require('@/assets/yxy/classPic.jpg')" />
-          </div>
-          <div class="name">
-            <span> {{ "作业进行中 " + o }}</span>
-            <span class="tasktime">截至时间：2023-1-22</span>
-          </div>
-        </div>
-      </el-card>
-    </div>
-        <div class="taskState">
-      <span>已结束(5)</span>
-    </div>
-    <div class="zuo">
-      <el-card class="box-card">
-        <div v-for="o in 5" :key="o" class="text item">
-          <div class="name">
-            <img :src="adatar ? adatar : require('@/assets/yxy/classPic.jpg')" />
-          </div>
-          <div class="name">
-            <span> {{ "作业已结束 " + o }}</span>
-            <span class="tasktime">截止时间：2023-1-12</span>
-          </div>
-        </div>
-      </el-card>
+    <div class="qian">
+      <SignIn v-show="check == '签到'" :check="check" @changeMsg="changeMsg" />
     </div>
   </div>
 </template>
 
 <script>
 import { Card } from "element-ui";
+import SignIn from "@/components/student/CourseInfo/SignIn";
 export default {
   name: "ClassTask",
   data() {
     return {
       radio: "1",
       adatar: "",
+      check: "任务",
     };
   },
   components: {
     [Card.name]: Card,
+    SignIn,
   },
-  methods: {},
+  methods: {
+    changeMsg(text, value) {
+      console.log(text, value);
+      this.check = value;
+    },
+  },
 };
 </script>
 
 <style lang="less" scoped>
 .task {
-  width: 90%;
+  width: 95%;
   min-height: 450px;
   margin-bottom: 50px;
   background: white;
