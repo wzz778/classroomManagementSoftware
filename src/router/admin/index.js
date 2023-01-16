@@ -3,6 +3,23 @@
 
 export default [
     {
+        path:'/admin',
+        name:'Layout',
+        component:() => import('@/components/admin/layout.vue'),
+        meta:{
+            title:"首页"
+        },
+        children:[ //通过children配置子级路由
+            {
+                path:'index', 
+                component: () => import('@/pages/admin/Users/list.vue'),
+                meta:{
+                    title:"主页"
+                }
+            },
+        ]
+    },
+    {
         path:'/admin/users',
         name:'Layout',
         component: () => import('@/components/admin/layout.vue'),
