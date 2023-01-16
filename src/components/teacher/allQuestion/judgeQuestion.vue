@@ -144,7 +144,13 @@ export default {
         type: 3,
       };
       console.log(obj);
-      this.$store.commit("teacher/ADDQUESTION", obj);
+      this.$store.commit("teacher/ADDQUESTION", {
+        data: obj,
+        answer: {
+          answer: this.trueOptions.toString(),
+          type: 3,
+        },
+      });
       this.cancelFn();
       this.clearAll();
     },
