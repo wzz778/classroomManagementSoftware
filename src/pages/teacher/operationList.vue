@@ -35,6 +35,10 @@
           style="margin-bottom: 20px"
           >添加题目</el-button
         >
+        <el-form-item label="作业名称">
+          <el-input placeholder="请输入内容" v-model="name" clearable>
+          </el-input>
+        </el-form-item>
         <el-form-item label="备注">
           <el-input type="textarea" v-model="desc"></el-input>
         </el-form-item>
@@ -158,6 +162,7 @@ import gapFilling from "@/components/teacher/allQuestion/gapFilling";
 // 简答
 import shortAnswer from "@/components/teacher/allQuestion/shortAnswer";
 import { Row, Col, Card } from "element-ui";
+import { createHomework } from "@/api/teacher";
 export default {
   name: "operationList",
   components: {
@@ -258,6 +263,7 @@ export default {
           label: "解答题",
         },
       ],
+      name: "",
     };
   },
   computed: {
@@ -294,7 +300,23 @@ export default {
       this.searchObj = obj;
     },
     getAllGradeFn() {},
-    submitFn() {},
+    submitFn() {
+      // 判断值是否为空
+      console.log(
+        this.$store.state.teacher.questions,
+        this.$store.state.teacher.answer
+      );
+      let obj = {
+        answer: this.$store.state.teacher.answer,
+      };
+      createHomework(obj)
+        .then((result) => {
+          console.log(result);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
     handleClose(done) {
       this.$confirm("确认关闭？")
         .then(() => {
