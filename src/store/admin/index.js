@@ -14,8 +14,8 @@ const mutations = {
 }
 // 准备state(存放数据)
 const state = {
-    editableTabs:Storage.getEditableTabs()|| [{title:'用户列表',name:'/admin/users/list'}],
-    editableTabsValue:Storage.getEditableTabsValue() || '/admin/users/list',
+    editableTabs:Storage.getEditableTabs()|| [{title:'首页',name:'/admin/index'}],
+    editableTabsValue:Storage.getEditableTabsValue() || '/admin/index',
     // allgrade:["一年级","二年级","三年级","四年级","五年级","六年级","初一","初二","初三","高一","高二","高三"]
 }
 // 准备getters

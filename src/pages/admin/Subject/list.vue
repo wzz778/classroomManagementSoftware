@@ -1,46 +1,58 @@
 <template>
   <div id="adminindex">
-    年级：
-    <el-select v-model="level" placeholder="请选择活动区域">
-      <el-option  v-for="p of $store.state.admin.allgrade" :key="p.index" :label="p" :value="p"></el-option>
-    </el-select>
-    <el-button @click="find" type="primary" style="margin:0px 10px;">查询</el-button>
+    <el-form label-width="80px" style="width:300px;">
+      <el-form-item style="width:500px;margin-bottom: 0px;" label="老师ID">
+        <el-input style="width:150px;" v-model="teacherid"></el-input>
+        <el-button @click="find" type="primary" style="margin:0px 10px;">查询</el-button>
+        <el-button @click="dialogFormVisible = true" type="button">添加课堂</el-button>
+      </el-form-item>
+    </el-form>
     <el-table
         :data="tableData"
-        :v-loading="true"
         border
         style="width: 100%;margin:10px 0;">
         <el-table-column
         fixed
-        prop="id"
-        label="ID"
-        empty-text
-       >    
+        prop="date"
+        label="日期">    
         </el-table-column>
         <el-table-column
-        prop="subjectName"
-        label="学科"
-        > 
+        prop="name"
+        label="姓名">
         </el-table-column>
         <el-table-column
-        prop="levelName"
-        label="年级"
-        >
+        prop="province"
+        label="省份">
         </el-table-column>
         <el-table-column
-          prop="deleted"
-          label="状态"
-        >
-          <template slot-scope="scope">
-            <el-tag :type="scope.row.deleted? 'warning' : 'success'">{{scope.row.deleted|toch()}}</el-tag>
-          </template>
+        prop="city"
+        label="市区">
         </el-table-column>
         <el-table-column
-        label="操作"
-        >
+        prop="url"
+        label="图片"
+>
         <template slot-scope="scope">
-            <el-button @click="editClick(scope.row)" type="primary" size="small">修改</el-button>
-            <el-button @click="deleteClick(scope.row)" type="danger" size="small">删除</el-button>
+            <el-image 
+                style="width: 100px; height: 100px"
+                :src="scope.row.url" 
+                :preview-src-list="[scope.row.url]"
+                >
+            </el-image>
+        </template>
+        </el-table-column>
+        <el-table-column
+        prop="zip"
+        label="邮编"
+        width="120">
+        </el-table-column>
+        <el-table-column
+        fixed="right"
+        label="操作"
+        width="100">
+        <template slot-scope="scope">
+            <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
+            <el-button type="text" size="small">编辑</el-button>
         </template>
         </el-table-column>
     </el-table>
@@ -48,145 +60,114 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       :current-page="currentPage"
-      :page-sizes="[5, 10, 15, 20]"
-      :page-size="pagesize"
+      :page-sizes="[3, 5, 10]"
+      :page-size="3"
       layout="total, sizes, prev, pager, next, jumper"
-      :total="alltotal">
+      :total="100">
     </el-pagination>
-    <!-- <div>{{tableDatas}}</div> -->
+    <el-dialog style="z-index:2001;" title="幻灯片添加" append-to-body :visible.sync="dialogFormVisible">
+      <el-upload
+        class="upload-demo"
+        ref="upload"
+        action=""
+        :http-request="postFile"
+        :before-upload="handleBeup"
+        :file-list="fileList"
+        :headers="postHeader"
+        drag
+         :auto-upload="false"
+        multiple
+        >
+      <i class="el-icon-upload"></i>
+      <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+        <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb<el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">开始上传</el-button></div>
+      </el-upload>
+      <div slot="footer" class="dialog-footer">
+        <el-button  @click="cleardialog" type="primary">完成</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
-import { Select, Option , Tag} from "element-ui";
-// import {getAllSubject,searchSubject,deleteSubject} from '@/myAxios/admin/wzzAxios'
+import {Image,Upload} from "element-ui";
+// import {addSlideshow } from '@/myAxios/admin/wzzAxios'
 export default {
-  name:'UsersList',
+    name:'SubjectList',
   components: {
-    [Select.name]: Select,
-    [Option.name]: Option,
-     [Tag.name]: Tag,
+    [Image.name]:  Image,
+    [Upload.name]:  Upload
   },
     data() {
-      const item = {
-        id: '1',
-        subjectName: '语文',
-        levelName: '年级',
-        deleted:"34"
-      };
+        const item = {
+          date: '2016-05-02',
+          name: '王小虎',
+          province: '上海',
+          city: '普陀区',
+          url: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
+          zip: 200333
+        };
       return {
+        dialogFormVisible:false,
+        formLabelWidth: '120px',
         currentPage: 1,
-        tableData:Array(0).fill(item),
-        level:"",
-        pagesize:5,
-        alltotal:100
+        postHeader:{
+          token:this.$store.state.token,
+        },
+        tableData:Array(3).fill(item),
+        region:"",
+        fileList: [],
+        filetype:true,
+        teacherid:11
       }
     },
     methods:{
-      editClick(row) {
-        console.log(row);
-        sessionStorage.setItem("formmessage",JSON.stringify(row))
-        this.$router.replace({
-            path:"edit",
-                query:{
-                    id:row.id,
-                }
-        })
+      handleBeup(file){
+        const isJPG = file.type === 'image/jpeg'|'image/png';
+        const isLt5M = file.size / 1024 / 1024 < 5;
+        if (!isJPG) {
+          this.$message.error( '上传头像图片只能是图片格式! ');
+        }
+        if (!isLt5M ) {
+          this.$message.error( '上传图片大小帮你超过5MB！ ');
+        }
+        this.filetype= isJPG&&isLt5M;
+      },  
+
+      async postFile(){
+        if(this.filetype){
+          // let newfile=new FormData();
+          // newfile.append('slideshows',data.file)
+          // let rep=await addSlideshow(newfile);
+          // if(rep.status==200){
+          //     this.$message.success('上传成功');
+          //   }else{
+          //     this.$message.error('获取失败');
+          //   }
+        }else{
+          this.$refs.upload.clearFiles()
+        }
       },
-      deleteClick(row) {
-        console.log(row);
-        //  this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
-        //   confirmButtonText: '确定',
-        //   cancelButtonText: '取消',
-        //   type: 'warning',
-        //   center: true
-        // }).then(() => {
-        //   return deleteSubject({ids:row.id});
-        // })
-        // .then((response) => {
-        //   if(response.status==200){
-        //     this.$message({
-        //       type: 'success',
-        //       message: '删除成功!'
-        //     });
-        //     this.chagepage()
-        //   }else{
-        //     this.$message.error('删除失败');
-        //   }
-        // })
-        // .catch(() => {
-        //   this.$message({
-        //     type: 'info',
-        //     message: '已取消删除'
-        //   });
-        // });
+      submitUpload() {
+        this.$refs.upload.submit();
       },
-      handleSizeChange(val) {
-        this.pagesize=val;
-        this.chagepage()
+      cleardialog(){
+        this.dialogFormVisible=false;
+        this.$refs.upload.clearFiles()
+      },
+      handleClick(row) {
+        console.log(row);
+      },
+        handleSizeChange(val) {
+        console.log(`每页 ${val} 条`);
       },
       handleCurrentChange(val) {
         this.currentPage=val;
-        this.chagepage()
+        console.log(`当前页: ${val}`);
       },
       find() {
-        this.currentPage=1;
-        this.chagepage()
-      },
-      async chagepage() {
-        // if(this.level==""){
-        //   let data= await getAllSubject({beginIndex:this.currentPage,size:this.pagesize})
-        //   console.log(data);
-        //   if(data.status==200){
-        //     this.alltotal=data.data.total;
-        //     this.tableData=data.data.records;
-        //   }else{
-        //     this.$message.error('获取失败');
-        //   }
-        // }else{
-        //   let data= await searchSubject({beginIndex:this.currentPage,size:this.pagesize,level:this.level})
-        //   console.log(data);
-        //   if(data.status==200){
-        //     this.alltotal=data.data.total;
-        //     this.tableData=data.data.records;
-        //   }else{
-        //     this.$message.error('获取失败');
-        //   }
-        // }
+        console.log(this.region);
       },
     },
-    async mounted(){
-      this.chagepage()
-    },
-    computed:{
-        // tableDatas() {
-        //   let that=this;
-        //   let axios;
-        //   (async function(){
-        //     axios= await getAllSubject({beginIndex:that.currentPage,size:that.pagesize})
-        //     if (axios.status==200) {
-        //       return 111;
-        //     }
-        //   })()
-        //     console.log(axios);
-        //   // await getAllSubject({beginIndex:this.currentPage,size:this.pagesize})
-        //     // .then(data=>{
-        //     //   console.log(data);
-        //     //   return data.data.records;
-        //     // })
-        //     // .catch(err=>{
-        //     //   })
-        //     return axios;
-        // },
-  },
-   filters:{
-        toch(value){      
-            if(!value){
-              return "启用"
-            }else{
-              return "停用"
-            }
-        }//1368
-    }
 }
 </script>
 <style lang="less" scoped>
@@ -194,11 +175,5 @@ export default {
         width: 100%;
         min-height: 500px;
         background-color: #f8f8f8;
-        .panelbox{
-          width: 100%;
-          display: flex;
-          justify-content:space-around;
-          flex-wrap: wrap;
-        }
     }
 </style>

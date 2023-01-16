@@ -13,7 +13,7 @@
          text-color="rgba(255, 255, 255, 0.9)"
          active-text-color="#FF9800"
       >
-        <el-menu-item index="">
+        <el-menu-item index="/admin/index">
           <i class="el-icon-menu"></i>
           <span slot="title">管理端</span>
         </el-menu-item>
