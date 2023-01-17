@@ -2,7 +2,7 @@
   <div id="adminindex">
     <el-form label-width="80px" style="width:300px;">
       <el-form-item style="width:500px;margin-bottom: 0px;" label="老师ID">
-        <el-input style="width:150px;" v-model="teacherid"></el-input>
+        <el-input style="width:150px;" v-model="searchform.userId" clearable></el-input>
         <el-button @click="find" type="primary" style="margin:0px 10px;">查询</el-button>
         <el-button @click="dialogFormVisible = true" type="button">添加课堂</el-button>
       </el-form-item>
@@ -13,57 +13,58 @@
         style="width: 100%;margin:10px 0;">
         <el-table-column
         fixed
-        prop="date"
-        label="日期">    
+        prop="courseName"
+        label="课堂名称">    
         </el-table-column>
         <el-table-column
-        prop="name"
-        label="姓名">
+        prop="courseCode"
+        label="课堂码">
         </el-table-column>
         <el-table-column
-        prop="province"
-        label="省份">
+        prop="cover"
+        label="课堂封面">
+          <template slot-scope="scope">
+              <el-image 
+                  style="width: 100px; height: 100px"
+                  :src="scope.row.cover" 
+                  :preview-src-list="[scope.row.cover]"
+                  >
+              </el-image>
+          </template>
         </el-table-column>
         <el-table-column
-        prop="city"
-        label="市区">
+        prop="createTime"
+        label="创建时间">
         </el-table-column>
         <el-table-column
-        prop="url"
-        label="图片"
->
-        <template slot-scope="scope">
-            <el-image 
-                style="width: 100px; height: 100px"
-                :src="scope.row.url" 
-                :preview-src-list="[scope.row.url]"
-                >
-            </el-image>
-        </template>
+        prop="isDeleted"
+        label="状态">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.isDeleted?'warning' : 'success'">{{scope.row.isDeleted|toch()}}</el-tag>
+          </template>
         </el-table-column>
         <el-table-column
-        prop="zip"
-        label="邮编"
-        width="120">
+        prop="creatorId"
+        label="创建人ID">
         </el-table-column>
         <el-table-column
         fixed="right"
-        label="操作"
-        width="100">
+        label="操作">
         <template slot-scope="scope">
-            <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
-            <el-button type="text" size="small">编辑</el-button>
+            <el-button @click="watchClick(scope.row.id)" type="text" size="small">详情</el-button>
+            <el-button @click="editClick(scope.row.id)" type="text" size="small">编辑</el-button>
+            <el-button @click="deleteClick(scope.row.id)" type="text" size="small">禁用</el-button>
         </template>
         </el-table-column>
     </el-table>
     <el-pagination
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
-      :current-page="currentPage"
-      :page-sizes="[3, 5, 10]"
-      :page-size="3"
+      :current-page="searchform.nodePage"
+      :page-sizes="[5, 10, 15, 20]"
+      :page-size="searchform.pageSize"
       layout="total, sizes, prev, pager, next, jumper"
-      :total="100">
+      :total="alltotal">
     </el-pagination>
     <el-dialog style="z-index:2001;" title="幻灯片添加" append-to-body :visible.sync="dialogFormVisible">
       <el-upload
@@ -89,23 +90,16 @@
   </div>
 </template>
 <script>
-import {Image,Upload} from "element-ui";
-// import {addSlideshow } from '@/myAxios/admin/wzzAxios'
+import {Image,Upload,Tag} from "element-ui";
+import {getHerCourse,deleteCourse} from '@/api/admin/index'
 export default {
     name:'SubjectList',
   components: {
     [Image.name]:  Image,
-    [Upload.name]:  Upload
+    [Upload.name]:  Upload,
+    [Tag.name]: Tag,
   },
     data() {
-        const item = {
-          date: '2016-05-02',
-          name: '王小虎',
-          province: '上海',
-          city: '普陀区',
-          url: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-          zip: 200333
-        };
       return {
         dialogFormVisible:false,
         formLabelWidth: '120px',
@@ -113,11 +107,16 @@ export default {
         postHeader:{
           token:this.$store.state.token,
         },
-        tableData:Array(3).fill(item),
+        tableData:[],
         region:"",
         fileList: [],
         filetype:true,
-        teacherid:11
+        alltotal:0,
+        searchform:{
+          nodePage: 1,
+          pageSize:5,
+           userId:""
+        }
       }
     },
     methods:{
@@ -154,20 +153,80 @@ export default {
         this.dialogFormVisible=false;
         this.$refs.upload.clearFiles()
       },
-      handleClick(row) {
+      watchClick(row) {
         console.log(row);
       },
-        handleSizeChange(val) {
-        console.log(`每页 ${val} 条`);
+      editClick(row) {
+        console.log(row);
+      },
+      deleteClick(row) {
+        this.$confirm("确定要删除课程吗?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        })
+        .then(() => {
+          deleteCourse({ id:row }).then((result) => {
+            if(result.status==200){
+              this.$message({
+                type: "success",
+                message: "删除成功!",
+              });
+              this.chagepage();
+            }else{
+              this.$message({
+                type: "warning",
+                message: "操作失败",
+              });
+            }
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除",
+          });
+        });
+        console.log(row);
+      },
+      handleSizeChange(val) {
+        this.searchform.pageSize=val;
+        this.chagepage()
       },
       handleCurrentChange(val) {
-        this.currentPage=val;
-        console.log(`当前页: ${val}`);
+        this.searchform.nodePage=val;
+        this.chagepage()
       },
       find() {
-        console.log(this.region);
+        this.searchform.nodePage=1;
+        this.chagepage()
+      },
+      chagepage() {
+        getHerCourse(this.searchform)
+        .then(data=>{
+          if(data.status==200){
+            let req=data.data;
+            this.tableData=req.records;
+            this.alltotal=req.total;
+          }
+        })
+        .catch(error=>{
+            console.log(error);
+        })
       },
     },
+    filters:{
+      toch(value){      
+          if(!value){
+            return "启用"
+          }else{
+            return "停用"
+          }
+      }//1368
+  },
+   mounted(){
+    this.chagepage()
+  }
 }
 </script>
 <style lang="less" scoped>

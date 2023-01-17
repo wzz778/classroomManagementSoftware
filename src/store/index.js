@@ -17,7 +17,7 @@ const actions = {}
 const mutations = {}
 // 准备state(存放数据)
 const state = {
-    token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2NzM2OTc4OTksInVzZXJuYW1lIjoiMTIzNDU2Nzg5IiwicG93ZXIiOiIwIiwiaWQiOjJ9.idTqmW-TbzUBHSKmMHvHWhtmrJHvBFAKeGiUX6pPKZs'
+    token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2NzM4NTE2NTgsInVzZXJuYW1lIjoiMTIzNDU2Nzg5IiwicG93ZXIiOiIwIiwiaWQiOjJ9._0IazMUMMJp_DMFJYtKlUOeFNJfK0kuzRABTJZwe_gU'
 }
 // 准备getters
 const getters = {}

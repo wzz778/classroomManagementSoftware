@@ -12,44 +12,59 @@
         style="width: 100%;margin:10px 0;">
         <el-table-column
         fixed
-        prop="id"
-        label="ID"
+        prop="studentId"
+        label="用户ID"
+         width="50"
         empty-text
        >    
         </el-table-column>
         <el-table-column
-        prop="subjectName"
-        label="学科"
+        prop="identity"
+        label="身份"
+        width="70"
+        > 
+        <template slot-scope="scope">
+          {{scope.row.identity|toidentity()}}
+        </template>
+        </el-table-column>
+        <el-table-column
+        prop="userName"
+        label="账号"
         > 
         </el-table-column>
         <el-table-column
-        prop="levelName"
-        label="年级"
+        prop="email"
+        label="邮箱"
         >
         </el-table-column>
         <el-table-column
-          prop="deleted"
+        prop="createTime"
+        label="创建时间"
+        >
+        </el-table-column>
+        <el-table-column
+          prop="isDeleted"
           label="状态"
         >
           <template slot-scope="scope">
-            <el-tag :type="scope.row.deleted? 'warning' : 'success'">{{scope.row.deleted|toch()}}</el-tag>
+            <el-tag :type="scope.row.isDeleted? 'warning' : 'success'">{{scope.row.isDeleted|toch()}}</el-tag>
           </template>
         </el-table-column>
         <el-table-column
         label="操作"
         >
         <template slot-scope="scope">
-            <el-button @click="editClick(scope.row)" type="primary" size="small">修改</el-button>
-            <el-button @click="deleteClick(scope.row)" type="danger" size="small">删除</el-button>
+            <el-button @click="editclick(scope.row.studentId)" type="primary" size="small">修改</el-button>
+            <el-button @click="deleteClick(scope.row.studentId)" type="danger" size="small">删除</el-button>
         </template>
         </el-table-column>
     </el-table>
     <el-pagination
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
-      :current-page="currentPage"
+      :current-page="searchform.nodePage"
       :page-sizes="[5, 10, 15, 20]"
-      :page-size="pagesize"
+      :page-size="searchform.pageSize"
       layout="total, sizes, prev, pager, next, jumper"
       :total="alltotal">
     </el-pagination>
@@ -58,7 +73,7 @@
 </template>
 <script>
 import { Select, Option , Tag} from "element-ui";
-// import {getAllSubject,searchSubject,deleteSubject} from '@/myAxios/admin/wzzAxios'
+import {getAllUser,deleteUser} from '@/api/admin/index'
 export default {
   name:'UsersList',
   components: {
@@ -78,11 +93,17 @@ export default {
         tableData:Array(0).fill(item),
         level:"",
         pagesize:5,
-        alltotal:100
+        alltotal:100,
+        searchform:{
+          nodePage: 1,
+          pageSize:5,
+          gradeId:"",
+          sex:''
+        }
       }
     },
     methods:{
-      editClick(row) {
+      editclick(row) {
         console.log(row);
         sessionStorage.setItem("formmessage",JSON.stringify(row))
         this.$router.replace({
@@ -92,101 +113,92 @@ export default {
                 }
         })
       },
-      deleteClick(row) {
+      watchClick(row) {
         console.log(row);
-        //  this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
-        //   confirmButtonText: '确定',
-        //   cancelButtonText: '取消',
-        //   type: 'warning',
-        //   center: true
-        // }).then(() => {
-        //   return deleteSubject({ids:row.id});
-        // })
-        // .then((response) => {
-        //   if(response.status==200){
-        //     this.$message({
-        //       type: 'success',
-        //       message: '删除成功!'
-        //     });
-        //     this.chagepage()
-        //   }else{
-        //     this.$message.error('删除失败');
-        //   }
-        // })
-        // .catch(() => {
-        //   this.$message({
-        //     type: 'info',
-        //     message: '已取消删除'
-        //   });
-        // });
+      },
+      editClick(row) {
+        console.log(row);
+      },
+      deleteClick(row) {
+        this.$confirm("确定要删除课程吗?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        })
+        .then(() => {
+          deleteUser({ id:row }).then((result) => {
+            if(result.status==200){
+              this.$message({
+                type: "success",
+                message: "删除成功!",
+              });
+              this.chagepage();
+            }else{
+              this.$message({
+                type: "warning",
+                message: "操作失败",
+              });
+            }
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除",
+          });
+        });
+        console.log(row);
       },
       handleSizeChange(val) {
-        this.pagesize=val;
+        this.searchform.pageSize=val;
         this.chagepage()
       },
       handleCurrentChange(val) {
-        this.currentPage=val;
+        this.searchform.nodePage=val;
         this.chagepage()
       },
       find() {
-        this.currentPage=1;
+        this.searchform.nodePage=1;
         this.chagepage()
       },
-      async chagepage() {
-        // if(this.level==""){
-        //   let data= await getAllSubject({beginIndex:this.currentPage,size:this.pagesize})
-        //   console.log(data);
-        //   if(data.status==200){
-        //     this.alltotal=data.data.total;
-        //     this.tableData=data.data.records;
-        //   }else{
-        //     this.$message.error('获取失败');
-        //   }
-        // }else{
-        //   let data= await searchSubject({beginIndex:this.currentPage,size:this.pagesize,level:this.level})
-        //   console.log(data);
-        //   if(data.status==200){
-        //     this.alltotal=data.data.total;
-        //     this.tableData=data.data.records;
-        //   }else{
-        //     this.$message.error('获取失败');
-        //   }
-        // }
+      chagepage() {
+        getAllUser(this.searchform)
+        .then(data=>{
+          console.log(data);
+          if(data.status==200){
+            let req=data.data;
+            this.tableData=req.records;
+            this.alltotal=req.total;
+          }else if(data.status==555){
+            this.tableData=[]
+          }
+        })
+        .catch(error=>{
+            console.log(error);
+        })
       },
     },
-    async mounted(){
-      this.chagepage()
-    },
-    computed:{
-        // tableDatas() {
-        //   let that=this;
-        //   let axios;
-        //   (async function(){
-        //     axios= await getAllSubject({beginIndex:that.currentPage,size:that.pagesize})
-        //     if (axios.status==200) {
-        //       return 111;
-        //     }
-        //   })()
-        //     console.log(axios);
-        //   // await getAllSubject({beginIndex:this.currentPage,size:this.pagesize})
-        //     // .then(data=>{
-        //     //   console.log(data);
-        //     //   return data.data.records;
-        //     // })
-        //     // .catch(err=>{
-        //     //   })
-        //     return axios;
-        // },
+    filters:{
+      toch(value){      
+          if(!value){
+            return "启用"
+          }else{
+            return "停用"
+          }
+      },//1368
+      toidentity(value){
+        if(value==0){
+          return"学生"
+        }else if(value==1){
+          return"老师"
+        }else{
+          return"管理"
+        }
+        }
   },
-   filters:{
-        toch(value){      
-            if(!value){
-              return "启用"
-            }else{
-              return "停用"
-            }
-        }//1368
-    }
+   mounted(){
+    this.chagepage()
+  }
 }
 </script>
 <style lang="less" scoped>
