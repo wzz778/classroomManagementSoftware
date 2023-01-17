@@ -54,8 +54,8 @@
               >
             </el-menu-item>
           </router-link>
-          <router-link to="/student/classStudents">
-            <el-menu-item index="/student/classStudents">
+          <router-link to="/student/ClassMembers">
+            <el-menu-item index="/student/ClassMembers">
               <span slot="title"><i class="el-icon-user"></i>课程成员</span>
             </el-menu-item>
           </router-link>
@@ -140,6 +140,7 @@ html {
   text-align: center;
   line-height: 200px;
   background-color: #fff;
+  overflow-y: hidden;
 }
 
 .el-main {

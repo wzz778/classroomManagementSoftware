@@ -6,38 +6,36 @@
       >
     </div>
     <div class="card">
-      <div class="cardItem">
-        <div class="cardImg">
-          <div class="operator">
-            <button class="delBtn">删除</button>
+      <template v-for="(item, index) in myCourse">
+        <div class="cardItem" :key="index">
+          <div class="cardImg">
+            <div class="operator">
+              <button class="delBtn" @click="delFn(item.id)">删除</button>
+              <button class="delBtn copyBtn" @click="copyFn(item.courseCode)">
+                复制课程码
+              </button>
+              <button
+                class="delBtn copyBtn changeBtn"
+                @click="changeShow(item.id)"
+              >
+                修改
+              </button>
+            </div>
+            <img :src="item.cover" alt="" />
           </div>
-          <img src="@/assets/01.jpg" alt="" />
+          <div class="cardInfo">
+            <div class="infoText">
+              <span>{{ item.courseName }}</span>
+            </div>
+            <div class="infoText">
+              <span></span>
+            </div>
+            <div class="infoText">
+              简介:<span class="desc">{{ item.details }}</span>
+            </div>
+          </div>
         </div>
-        <div class="cardInfo">
-          <div class="infoText">
-            <span>离散数学</span>
-          </div>
-          <div class="infoText">
-            <span>xxx</span>
-          </div>
-          <div class="infoText">班级:<span>xxx</span></div>
-        </div>
-      </div>
-      <div class="cardItem">
-        <div class="cardImg">
-          <div></div>
-          <img src="@/assets/logo.png" alt="" />
-        </div>
-        <div class="cardInfo">
-          <div class="infoText">
-            <span>离散数学</span>
-          </div>
-          <div class="infoText">
-            <span>xxx</span>
-          </div>
-          <div class="infoText">班级:<span>xxx</span></div>
-        </div>
-      </div>
+      </template>
     </div>
     <el-dialog
       title="提示"
@@ -47,15 +45,17 @@
     >
       <div class="dialogSty">
         <el-form label-width="80px">
-          <el-form-item label="课程名称">
+          <el-form-item label="课程名称" v-if="!isChange">
             <el-input v-model="name" clearable></el-input>
+          </el-form-item>
+          <el-form-item label="课程简介" v-if="!isChange">
+            <el-input type="textarea" v-model="desc" clearable></el-input>
           </el-form-item>
           <el-form-item label="上传图片">
             <el-upload
               class="upload-demo"
               ref="upload"
               action=""
-              :on-preview="handlePreview"
               :on-remove="handleRemove"
               :file-list="fileList"
               :on-change="handelChange"
@@ -75,7 +75,12 @@
         </el-form>
       </div>
       <div class="dialogOperator">
-        <el-button @click="handelSend" type="success">提交</el-button>
+        <el-button @click="handelSend" type="success" v-if="!isChange"
+          >提交</el-button
+        >
+        <el-button @click="changeClass" type="warning" v-if="isChange"
+          >修改</el-button
+        >
         <el-button @click="dialogVisible = false" type="">取消</el-button>
       </div>
     </el-dialog>
@@ -84,6 +89,7 @@
 
 <script>
 import { Upload } from "element-ui";
+import { addCourse, myCourse, updateCover, deleteCourse } from "@/api/teacher";
 export default {
   name: "myClassroom",
   data() {
@@ -92,6 +98,10 @@ export default {
       fileList: [],
       picSrc: "",
       name: "",
+      desc: "",
+      isChange: false,
+      myCourse: [],
+      changeId: "",
     };
   },
   components: {
@@ -113,15 +123,10 @@ export default {
       };
       fileList = fileList.slice(-1);
       this.fileList = fileList;
-      console.log("文件修改执行的函数", file, fileList);
     },
     handleRemove(file, fileList) {
-      console.log("移除文件执行的函数", file, fileList);
       this.filesList = fileList;
       this.picSrc = "";
-    },
-    handlePreview(file) {
-      console.log("点击已经上传的文件", file);
     },
     handleExceed(files, fileList) {
       this.$message.warning(
@@ -130,22 +135,143 @@ export default {
         } 个文件`
       );
     },
-    beforeRemove(file, fileList) {
-      console.log("移除之前执行的函数", fileList);
-      return this.$confirm(`确定移除 ${file.name}？`);
-    },
     handelSend() {
-      console.log("上传文件", this.fileList);
+      // 判断是否为空值
+      if (this.name.replace(/(^\s*)|(\s*$)/g, "") == "") {
+        this.$message({
+          message: "请输入课程名字",
+          type: "warning",
+        });
+        return;
+      }
+      if (this.desc.replace(/(^\s*)|(\s*$)/g, "") == "") {
+        this.$message({
+          message: "请输入课程名字",
+          type: "warning",
+        });
+        return;
+      }
+      if (this.fileList.length == 0) {
+        this.$message({
+          message: "请上传封面",
+          type: "warning",
+        });
+        return;
+      }
       //   这里需要判断一下文件大小或者类型
       //   自定义上传就需要我们使用fromdata对象来上传文件
       let formdata = new FormData();
       for (let i = 0; i < this.fileList.length; i++) {
         // 我们上传的文件保存在每个文件对象的raw里边
-        formdata.append("file", this.fileList[i].raw);
+        formdata.append("cover0", this.fileList[i].raw);
       }
+      formdata.append("courseName", this.name);
+      formdata.append("details", this.desc);
       //   添加其他属性
       // 发送请求
+      addCourse(formdata)
+        .then((result) => {
+          console.log(result);
+          this.$message({
+            message: "上传成功",
+            type: "success",
+          });
+          this.clearAll();
+          this.getInfo();
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
+    changeShow(id) {
+      this.dialogVisible = true;
+      this.isChange = true;
+      this.changeId = id;
+    },
+    clearAll() {
+      this.dialogVisible = false;
+      this.fileList = [];
+      this.picSrc = "";
+      this.isChange = false;
+      this.changeId = "";
+    },
+    copyFn(value) {
+      navigator.clipboard.writeText(value).then(() => {
+        this.$message({
+          message: "已复制",
+          type: "success",
+        });
+      });
+    },
+    changeClass() {
+      let formdata = new FormData();
+      for (let i = 0; i < this.fileList.length; i++) {
+        // 我们上传的文件保存在每个文件对象的raw里边
+        formdata.append("newCover", this.fileList[i].raw);
+      }
+      // formdata.append("id", id);
+      // 修改图片
+      let obj = {
+        formdata: formdata,
+        id: this.changeId,
+      };
+      updateCover(obj)
+        .then(() => {
+          this.$message({
+            message: "已更新",
+            type: "success",
+          });
+          this.getInfo();
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      this.clearAll();
+    },
+    getInfo() {
+      myCourse({
+        nodePage: 1,
+        pageSize: 1,
+      })
+        .then((result) => {
+          return myCourse({
+            nodePage: 1,
+            pageSize: result.data.total,
+          });
+        })
+        .then((result) => {
+          this.myCourse = result.data.records;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    delFn(id) {
+      this.$confirm("确定要删除课程吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          deleteCourse({ id: id }).then((result) => {
+            console.log(result);
+            this.$message({
+              type: "success",
+              message: "删除成功!",
+            });
+            this.getInfo();
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除",
+          });
+        });
+    },
+  },
+  mounted() {
+    this.getInfo();
   },
 };
 </script>
@@ -197,5 +323,25 @@ export default {
 
 .dialogOperator {
   text-align: center;
+}
+
+.copyBtn {
+  color: orange;
+  margin-left: 20px;
+}
+
+.changeBtn {
+  color: rgb(37, 134, 37);
+}
+
+.desc {
+  display: inline-block;
+  max-width: 170px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  position: relative;
+  top: 4px;
+  margin-left: 10px;
 }
 </style>
