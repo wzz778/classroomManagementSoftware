@@ -22,11 +22,7 @@ const mutations = {
 }
 // 准备state(存放数据)
 const state = {
-<<<<<<< HEAD
-    token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2NzM4NTE2NTgsInVzZXJuYW1lIjoiMTIzNDU2Nzg5IiwicG93ZXIiOiIwIiwiaWQiOjJ9._0IazMUMMJp_DMFJYtKlUOeFNJfK0kuzRABTJZwe_gU'
-=======
     token:localStorage.getItem('token')||""
->>>>>>> 987d16613a94f45b2c17581c6cba09a531152ddd
 }
 // 准备getters
 const getters = {}
