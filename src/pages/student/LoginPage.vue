@@ -4,7 +4,7 @@
       <div class="title">易学堂</div>
       <div class="contentBox">
         <div class="scrollBox" :style="{ left: len }">
-          <div class="registerBox">
+          <!-- <div class="registerBox">
             <label for="inputAccount" style="margin-top: 50px">账号：</label>
             <el-input
               id="inputregisterAccount"
@@ -56,14 +56,14 @@
                 >登录<i class="el-icon-right"></i
               ></span>
             </div>
-          </div>
+          </div> -->
 
           <div class="loginBox">
-            <label style="margin-top: 60px">账号:</label>
+            <label style="margin-top: 60px">用户名/邮箱:</label>
             <el-input
               class="loginInputs"
               v-model="account"
-              placeholder="请输入账号"
+              placeholder="请输入用户名/邮箱"
             ></el-input>
             <label style="margin-top: 20px">密码：</label>
             <el-input
@@ -72,27 +72,31 @@
               v-model="password"
               show-password
             ></el-input>
-            <el-button type="primary" class="loginBtn">登录</el-button>
+            <el-button type="primary" class="loginBtn" @click.prevent="loginFun"
+              >登录</el-button
+            >
             <div class="rollBtns">
-              <span class="toRegisterBox" @click="len = 0"
+              <!-- <span class="toRegisterBox" @click="len = 0"
                 ><i class="el-icon-back"></i>注册</span
-              >
-              <span class="toForgetPasswordBox" @click="len = '-1000px'"
+              > -->
+              <span class="toForgetPasswordBox" @click="len = '-500px'"
                 >忘记密码<i class="el-icon-right"></i
               ></span>
             </div>
           </div>
 
           <div class="forgetPasswordBox">
-            <label for="inputPassword" style="margin-top: 60px;">密码：</label>
+            <label for="inputPassword" style="margin-top: 60px">密码：</label>
             <el-input
               id="inputforgetPassword"
               class="forgetInputs"
-              placeholder="请输入密码"
+              placeholder="8~15位且包含数字与字母"
               v-model="forgetPassword"
               show-password
+              @keyup.native="judgePassword"
             ></el-input>
             <br />
+            <p :style="passwordStyle">密码不合规范</p>
             <label for="surePassword">确认密码：</label>
             <el-input
               id="forgetSurePassword"
@@ -100,31 +104,46 @@
               placeholder="请确认密码"
               v-model="forgetSurePassword"
               show-password
+              @keyup.native="judgeSurePassword"
             ></el-input>
             <br />
+            <p :style="surePasswordStyle">两次密码输入不一致</p>
             <label for="inputEmail">邮箱：</label>
             <el-input
               id="inputforgetEmail"
               class="forgetInputs"
               placeholder="请输入邮箱"
               v-model="forgetEmail"
+              @keyup.native="judgeEmail"
             ></el-input>
             <br />
+            <p :style="emailStyle">邮箱格式不正确</p>
             <div class="getCodeBox">
               <el-input
                 id="inputforgetCode"
                 placeholder="请输入验证码"
                 v-model="forgetCode"
-                style="width: 200px;"
+                style="width: 200px"
               ></el-input>
-              <el-button class="forgetGetCodeBtn" type="primary" size="small"
+              <el-button
+                class="forgetGetCodeBtn"
+                type="primary"
+                plain
+                size="small"
+                @click="getCode"
                 >获取验证码</el-button
               >
             </div>
-            <el-button type="primary" class="forgetBtn">确认</el-button>
+            <el-button
+              type="primary"
+              class="forgetBtn"
+              @click="forgetPasswordFun"
+              >确认</el-button
+            >
             <div class="rollBtns">
-              <span class="toLogin" @click="len = '-500px'"
-                ><i class="el-icon-back"></i>登录</span>
+              <span class="toLogin" @click="len = '0'"
+                ><i class="el-icon-back"></i>登录</span
+              >
             </div>
           </div>
         </div>
@@ -134,26 +153,40 @@
 </template>
 
 <script>
-import { Input, Button, Icon } from "element-ui";
+import { Input, Button, Icon, Message } from "element-ui";
+import { toLogin, getCode, forgetPassword } from "@/api/student/yxyAxios";
+import jwt_decode from "jwt-decode";
 export default {
   name: "LoginPage",
   data() {
     return {
       account: "",
       password: "",
-      len: "-500px",
-      registerAccount:"",
-      registerPassword:"",
-      surePassword:"",
-      registerCode:"",
-      registerEmail:"",
-      forgetPassword:"",
-      forgetSurePassword:"",
-      forgetCode:"",
-      forgetEmail:""
+      len: "0",
+      registerAccount: "",
+      registerPassword: "",
+      surePassword: "",
+      registerCode: "",
+      registerEmail: "",
+      forgetPassword: "",
+      forgetSurePassword: "",
+      forgetCode: "",
+      forgetEmail: "",
+      judgePasswordRes: false,
+      judgeEmailRes: false,
+      judgeSurePasswordRes: false,
       // scrollLength:{
       //   left:len
       // }
+      emailStyle: {
+        height: 0,
+      },
+      surePasswordStyle: {
+        height: 0,
+      },
+      passwordStyle: {
+        height: 0,
+      },
     };
   },
   components: {
@@ -162,8 +195,117 @@ export default {
     [Icon.name]: Icon,
   },
   methods: {
-    toLogin() {},
+    loginFun() {
+      let data = {
+        username: this.account,
+        password: this.password,
+      };
+      toLogin(data).then((res) => {
+        if (res.status == 200) {
+          Message.success("登录成功！");
+          this.$store.commit("GETTOKEN", res.data);
+          let personInfo = jwt_decode(res.data);
+          if (personInfo.power == 0) {
+            this.$router.push("/student/learnDaily");
+          }
+          if (personInfo.power == 1) {
+            this.$router.push("/teacher");
+          }
+          if (personInfo.power == 2) {
+            this.$router.push("/admin/index");
+          }
+        } else {
+          Message.error("网络异常，登录失败！");
+        }
+      });
+    },
+    judgePassword() {
+      let passwordReg = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{8,15}$/;
+      let judgeRes = passwordReg.test(this.forgetPassword);
+      if (judgeRes == false) {
+        this.passwordStyle = {
+          height: "16px",
+        };
+        this.judgePasswordRes = false;
+      } else {
+        this.passwordStyle = {
+          height: "0",
+        };
+        this.judgePasswordRes = true;
+      }
+    },
+    judgeSurePassword() {
+      if (this.forgetPassword != this.forgetSurePassword) {
+        this.surePasswordStyle = {
+          height: "16px",
+        };
+        this.judgeSurePasswordRes = false;
+      } else {
+        this.surePasswordStyle = {
+          height: "0",
+        };
+        this.judgeSurePasswordRes = true;
+      }
+    },
+    judgeEmail() {
+      let EmailReg =
+        /^[0-9A-Za-z_]+([-+.][0-9A-Za-z_]+)*@[0-9A-Za-z_]+([-.][0-9A-Za-z_]+)*\.[0-9A-Za-z_]+([-.][0-9A-Za-z_]+)*$/;
+      if (EmailReg.test(this.forgetEmail) == false) {
+        this.emailStyle = {
+          height: "16px",
+        };
+        this.judgeEmailRes = false;
+      } else {
+        this.emailStyle = {
+          height: "0",
+        };
+        this.judgeEmailRes = true;
+      }
+    },
+    getCode() {
+      let EmailReg =
+        /^[0-9A-Za-z_]+([-+.][0-9A-Za-z_]+)*@[0-9A-Za-z_]+([-.][0-9A-Za-z_]+)*\.[0-9A-Za-z_]+([-.][0-9A-Za-z_]+)*$/;
+      if (this.forgetEmail == "") {
+        Message.warning("请填写邮箱！");
+      } else if (EmailReg.test(this.forgetEmail) == false) {
+        Message.warning("邮箱格式不合规范，请重新填写！");
+      } else {
+        let data = {
+          email: this.forgetEmail,
+        };
+        getCode(data).then((res) => {
+          if (res.status == 200) {
+            Message.success("获取成功！");
+          } else {
+            Message.error("网络异常，发送失败！");
+          }
+        });
+      }
+    },
+    forgetPasswordFun() {
+      if (this.judgePasswordRes == false) {
+        Message.warning("密码不合规范！");
+      } else if (this.judgeSurePasswordRes == false) {
+        Message.warning("密码输入不一致！");
+      } else if (this.judgeEmailRes == false) {
+        Message.warning("邮箱不合规范！");
+      } else {
+        let data={
+          email:this.forgetEmail,
+          code:this.forgetCode,
+          newPassword:this.forgetPassword
+        }
+        forgetPassword(data).then((res) => {
+          if(res.status==200){
+            Message.success("修改成功！")
+          }else{
+            Message.error("网络异常，修改失败！")
+          }
+        });
+      }
+    },
   },
+  mounted() {},
 };
 </script>
 
@@ -196,7 +338,7 @@ body {
 .content {
   position: relative;
   width: 500px;
-  height: 380px;
+  height: 400px;
 }
 
 .contentBox {
@@ -258,7 +400,7 @@ body {
 .forgetPasswordBox {
   display: inline-block;
   width: 500px;
-  height: 380px;
+  height: 400px;
   background-color: #fff;
 }
 .forgetPasswordBox {
@@ -322,7 +464,7 @@ body {
     margin-left: 80px;
     margin-top: 10px;
   }
-  .toLogin{
+  .toLogin {
     float: right;
     margin-right: 20px;
     cursor: pointer;
@@ -337,7 +479,7 @@ body {
   margin-left: 20px;
 }
 
-.registerBtn{
+.registerBtn {
   display: block;
   width: 260px;
   margin-top: 15px;
@@ -349,7 +491,6 @@ body {
   width: 260px;
   margin-top: 10px;
 }
-
 
 .forgetPasswordBox {
   background-color: #fff;
@@ -370,7 +511,7 @@ body {
     margin-left: 80px;
     margin-top: 15px;
   }
-  .toLogin{
+  .toLogin {
     float: left;
     margin-left: 20px;
     cursor: pointer;
@@ -385,7 +526,7 @@ body {
   margin-left: 20px;
 }
 
-.forgetBtn{
+.forgetBtn {
   display: block;
   width: 260px;
   margin-top: 20px;
@@ -398,4 +539,12 @@ body {
   margin-top: 15px;
 }
 
+p {
+  line-height: 16px;
+  font-size: 12px;
+  color: red;
+  text-align: center;
+  transition: all 0.3s;
+  overflow: hidden;
+}
 </style>

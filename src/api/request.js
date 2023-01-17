@@ -22,7 +22,7 @@ requests.interceptors.request.use((config) => {
   if (store.state.token) {
     config.headers.token = store.state.token;
   }
-  nprogress.start()
+  // nprogress.start()
   return config;
 });
 
