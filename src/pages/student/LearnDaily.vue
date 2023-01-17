@@ -55,6 +55,10 @@ export default {
   components: {
     [Progress.name]: Progress,
   },
+  mounted(){
+    console.log("token是:",this.$store);
+    console.log(this.$store.state.token);
+  }
 };
 </script>
 

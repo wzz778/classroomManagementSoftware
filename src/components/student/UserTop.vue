@@ -44,6 +44,7 @@
 </template>
 
 <script>
+import { ZaddGrade } from "@/api/user/index";
 export default {
   name: "UserTop",
   data() {
@@ -56,13 +57,24 @@ export default {
       this.$prompt("请输入班级邀请码", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        inputPattern: /^[a-zA-Z\d]{4}$/,
+        //4个字母:小写字母a到z 大写字母A到Z 数字 中的一个或多个 /^[a-zA-Z\d]{4}$/
+        inputPattern:  /^[a-zA-Z\d]{4,15}$/,
         inputErrorMessage: "邀请码格式不正确",
       })
         .then(({ value }) => {
-          this.$message({
-            type: "success",
-            message: "成功加入" + value,
+          let data = {
+            code: value,
+          };
+          ZaddGrade(data).then((result) => {
+            console.log("加入课程", result);
+            if (result.data == "已加入") {
+              this.$message({
+                type: "success",
+                message: "加入班级成功",
+              });
+            } else {
+              this.$message.error("邀请码错误");
+            }
           });
         })
         .catch(() => {

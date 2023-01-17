@@ -25,3 +25,9 @@ export const deleteCourse = async (data) => requests({
     method: "DELETE",
     params: data
 })
+
+export const createHomework = async (data) => requests({
+    url: "/homework/createHomework",
+    method: "POST",
+    params: data
+})

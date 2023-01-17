@@ -4,14 +4,14 @@
       <el-tab-pane label="基本信息">
         <ChangeInfo></ChangeInfo>
       </el-tab-pane>
-      <el-tab-pane  label="修改密码">
+      <!-- <el-tab-pane  label="修改密码">
+        <ChangePassword></ChangePassword>
+      </el-tab-pane> -->
+      <el-tab-pane label="修改密码">
         <ForgetPassword></ForgetPassword>
       </el-tab-pane>
-      <el-tab-pane label="忘记密码">
-        <ChangePassword></ChangePassword>
-      </el-tab-pane>
       <el-tab-pane label="注销账号">
-        <ChangePassword></ChangePassword>
+        <AccountCancellation></AccountCancellation>
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -21,7 +21,8 @@
 import { Tabs, TabPane } from "element-ui";
 import ChangeInfo from '@/components/student/UserInfo/ChangeInfo'
 import ForgetPassword from '@/components/student/UserInfo/ForgetPassword'
-import ChangePassword from '@/components/student/UserInfo/ChangePassword'
+// import ChangePassword from '@/components/student/UserInfo/ChangePassword'
+import AccountCancellation from '@/components/student/UserInfo/AccountCancellation'
 export default {
   name: "UserInfo",
   data() {
@@ -34,7 +35,8 @@ export default {
     [TabPane.name]: TabPane,
     ChangeInfo,
     ForgetPassword,
-    ChangePassword,
+    // ChangePassword,
+    AccountCancellation
   },
 };
 </script>

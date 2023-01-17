@@ -3,7 +3,10 @@
     <div class="leftBox">
       <div class="headPortraitBox">
         <div class="headPortrait"></div>
-        <input type="file" />
+        <div class="cover">
+            <i class="el-icon-camera"></i>
+            <input class="headPortraitFile" type="file" />
+        </div>
       </div>
       <div class="unchangeableInfo">
         <div class="studentName">姓名：MOON</div>
@@ -15,7 +18,7 @@
       <div class="studentSex">
         性别：
         <el-radio v-model="sex" label="男">男</el-radio>
-        <el-radio v-model="sex" label="女">女</el-radio>
+        <el-radio v-model="sex" label="女" style="margin-left:20px">女</el-radio>
       </div>
       <div class="major">
         专业：
@@ -40,7 +43,7 @@
           >
           </el-option>
         </el-select>
-        <el-select v-model="city" placeholder="city">
+        <el-select style="margin-left:20px" v-model="city" placeholder="city">
           <el-option
             v-for="item in options"
             :key="item.value"
@@ -104,24 +107,82 @@ export default {
 
 .mainBox {
   display: flex;
+  justify-content: center;
   width: 100%;
+  margin-top: 50px;
 }
 .headPortraitBox {
     position: relative;
-    width: 70px;
-    height: 70px;
+    width: 80px;
+    height: 80px;
     .headPortrait{
-        position: absolute;
-        width: 70px;
-        height: 70px;
-        border-radius: 70px;
+        width: 80px;
+        height: 80px;
+        border-radius: 80px;
         background-image: url(@/assets/yxy/userProfile.jpg);
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center center;
     }
+    .cover{
+        display: inline-block;
+        position: absolute;
+        width: 80px;
+        height: 80px;
+        border-radius: 80px;
+        top: 0;
+        left: 0;
+        background-color: rgba(0,0,0,.4);
+        opacity: 0;
+        transition: all .3s;
+        i{
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            font-size: 25px;
+            color: #fff;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            margin-left: -15px;
+            margin-top: -15px;
+        }
+        input{
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+        }
+    }
+    &:hover{
+            .cover{
+                opacity: 1;
+            }
+        }
 }
 
 .nativePlace {
   li {
     padding-left: 10px;
   }
+}
+
+.unchangeableInfo{
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+    div{
+        margin: 10px 0;
+        color: #666;
+        font-size: 15px;
+    }
+}
+.rightBox{
+    margin-left: 100px;
+    .studentSex{
+        margin-top: 20px;
+    }
+    .major{
+        margin: 50px 0;
+    }
 }
 </style>
