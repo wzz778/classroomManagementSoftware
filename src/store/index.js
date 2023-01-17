@@ -14,10 +14,15 @@ import admin from './admin'
 // 准备actions(操作数据之前的操作)
 const actions = {}
 // 准备mutations(操作数据,键值一般大写)
-const mutations = {}
+const mutations = {
+    GETTOKEN(state,val){
+        state.token=val
+        localStorage.setItem('token',val)
+    }
+}
 // 准备state(存放数据)
 const state = {
-    token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2NzM2OTc4OTksInVzZXJuYW1lIjoiMTIzNDU2Nzg5IiwicG93ZXIiOiIwIiwiaWQiOjJ9.idTqmW-TbzUBHSKmMHvHWhtmrJHvBFAKeGiUX6pPKZs'
+    token:localStorage.getItem('token')||""
 }
 // 准备getters
 const getters = {}

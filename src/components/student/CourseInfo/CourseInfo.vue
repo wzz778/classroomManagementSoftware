@@ -112,6 +112,9 @@ body,html{
 .el-main {
   background-color: #e9eef3;
   color: #333;
+  text-align: center;
+  line-height: 160px;
+  padding-bottom: 0;
 }
 
 body > .el-container {
