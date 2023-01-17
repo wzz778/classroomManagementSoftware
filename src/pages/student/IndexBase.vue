@@ -4,7 +4,28 @@
       <div class="lesson_title">我学的课程</div>
       <div class="lesson_con">
         <el-row :gutter="20">
-          <el-col :span="6"
+          <el-col :span="6" v-for="o in carr" :key="o.id"
+            ><div class="grid-content bg-purple">
+              <div>
+                <router-link
+                  :to="{
+                  path: '/student/ClassTask',
+                  query: { 
+                  id:o.id,
+                  }
+                  }"
+                >
+                  <img
+                    :src="o.cover ? o.cover : require('@/assets/bac01.jpeg')"
+                  />
+                </router-link>
+                <h3>{{ o.courseName }}</h3>
+                <p>叶子</p>
+                <p>创建时间：{{ o.createTime }}</p>
+              </div>
+            </div></el-col
+          >
+          <!-- <el-col :span="6"
             ><div class="grid-content bg-purple">
               <div>
                 <router-link to="/student/classTask">
@@ -34,7 +55,7 @@
           >
           <el-col :span="6"
             ><div class="grid-content bg-purple">
-              <div>
+              <div class="coursein">
                 <router-link to="/student/classTask">
                   <img
                     :src="adatar ? adatar : require('@/assets/bac01.jpeg')"
@@ -45,137 +66,7 @@
                 <p>班级：1班</p>
               </div>
             </div></el-col
-          >
-          <el-col :span="6"
-            ><div class="grid-content bg-purple">
-              <div>
-                <router-link to="/student/classTask">
-                  <img
-                    :src="adatar ? adatar : require('@/assets/bac01.jpeg')"
-                  />
-                </router-link>
-                <h3>离散数学</h3>
-                <p>叶子</p>
-                <p>班级：1班</p>
-              </div>
-            </div></el-col
-          >
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="6"
-            ><div class="grid-content bg-purple">
-              <div>
-                <router-link to="/student/classTask">
-                  <img
-                    :src="adatar ? adatar : require('@/assets/bac01.jpeg')"
-                  />
-                </router-link>
-                <h3>离散数学</h3>
-                <p>叶子</p>
-                <p>班级：1班</p>
-              </div>
-            </div></el-col
-          >
-          <el-col :span="6"
-            ><div class="grid-content bg-purple">
-              <div>
-                <router-link to="/student/classTask">
-                  <img
-                    :src="adatar ? adatar : require('@/assets/bac01.jpeg')"
-                  />
-                </router-link>
-                <h3>离散数学</h3>
-                <p>叶子</p>
-                <p>班级：1班</p>
-              </div>
-            </div></el-col
-          >
-          <el-col :span="6"
-            ><div class="grid-content bg-purple">
-              <div>
-                <router-link to="/student/classTask">
-                  <img
-                    :src="adatar ? adatar : require('@/assets/bac01.jpeg')"
-                  />
-                </router-link>
-                <h3>离散数学</h3>
-                <p>叶子</p>
-                <p>班级：1班</p>
-              </div>
-            </div></el-col
-          >
-          <el-col :span="6"
-            ><div class="grid-content bg-purple">
-              <div>
-                <router-link to="/student/classTask">
-                  <img
-                    :src="adatar ? adatar : require('@/assets/bac01.jpeg')"
-                  />
-                </router-link>
-                <h3>离散数学</h3>
-                <p>叶子</p>
-                <p>班级：1班</p>
-              </div>
-            </div></el-col
-          >
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="6"
-            ><div class="grid-content bg-purple">
-              <div>
-                <router-link to="/student/classTask">
-                  <img
-                    :src="adatar ? adatar : require('@/assets/bac01.jpeg')"
-                  />
-                </router-link>
-                <h3>离散数学</h3>
-                <p>叶子</p>
-                <p>班级：1班</p>
-              </div>
-            </div></el-col
-          >
-          <el-col :span="6"
-            ><div class="grid-content bg-purple">
-              <div>
-                <router-link to="/student/classTask">
-                  <img
-                    :src="adatar ? adatar : require('@/assets/bac01.jpeg')"
-                  />
-                </router-link>
-                <h3>离散数学</h3>
-                <p>叶子</p>
-                <p>班级：1班</p>
-              </div>
-            </div></el-col
-          >
-          <el-col :span="6"
-            ><div class="grid-content bg-purple">
-              <div>
-                <router-link to="/student/classTask">
-                  <img
-                    :src="adatar ? adatar : require('@/assets/bac01.jpeg')"
-                  />
-                </router-link>
-                <h3>离散数学</h3>
-                <p>叶子</p>
-                <p>班级：1班</p>
-              </div>
-            </div></el-col
-          >
-          <el-col :span="6"
-            ><div class="grid-content bg-purple">
-              <div>
-                <router-link to="/student/classTask">
-                  <img
-                    :src="adatar ? adatar : require('@/assets/bac01.jpeg')"
-                  />
-                </router-link>
-                <h3>离散数学</h3>
-                <p>叶子</p>
-                <p>班级：1班</p>
-              </div>
-            </div></el-col
-          >
+          > -->
         </el-row>
       </div>
     </div>
@@ -183,14 +74,53 @@
 </template>
 
 <script>
+import { ZgetEntered, ZgetOneCourse } from "@/api/user/index";
 export default {
   name: "IndexBase",
   data() {
     return {
       adatar: "",
+      sarr: [],
+      carr: [],
     };
   },
+  mounted: function () {
+    this.Getclass();
+  },
   methods: {
+    Getclass() {
+      return new Promise((resolve, reject) => {
+        let data = {
+          nodePage: "1",
+          pageSize: "1",
+        };
+        ZgetEntered(data).then((response) => {
+          console.log("取出学生的课程", response);
+          if (response.msg == "OK") {
+            this.sarr = response.data;
+            for (let q = 0; q < response.data.length; q++) {
+              console.log("猜想：" + response.data[q] + this.sarr[q]);
+              this.getAllclass(this.sarr[q]);
+            }
+          } else {
+            this.$message.error("获取课程失败");
+          }
+        });
+      });
+    },
+    getAllclass(se) {
+      let cid = {
+        id: se.courseId,
+      };
+      ZgetOneCourse(cid).then((result) => {
+        console.log("取出课程信息", result);
+        if (result.msg == "OK") {
+          this.carr.push(result.data);
+        } else {
+          this.$message.error("获取课程信息失败");
+        }
+      });
+    },
   },
   // 组件内路由进入组件时
   beforeCreate() {
@@ -198,7 +128,7 @@ export default {
       .querySelector("body")
       .setAttribute("style", "background-color: #f1f1f1;;");
   },
-  // 销毁前清除（非必须,不清除的话完全可以,这块只不过告诉您可以这么玩）
+  // 销毁前清除（非必须,不清除的话完全可以）
   beforeDestroy() {
     document.querySelector("body").removeAttribute("style");
   },
@@ -261,5 +191,10 @@ img {
 }
 p {
   color: #434446;
+}
+.coursein {
+  p {
+    font-size: 14px;
+  }
 }
 </style>
