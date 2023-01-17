@@ -22,3 +22,13 @@ export const forgetPassword=async(data)=>requests({
     method:'PUT',
     params:data
 })
+
+export const logout=async()=>requests({
+    url:'user/logged/logOut',
+    method:'GET'
+})
+
+export const getUserInfo=async()=>requests({
+    url:'user/getUserInfo',
+    method:'GET'
+})
