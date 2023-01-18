@@ -39,6 +39,26 @@
           <el-input placeholder="请输入内容" v-model="name" clearable>
           </el-input>
         </el-form-item>
+        <el-form-item label="开始时间:">
+          <el-date-picker
+            v-model="startTime"
+            value-format="yyyy-MM-dd HH:mm:ss"
+            style="width: 100%"
+            type="datetime"
+            placeholder="选择日期"
+          >
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="结束时间:">
+          <el-date-picker
+            v-model="endTime"
+            value-format="yyyy-MM-dd HH:mm:ss"
+            type="datetime"
+            style="width: 100%"
+            placeholder="选择日期"
+          >
+          </el-date-picker>
+        </el-form-item>
         <el-form-item label="备注">
           <el-input type="textarea" v-model="desc"></el-input>
         </el-form-item>
@@ -161,7 +181,7 @@ import judgeQuestion from "@/components/teacher/allQuestion/judgeQuestion";
 import gapFilling from "@/components/teacher/allQuestion/gapFilling";
 // 简答
 import shortAnswer from "@/components/teacher/allQuestion/shortAnswer";
-import { Row, Col, Card } from "element-ui";
+import { Row, Col, Card, DatePicker } from "element-ui";
 import { createHomework } from "@/api/teacher";
 export default {
   name: "operationList",
@@ -177,12 +197,13 @@ export default {
     [Row.name]: Row,
     [Col.name]: Col,
     [Card.name]: Card,
+    [DatePicker.name]: DatePicker,
   },
   data() {
     return {
       myTopConfiguration: {
         inputInfoObj: {
-          showName: "班级名称:",
+          showName: "作业名称:",
           transferName: "name",
         },
         buttonInfo: {
@@ -264,6 +285,8 @@ export default {
         },
       ],
       name: "",
+      startTime: "",
+      endTime: "",
     };
   },
   computed: {
@@ -306,16 +329,55 @@ export default {
         this.$store.state.teacher.questions,
         this.$store.state.teacher.answer
       );
+      if (Date.parse(this.startTime) > Date.parse(this.endTime)) {
+        this.$message({
+          message: "结束时间不能先于开始时间",
+          type: "warning",
+        });
+        return;
+      }
+      if (this.$store.state.teacher.questions.length == 0) {
+        this.$message({
+          message: "请添加问题",
+          type: "warning",
+        });
+        return;
+      }
+      // 判断值是否为空值
+      if (this.name.replace(/(^\s*)|(\s*$)/g, "") == "") {
+        this.$message({
+          message: "请输入作业名字",
+          type: "warning",
+        });
+        return;
+      }
       let obj = {
         answer: this.$store.state.teacher.answer,
+        homeworkName: this.name,
+        questionCount: this.$store.state.teacher.questions.length,
+        question: this.$store.state.teacher.questions,
+        beginTime: this.startTime,
+        endTime: this.endTime,
       };
       createHomework(obj)
         .then((result) => {
           console.log(result);
+          this.$message({
+            message: "发布成功",
+            type: "success",
+          });
+          this.$store.commit("teacher/CLEARALL");
+          this.clearAll();
+          this.dialogVisible = false;
+          this.showQuestion = false;
         })
         .catch((err) => {
           console.log(err);
         });
+    },
+    clearAll() {
+      this.name = "";
+      this.desc = "";
     },
     handleClose(done) {
       this.$confirm("确认关闭？")
