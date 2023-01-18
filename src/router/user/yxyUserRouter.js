@@ -12,6 +12,8 @@ import IndexCourse from '@/pages/student/IndexCourse'
 import DoPaper from '@/pages/student/DoPaper'
 import UserInfo from '@/components/student/UserInfo/UserInfo'
 import ClassMembers from '@/pages/student/ClassMembers'
+import InboxPage from '@/pages/student/InboxPage'
+import GroupChat from '@/pages/student/GroupChat'
 
 // 
 export default [
@@ -54,6 +56,10 @@ export default [
             {
                 path:'aboutClass',
                 component:IndexCourse
+            },
+            {
+                path:'groupChat',
+                component:GroupChat
             }
         ]
     },
@@ -63,6 +69,10 @@ export default [
     },
     {
         path:'/userInfo',
-        component:UserInfo
+        component:UserInfo,
+    },
+    {
+        path:'/Inbox',
+        component:InboxPage
     }
 ]
