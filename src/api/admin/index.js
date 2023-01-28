@@ -8,3 +8,5 @@ export const deleteUser = async (params) => requests({url: "/admin/deleteUser",m
 export const getHerCourse = async (params) =>requests({url:'/admin/getAllCourse',method:'get',params});
 //删除某学科
 export const deleteCourse = async (params) => requests({url: "/course/deleteCourse",method: "DELETE",params})
+//添加课程
+export const addCourse = async (data) => requests({url: "/course/addCourse",method: "POST",data})

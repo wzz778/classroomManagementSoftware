@@ -1,10 +1,10 @@
 <template>
   <div id="adminindex">
     <el-form label-width="80px" style="width:300px;">
-      <el-form-item style="width:500px;margin-bottom: 0px;" label="老师ID">
+      <el-form-item style="width:500px;margin-bottom: 0px;" label="创建人ID">
         <el-input style="width:150px;" v-model="searchform.userId" clearable></el-input>
         <el-button @click="find" type="primary" style="margin:0px 10px;">查询</el-button>
-        <el-button @click="dialogFormVisible = true" type="button">添加课堂</el-button>
+        <el-button @click="$router.replace({path:'edit'})" type="button">添加课堂</el-button>
       </el-form-item>
     </el-form>
     <el-table
@@ -52,7 +52,7 @@
         label="操作">
         <template slot-scope="scope">
             <el-button @click="watchClick(scope.row.id)" type="text" size="small">详情</el-button>
-            <el-button @click="editClick(scope.row.id)" type="text" size="small">编辑</el-button>
+            <el-button @click="editClick(scope.row)" type="text" size="small">编辑</el-button>
             <el-button @click="deleteClick(scope.row.id)" type="text" size="small">禁用</el-button>
         </template>
         </el-table-column>
@@ -67,25 +67,47 @@
       :total="alltotal">
     </el-pagination>
     <el-dialog style="z-index:2001;" title="幻灯片添加" append-to-body :visible.sync="dialogFormVisible">
-      <el-upload
-        class="upload-demo"
-        ref="upload"
-        action=""
-        :http-request="postFile"
-        :before-upload="handleBeup"
-        :file-list="fileList"
-        :headers="postHeader"
-        drag
-         :auto-upload="false"
-        multiple
+    <el-form
+      label-position="right"
+      :rules="rules"
+      label-width="100px"
+      :model="form"
+      ref="form"
+    >
+      <!-- <el-form-item label="课堂名称" prop="courseName">
+        <el-input v-model="form.courseName" clearable></el-input>
+      </el-form-item>
+      <el-form-item  label="课堂简介" prop="details">
+        <el-input type="textarea"  v-model="form.details" clearable></el-input>
+      </el-form-item> -->
+      <el-form-item label="上传图片">
+        <el-upload
+          class="upload-demo"
+          ref="upload"
+          action=""
+          :on-remove="handleRemove"
+          :file-list="fileList"
+          :on-change="handelChange"
+          name="cover"
+          :auto-upload="false"
         >
-      <i class="el-icon-upload"></i>
-      <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-        <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb<el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">开始上传</el-button></div>
-      </el-upload>
-      <div slot="footer" class="dialog-footer">
-        <el-button  @click="cleardialog" type="primary">完成</el-button>
-      </div>
+          <el-button slot="trigger" size="small" type="primary"
+            >选取文件</el-button
+          >
+        </el-upload>
+      </el-form-item>
+      <el-form-item label="图片预览">
+        <div class="cardImg" v-show="picSrc">
+          <img style="height: 200px;" :src="picSrc" alt="" />
+        </div>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="handelSend('form')"
+          >立即创建</el-button
+        >
+        <el-button @click="resetForm('form')">重置</el-button>
+      </el-form-item>
+    </el-form>
     </el-dialog>
   </div>
 </template>
@@ -104,22 +126,22 @@ export default {
         dialogFormVisible:false,
         formLabelWidth: '120px',
         currentPage: 1,
-        postHeader:{
-          token:this.$store.state.token,
-        },
         tableData:[],
         region:"",
         fileList: [],
+        editid: 0,
         filetype:true,
         alltotal:0,
+        picSrc:'',
         searchform:{
           nodePage: 1,
           pageSize:5,
-           userId:""
+          userId:""
         }
       }
     },
     methods:{
+      //判断文件格式和大小
       handleBeup(file){
         const isJPG = file.type === 'image/jpeg'|'image/png';
         const isLt5M = file.size / 1024 / 1024 < 5;
@@ -131,34 +153,24 @@ export default {
         }
         this.filetype= isJPG&&isLt5M;
       },  
-
-      async postFile(){
-        if(this.filetype){
-          // let newfile=new FormData();
-          // newfile.append('slideshows',data.file)
-          // let rep=await addSlideshow(newfile);
-          // if(rep.status==200){
-          //     this.$message.success('上传成功');
-          //   }else{
-          //     this.$message.error('获取失败');
-          //   }
-        }else{
-          this.$refs.upload.clearFiles()
-        }
-      },
-      submitUpload() {
-        this.$refs.upload.submit();
-      },
       cleardialog(){
         this.dialogFormVisible=false;
-        this.$refs.upload.clearFiles()
       },
       watchClick(row) {
         console.log(row);
       },
       editClick(row) {
         console.log(row);
-      },
+        this.dialogFormVisible=true;
+        this.editid=row.id;
+        // sessionStorage.setItem("classformmessage",JSON.stringify(row))
+        // this.$router.replace({
+        //     path:"edit",
+        //         query:{
+        //             id:row.id,
+        //         }
+        // })
+      },      
       deleteClick(row) {
         this.$confirm("确定要删除课程吗?", "提示", {
           confirmButtonText: "确定",
@@ -189,6 +201,8 @@ export default {
         });
         console.log(row);
       },
+      //显示功能
+      //主键页数的处理
       handleSizeChange(val) {
         this.searchform.pageSize=val;
         this.chagepage()
@@ -201,18 +215,39 @@ export default {
         this.searchform.nodePage=1;
         this.chagepage()
       },
+      //数据的渲染
       chagepage() {
         getHerCourse(this.searchform)
         .then(data=>{
+          console.log(data);
           if(data.status==200){
             let req=data.data;
             this.tableData=req.records;
             this.alltotal=req.total;
+          }else if(data.status==555){
+            this.tableData=[]
           }
         })
         .catch(error=>{
             console.log(error);
         })
+      },
+      //课堂的编辑功能
+      handelChange(file, fileList) {
+        console.log(file);
+        console.log(fileList);
+        let f = new FileReader();
+        f.readAsDataURL(file.raw);
+        f.onload = () => {
+          this.picSrc = f.result;
+        };
+        fileList = fileList.slice(-1);
+        this.fileList = fileList;
+      },
+      handleRemove(file, fileList) {
+        console.log(fileList);
+        this.fileList = fileList;
+        this.picSrc = "";
       },
     },
     filters:{
