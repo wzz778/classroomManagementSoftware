@@ -66,12 +66,10 @@
       layout="total, sizes, prev, pager, next, jumper"
       :total="alltotal">
     </el-pagination>
-    <el-dialog style="z-index:2001;" title="幻灯片添加" append-to-body :visible.sync="dialogFormVisible">
+    <el-dialog style="z-index:2001;" title="课堂封面更改" append-to-body :visible.sync="dialogFormVisible">
     <el-form
       label-position="right"
-      :rules="rules"
       label-width="100px"
-      :model="form"
       ref="form"
     >
       <!-- <el-form-item label="课堂名称" prop="courseName">
@@ -102,10 +100,10 @@
         </div>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="handelSend('form')"
-          >立即创建</el-button
+        <el-button type="primary" @click="handelEditSend()"
+          >确认更改</el-button
         >
-        <el-button @click="resetForm('form')">重置</el-button>
+        <el-button @click="resetForm()">重置</el-button>
       </el-form-item>
     </el-form>
     </el-dialog>
@@ -113,7 +111,7 @@
 </template>
 <script>
 import {Image,Upload,Tag} from "element-ui";
-import {getHerCourse,deleteCourse} from '@/api/admin/index'
+import {getHerCourse,deleteCourse,updateCover} from '@/api/admin/index'
 export default {
     name:'SubjectList',
   components: {
@@ -182,7 +180,7 @@ export default {
             if(result.status==200){
               this.$message({
                 type: "success",
-                message: "删除成功!",
+                message: "停用成功!",
               });
               this.chagepage();
             }else{
@@ -223,6 +221,12 @@ export default {
           if(data.status==200){
             let req=data.data;
             this.tableData=req.records;
+            if(req.records.length==0){
+              if(this.searchform.nodePage!=1){
+                this.searchform.nodePage--;
+                this.chagepage()
+              }
+            }
             this.alltotal=req.total;
           }else if(data.status==555){
             this.tableData=[]
@@ -249,6 +253,54 @@ export default {
         this.fileList = fileList;
         this.picSrc = "";
       },
+      resetForm(){
+        this.fileList = [];
+        this.picSrc = "";
+      },
+      handelEditSend() {
+            //判断是否为空值
+            if (this.fileList.length == 0) {   
+              this.$message({
+                message: "请上传封面",
+                type: "warning",
+              });
+              return;
+            }
+            //   这里需要判断一下文件大小或者类型
+            //   自定义上传就需要我们使用fromdata对象来上传文件
+            let formdata = new FormData();
+            console.log(this.fileList);
+            for (let i = 0; i < this.fileList.length; i++) {
+              // 我们上传的文件保存在每个文件对象的raw里边
+              formdata.append("newCover", this.fileList[i].raw);
+            }
+            //   添加其他属性
+            formdata.append("id", this.editid);
+            // 发送请求
+             updateCover(formdata)
+              .then((result) => {
+                if(result.status==200){
+                  this.$message({
+                    message: "更改成功",
+                    type: "success",
+                  });
+                  this.dialogFormVisible=false;
+                  this.fileList = [];
+                  this.picSrc = "";
+                  this.chagepage()
+                }else{
+                  this.$message({
+                    type: "warning",
+                    message: "操作失败",
+                  });
+                }
+                console.log(result);
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+
+    },
     },
     filters:{
       toch(value){      
@@ -257,7 +309,7 @@ export default {
           }else{
             return "停用"
           }
-      }//1368
+      }//
   },
    mounted(){
     this.chagepage()

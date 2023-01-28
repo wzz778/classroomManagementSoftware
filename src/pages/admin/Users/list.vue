@@ -1,10 +1,12 @@
 <template>
   <div id="adminindex">
-    年级：
-    <el-select v-model="level" placeholder="请选择活动区域">
-      <el-option  v-for="p of $store.state.admin.allgrade" :key="p.index" :label="p" :value="p"></el-option>
-    </el-select>
-    <el-button @click="find" type="primary" style="margin:0px 10px;">查询</el-button>
+    <el-form label-width="80px" style="width:300px;">
+      <el-form-item style="width:500px;margin-bottom: 0px;" label="班级ID">
+        <el-input style="width:150px;" v-model="searchform.gradeId" clearable></el-input>
+        <el-button @click="find" type="primary" style="margin:0px 10px;">查询</el-button>
+        <!-- <el-button @click="$router.replace({path:'edit'})" type="button">添加课堂</el-button> -->
+      </el-form-item>
+    </el-form>
     <el-table
         :data="tableData"
         :v-loading="true"
@@ -168,6 +170,12 @@ export default {
           if(data.status==200){
             let req=data.data;
             this.tableData=req.records;
+            if(req.records.length==0){
+              if(this.searchform.nodePage!=1){
+                this.searchform.nodePage--;
+                this.chagepage()
+              }
+            }
             this.alltotal=req.total;
           }else if(data.status==555){
             this.tableData=[]

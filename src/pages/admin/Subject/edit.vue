@@ -45,7 +45,7 @@
 </template>
 <script>
 import { Upload } from "element-ui";
-// import {addCourse} from "@/api/admin";
+import {addCourse} from "@/api/admin";
 export default {
   components: {
     [Upload.name]: Upload,
@@ -79,6 +79,8 @@ export default {
     },
     resetForm(formName) {
       this.$refs[formName].resetFields();
+      this.fileList = [];
+      this.picSrc = "";
     },
     handelChange(file, fileList) {
       console.log(file);
@@ -119,17 +121,19 @@ export default {
           formdata.append("details", this.form.details);
           //   添加其他属性
           // 发送请求
-          // addCourse(formdata)
-          //   .then((result) => {
-          //     console.log(result);
-          //     this.$message({
-          //       message: "上传成功",
-          //       type: "success",
-          //     });
-          //   })
-          //   .catch((err) => {
-          //     console.log(err);
-          //   });
+          addCourse(formdata)
+            .then((result) => {
+              this.$message({
+                message: "创建成功",
+                type: "success",
+              });
+              this.$refs['form'].resetFields();
+              this.fileList = [];
+              this.picSrc = "";
+            })
+            .catch((err) => {
+              console.log(err);
+            });
         }else{
           console.log("error");
         }
