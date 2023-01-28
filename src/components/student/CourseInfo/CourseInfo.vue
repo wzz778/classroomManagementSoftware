@@ -20,12 +20,26 @@
           <div class="className">高等数学</div>
         </div>
         <el-menu :default-active="pagePath" class="el-menu-vertical-demo">
-          <router-link to="/student/classTask">
+          <router-link
+            :to="{
+              path: '/student/classTask',
+              query: {
+                id: this.courid,
+              },
+            }"
+          >
             <el-menu-item index="/student/classTask">
               <span slot="title"><i class="el-icon-s-claim"></i>课程任务</span>
             </el-menu-item>
           </router-link>
-          <router-link to="/student/classWork">
+          <router-link
+            :to="{
+              path: '/student/classWork',
+              query: {
+                id: this.courid,
+              },
+            }"
+          >
             <el-menu-item index="/student/classWork">
               <span slot="title"><i class="el-icon-edit"></i>课程作业</span>
             </el-menu-item>
@@ -54,13 +68,27 @@
               >
             </el-menu-item>
           </router-link>
-          <router-link to="/student/ClassMembers">
+          <router-link
+            :to="{
+              path: '/student/ClassMembers',
+              query: {
+                id: this.courid,
+              },
+            }"
+          >
             <el-menu-item index="/student/ClassMembers">
               <span slot="title"><i class="el-icon-user"></i>课程成员</span>
             </el-menu-item>
           </router-link>
-          <router-link to="/student/aboutClass">
-            <el-menu-item index="/student/aboutClass">
+          <router-link
+            :to="{
+              path: '/student/IndexCourse',
+              query: {
+                id: this.courid,
+              },
+            }"
+          >
+            <el-menu-item index="/student/IndexCourse">
               <span slot="title"
                 ><i class="el-icon-collection"></i>关于课程</span
               >
@@ -74,7 +102,6 @@
 </template>
 
 <script>
-import { logout } from "@/api/student/yxyAxios";
 import {
   Container,
   Header,
@@ -85,12 +112,12 @@ import {
   Dropdown,
   DropdownMenu,
   DropdownItem,
-  Message
 } from "element-ui";
 export default {
   data() {
     return {
       pagePath: this.$route.path,
+      courid: this.$route.query.id,
     };
   },
   components: {
@@ -103,20 +130,6 @@ export default {
     [Dropdown.name]: Dropdown,
     [DropdownMenu.name]: DropdownMenu,
     [DropdownItem.name]: DropdownItem,
-  },
-  methods: {
-    logout() {
-      logout().then((res) => {
-        console.log("退出登录：", res);
-        if (res.status == 200) {
-          Message.success("退出登录成功！")
-          localStorage.clear();
-          this.$store.commit("GETTOKEN");
-        }else{
-          Message.error("网络异常，退出失败！")
-        }
-      });
-    },
   },
 };
 </script>
@@ -146,8 +159,8 @@ html {
 .el-main {
   background-color: #e9eef3;
   color: #333;
-  text-align: center;
-  line-height: 160px;
+  // text-align: center;
+  // line-height: 160px;
   padding-bottom: 0;
 }
 
