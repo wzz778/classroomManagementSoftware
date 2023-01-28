@@ -9,10 +9,10 @@
               <div>
                 <router-link
                   :to="{
-                  path: '/student/ClassTask',
-                  query: { 
-                  id:o.id,
-                  }
+                    path: '/student/ClassTask',
+                    query: {
+                      id: o.id,
+                    },
                   }"
                 >
                   <img
@@ -84,8 +84,20 @@ export default {
       carr: [],
     };
   },
+  props: ["change"],
   mounted: function () {
     this.Getclass();
+  },
+  watch: {
+    change: {
+      handler(newVal, oldVal) {
+        console.info("value changed 1", newVal,oldVal);
+        this.sarr = [];
+        this.carr = [];
+        this.Getclass();
+      },
+      deep: true
+    },
   },
   methods: {
     Getclass() {
