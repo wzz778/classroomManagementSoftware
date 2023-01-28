@@ -8,6 +8,10 @@ const mutations = {
     },
     DELSMALLQUEST(state, data) {
         state.questions.splice(data.index, 1)
+    },
+    CLEARALL(state) {
+        state.questions = []
+        state.answer = []
     }
 }
 // 准备state(存放数据)
