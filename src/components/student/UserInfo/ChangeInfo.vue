@@ -2,16 +2,16 @@
   <div class="mainBox">
     <div class="leftBox">
       <div class="headPortraitBox">
-        <div class="headPortrait"></div>
+        <div class="headPortrait" :style="photo"></div>
         <div class="cover">
             <i class="el-icon-camera"></i>
             <input class="headPortraitFile" type="file" />
         </div>
       </div>
       <div class="unchangeableInfo">
-        <div class="studentName">姓名：MOON</div>
-        <div class="studentClass">班级：计科211</div>
-        <div class="studentEmail">邮箱：3190493163@qq.com</div>
+        <div class="studentName">姓名：{{userInfo.userName}}</div>
+        <div class="studentClass">班级：{{userInfo.gradeId}}</div>
+        <div class="studentEmail">邮箱：{{userInfo.email}}</div>
       </div>
     </div>
     <div class="rightBox">
@@ -58,6 +58,7 @@
 </template>
 
 <script>
+import {getUserInfo} from '@/api/student/yxyAxios';
 import { Radio, Select, Option } from "element-ui";
 export default {
   name: "ChangeInfo",
@@ -89,6 +90,10 @@ export default {
       province: "河南省",
       city: "许昌市",
       major: "计算机科学与技术",
+      userInfo:"",
+      photo:{
+        backgroundImage:""
+      }
     };
   },
   components: {
@@ -96,6 +101,18 @@ export default {
     [Select.name]: Select,
     [Option.name]: Option,
   },
+  mounted(){
+    getUserInfo().then(res=>{
+      if(res.status==200){
+        console.log(res)
+        this.userInfo=res.data
+        this.sex=res.data.sex
+        this.photo.backgroundImage='url('+res.data.photo+')'
+      }else{
+        console.log('error');
+      }
+    })
+  }
 };
 </script>
 
@@ -119,7 +136,6 @@ export default {
         width: 80px;
         height: 80px;
         border-radius: 80px;
-        background-image: url(@/assets/yxy/userProfile.jpg);
         background-repeat: no-repeat;
         background-size: cover;
         background-position: center center;
