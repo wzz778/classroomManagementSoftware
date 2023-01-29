@@ -72,7 +72,7 @@
               v-model="password"
               show-password
             ></el-input>
-            <el-button type="primary" class="loginBtn" @click.prevent="loginFun"
+            <el-button type="primary" style="height:40px" class="loginBtn" @click.prevent="loginFun"
               >登录</el-button
             >
             <div class="rollBtns">
@@ -138,6 +138,7 @@
               type="primary"
               class="forgetBtn"
               @click="forgetPasswordFun"
+              style="height:40px"
               >确认</el-button
             >
             <div class="rollBtns">
@@ -263,11 +264,9 @@ export default {
       }
     },
     getCode() {
-      let EmailReg =
-        /^[0-9A-Za-z_]+([-+.][0-9A-Za-z_]+)*@[0-9A-Za-z_]+([-.][0-9A-Za-z_]+)*\.[0-9A-Za-z_]+([-.][0-9A-Za-z_]+)*$/;
       if (this.forgetEmail == "") {
         Message.warning("请填写邮箱！");
-      } else if (EmailReg.test(this.forgetEmail) == false) {
+      } else if (this.judgeEmailRes == false) {
         Message.warning("邮箱格式不合规范，请重新填写！");
       } else {
         let data = {
