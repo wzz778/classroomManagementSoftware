@@ -21,7 +21,7 @@
         ></el-menu-item
       >
     </el-menu>
-    <router-view></router-view>
+    <router-view :change="msg"></router-view>
     <div class="footer">
       <div class="footerMain">
         <div class="logo"></div>
@@ -50,15 +50,18 @@ export default {
   data() {
     return {
       activeIndex: "1",
+      urlp: "/user/IndexBase",
+      msg:1,
     };
   },
   methods: {
     open() {
-      this.$prompt("请输入班级邀请码", "提示", {
+      console.log("页面链接：" + this.$route.path);
+      this.$prompt("请输入课程邀请码", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         //4个字母:小写字母a到z 大写字母A到Z 数字 中的一个或多个 /^[a-zA-Z\d]{4}$/
-        inputPattern:  /^[a-zA-Z\d]{4,15}$/,
+        inputPattern: /^[a-zA-Z\d]{4,15}$/,
         inputErrorMessage: "邀请码格式不正确",
       })
         .then(({ value }) => {
@@ -70,8 +73,12 @@ export default {
             if (result.data == "已加入") {
               this.$message({
                 type: "success",
-                message: "加入班级成功",
+                message: "加入课程成功",
               });
+              if (this.$route.path == "/user/IndexBase") {
+                //4
+                this.msg++;
+              }
             } else {
               this.$message.error("邀请码错误");
             }

@@ -48,6 +48,7 @@
 import myPaging from "@/components/teacher/utilComponents/myPaging.vue";
 import myList from "@/components/teacher/utilComponents/myList.vue";
 import myTop from "@/components/teacher/utilComponents/myTop.vue";
+import { createGrade, getGrade } from "@/api/teacher";
 export default {
   name: "classList",
   components: {
@@ -145,8 +146,28 @@ export default {
     searchFn(obj) {
       this.searchObj = obj;
     },
-    getAllGradeFn() {},
-    submitFn() {},
+    submitFn() {
+      if (this.className.replace(/(^\s*)|(\s*$)/g, "") == "") {
+        this.$message({
+          message: "请输入班级名称",
+          type: "warning",
+        });
+        return;
+      }
+      createGrade({
+        className: this.className,
+      })
+        .then(() => {
+          this.$message({
+            message: "添加成功",
+            type: "success",
+          });
+          this.dialogVisible = false;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
     handleClose(done) {
       this.$confirm("确认关闭？")
         .then(() => {
@@ -157,9 +178,17 @@ export default {
     addFn() {
       this.dialogVisible = true;
     },
+    getInfo() {
+      getGrade()
+        .then((result) => {
+          console.log(result);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
   },
-  mounted() {
-  },
+  mounted() {},
 };
 </script>
 

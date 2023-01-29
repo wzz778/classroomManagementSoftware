@@ -90,6 +90,7 @@ export default {
       radio: "1",
       adatar: "",
       check: "任务",
+      cid: this.$route.query.id
     };
   },
   components: {

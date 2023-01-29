@@ -1,10 +1,10 @@
 <template>
   <div id="adminindex">
     <el-form label-width="80px" style="width:300px;">
-      <el-form-item style="width:500px;margin-bottom: 0px;" label="老师ID">
-        <el-input style="width:150px;" v-model="teacherid"></el-input>
+      <el-form-item style="width:500px;margin-bottom: 0px;" label="创建人ID">
+        <el-input style="width:150px;" v-model="searchform.userId" clearable></el-input>
         <el-button @click="find" type="primary" style="margin:0px 10px;">查询</el-button>
-        <el-button @click="dialogFormVisible = true" type="button">添加课堂</el-button>
+        <el-button @click="$router.replace({path:'edit'})" type="button">添加课堂</el-button>
       </el-form-item>
     </el-form>
     <el-table
@@ -13,114 +13,133 @@
         style="width: 100%;margin:10px 0;">
         <el-table-column
         fixed
-        prop="date"
-        label="日期">    
+        prop="courseName"
+        label="课堂名称">    
         </el-table-column>
         <el-table-column
-        prop="name"
-        label="姓名">
+        prop="courseCode"
+        label="课堂码">
         </el-table-column>
         <el-table-column
-        prop="province"
-        label="省份">
+        prop="cover"
+        label="课堂封面">
+          <template slot-scope="scope">
+              <el-image 
+                  style="width: 100px; height: 100px"
+                  :src="scope.row.cover" 
+                  :preview-src-list="[scope.row.cover]"
+                  >
+              </el-image>
+          </template>
         </el-table-column>
         <el-table-column
-        prop="city"
-        label="市区">
+        prop="createTime"
+        label="创建时间">
         </el-table-column>
         <el-table-column
-        prop="url"
-        label="图片"
->
-        <template slot-scope="scope">
-            <el-image 
-                style="width: 100px; height: 100px"
-                :src="scope.row.url" 
-                :preview-src-list="[scope.row.url]"
-                >
-            </el-image>
-        </template>
+        prop="isDeleted"
+        label="状态">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.isDeleted?'warning' : 'success'">{{scope.row.isDeleted|toch()}}</el-tag>
+          </template>
         </el-table-column>
         <el-table-column
-        prop="zip"
-        label="邮编"
-        width="120">
+        prop="creatorId"
+        label="创建人ID">
         </el-table-column>
         <el-table-column
         fixed="right"
-        label="操作"
-        width="100">
+        label="操作">
         <template slot-scope="scope">
-            <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
-            <el-button type="text" size="small">编辑</el-button>
+            <el-button @click="watchClick(scope.row.id)" type="text" size="small">详情</el-button>
+            <el-button @click="editClick(scope.row)" type="text" size="small">编辑</el-button>
+            <el-button @click="deleteClick(scope.row.id)" type="text" size="small">禁用</el-button>
         </template>
         </el-table-column>
     </el-table>
     <el-pagination
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
-      :current-page="currentPage"
-      :page-sizes="[3, 5, 10]"
-      :page-size="3"
+      :current-page="searchform.nodePage"
+      :page-sizes="[5, 10, 15, 20]"
+      :page-size="searchform.pageSize"
       layout="total, sizes, prev, pager, next, jumper"
-      :total="100">
+      :total="alltotal">
     </el-pagination>
-    <el-dialog style="z-index:2001;" title="幻灯片添加" append-to-body :visible.sync="dialogFormVisible">
-      <el-upload
-        class="upload-demo"
-        ref="upload"
-        action=""
-        :http-request="postFile"
-        :before-upload="handleBeup"
-        :file-list="fileList"
-        :headers="postHeader"
-        drag
-         :auto-upload="false"
-        multiple
+    <el-dialog style="z-index:2001;" title="课堂封面更改" append-to-body :visible.sync="dialogFormVisible">
+    <el-form
+      label-position="right"
+      label-width="100px"
+      ref="form"
+    >
+      <!-- <el-form-item label="课堂名称" prop="courseName">
+        <el-input v-model="form.courseName" clearable></el-input>
+      </el-form-item>
+      <el-form-item  label="课堂简介" prop="details">
+        <el-input type="textarea"  v-model="form.details" clearable></el-input>
+      </el-form-item> -->
+      <el-form-item label="上传图片">
+        <el-upload
+          class="upload-demo"
+          ref="upload"
+          action=""
+          :on-remove="handleRemove"
+          :file-list="fileList"
+          :on-change="handelChange"
+          name="cover"
+          :auto-upload="false"
         >
-      <i class="el-icon-upload"></i>
-      <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-        <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb<el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">开始上传</el-button></div>
-      </el-upload>
-      <div slot="footer" class="dialog-footer">
-        <el-button  @click="cleardialog" type="primary">完成</el-button>
-      </div>
+          <el-button slot="trigger" size="small" type="primary"
+            >选取文件</el-button
+          >
+        </el-upload>
+      </el-form-item>
+      <el-form-item label="图片预览">
+        <div class="cardImg" v-show="picSrc">
+          <img style="height: 200px;" :src="picSrc" alt="" />
+        </div>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="handelEditSend()"
+          >确认更改</el-button
+        >
+        <el-button @click="resetForm()">重置</el-button>
+      </el-form-item>
+    </el-form>
     </el-dialog>
   </div>
 </template>
 <script>
-import {Image,Upload} from "element-ui";
-// import {addSlideshow } from '@/myAxios/admin/wzzAxios'
+import {Image,Upload,Tag} from "element-ui";
+import {getHerCourse,deleteCourse,updateCover} from '@/api/admin/index'
 export default {
     name:'SubjectList',
   components: {
     [Image.name]:  Image,
-    [Upload.name]:  Upload
+    [Upload.name]:  Upload,
+    [Tag.name]: Tag,
   },
     data() {
-        const item = {
-          date: '2016-05-02',
-          name: '王小虎',
-          province: '上海',
-          city: '普陀区',
-          url: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-          zip: 200333
-        };
       return {
         dialogFormVisible:false,
         formLabelWidth: '120px',
         currentPage: 1,
-        postHeader:{
-          token:this.$store.state.token,
-        },
-        tableData:Array(3).fill(item),
+        tableData:[],
         region:"",
         fileList: [],
+        editid: 0,
         filetype:true,
-        teacherid:11
+        alltotal:0,
+        picSrc:'',
+        searchform:{
+          nodePage: 1,
+          pageSize:5,
+          userId:""
+        }
       }
     },
     methods:{
+      //判断文件格式和大小
       handleBeup(file){
         const isJPG = file.type === 'image/jpeg'|'image/png';
         const isLt5M = file.size / 1024 / 1024 < 5;
@@ -132,42 +151,169 @@ export default {
         }
         this.filetype= isJPG&&isLt5M;
       },  
-
-      async postFile(){
-        if(this.filetype){
-          // let newfile=new FormData();
-          // newfile.append('slideshows',data.file)
-          // let rep=await addSlideshow(newfile);
-          // if(rep.status==200){
-          //     this.$message.success('上传成功');
-          //   }else{
-          //     this.$message.error('获取失败');
-          //   }
-        }else{
-          this.$refs.upload.clearFiles()
-        }
-      },
-      submitUpload() {
-        this.$refs.upload.submit();
-      },
       cleardialog(){
         this.dialogFormVisible=false;
-        this.$refs.upload.clearFiles()
       },
-      handleClick(row) {
+      watchClick(row) {
         console.log(row);
       },
-        handleSizeChange(val) {
-        console.log(`每页 ${val} 条`);
+      editClick(row) {
+        console.log(row);
+        this.dialogFormVisible=true;
+        this.editid=row.id;
+        // sessionStorage.setItem("classformmessage",JSON.stringify(row))
+        // this.$router.replace({
+        //     path:"edit",
+        //         query:{
+        //             id:row.id,
+        //         }
+        // })
+      },      
+      deleteClick(row) {
+        this.$confirm("确定要删除课程吗?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        })
+        .then(() => {
+          deleteCourse({ id:row }).then((result) => {
+            if(result.status==200){
+              this.$message({
+                type: "success",
+                message: "停用成功!",
+              });
+              this.chagepage();
+            }else{
+              this.$message({
+                type: "warning",
+                message: "操作失败",
+              });
+            }
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除",
+          });
+        });
+        console.log(row);
+      },
+      //显示功能
+      //主键页数的处理
+      handleSizeChange(val) {
+        this.searchform.pageSize=val;
+        this.chagepage()
       },
       handleCurrentChange(val) {
-        this.currentPage=val;
-        console.log(`当前页: ${val}`);
+        this.searchform.nodePage=val;
+        this.chagepage()
       },
       find() {
-        console.log(this.region);
+        this.searchform.nodePage=1;
+        this.chagepage()
       },
+      //数据的渲染
+      chagepage() {
+        getHerCourse(this.searchform)
+        .then(data=>{
+          console.log(data);
+          if(data.status==200){
+            let req=data.data;
+            this.tableData=req.records;
+            if(req.records.length==0){
+              if(this.searchform.nodePage!=1){
+                this.searchform.nodePage--;
+                this.chagepage()
+              }
+            }
+            this.alltotal=req.total;
+          }else if(data.status==555){
+            this.tableData=[]
+          }
+        })
+        .catch(error=>{
+            console.log(error);
+        })
+      },
+      //课堂的编辑功能
+      handelChange(file, fileList) {
+        console.log(file);
+        console.log(fileList);
+        let f = new FileReader();
+        f.readAsDataURL(file.raw);
+        f.onload = () => {
+          this.picSrc = f.result;
+        };
+        fileList = fileList.slice(-1);
+        this.fileList = fileList;
+      },
+      handleRemove(file, fileList) {
+        console.log(fileList);
+        this.fileList = fileList;
+        this.picSrc = "";
+      },
+      resetForm(){
+        this.fileList = [];
+        this.picSrc = "";
+      },
+      handelEditSend() {
+            //判断是否为空值
+            if (this.fileList.length == 0) {   
+              this.$message({
+                message: "请上传封面",
+                type: "warning",
+              });
+              return;
+            }
+            //   这里需要判断一下文件大小或者类型
+            //   自定义上传就需要我们使用fromdata对象来上传文件
+            let formdata = new FormData();
+            console.log(this.fileList);
+            for (let i = 0; i < this.fileList.length; i++) {
+              // 我们上传的文件保存在每个文件对象的raw里边
+              formdata.append("newCover", this.fileList[i].raw);
+            }
+            //   添加其他属性
+            formdata.append("id", this.editid);
+            // 发送请求
+             updateCover(formdata)
+              .then((result) => {
+                if(result.status==200){
+                  this.$message({
+                    message: "更改成功",
+                    type: "success",
+                  });
+                  this.dialogFormVisible=false;
+                  this.fileList = [];
+                  this.picSrc = "";
+                  this.chagepage()
+                }else{
+                  this.$message({
+                    type: "warning",
+                    message: "操作失败",
+                  });
+                }
+                console.log(result);
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+
     },
+    },
+    filters:{
+      toch(value){      
+          if(!value){
+            return "启用"
+          }else{
+            return "停用"
+          }
+      }//
+  },
+   mounted(){
+    this.chagepage()
+  }
 }
 </script>
 <style lang="less" scoped>

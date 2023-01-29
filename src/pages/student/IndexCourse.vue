@@ -4,12 +4,14 @@
       <div class="intro">
         <div class="main">
           <div class="intro_img">
-            <img :src="adatar ? adatar : require('@/assets/bac01.jpeg')" />
+            <img :src="lesson.photo ? lesson.photo : require('@/assets/bac01.jpeg')" />
           </div>
           <div class="intro_text">
             <div class="teacher">
-              <div class="course_name">论语</div>
-              <p style="text-align:left;">主讲人:<span>叶子</span>教室团队：<span>一人</span></p>
+              <div class="course_name">{{lesson.name}}</div>
+              <p style="text-align: left">
+                主讲人:<span>叶子</span>教室团队：<span>一人</span>
+              </p>
             </div>
             <div class="infor">
               <ul>
@@ -20,7 +22,11 @@
                 <li>行政班级：计科213</li>
                 <li>编号：1111</li>
               </ul>
-              <el-button type="primary" round><router-link  to="/user/IndexBase">进入课程</router-link></el-button>
+              <el-button type="primary" round
+                ><router-link to="/user/IndexBase"
+                  >进入课程</router-link
+                ></el-button
+              >
             </div>
           </div>
         </div>
@@ -31,9 +37,7 @@
         <el-tabs v-model="activeName" @tab-click="handleClick">
           <el-tab-pane label="课程概述" name="first">
             <div class="les">
-              儒家文化是我们整个中华民族思想文化的基础，而《论语》正是对于我们当代人最有用，最能集中体现儒家思想的一部重要的经典。半部《论语》治天下，可见其中的哲理既大道至简，
-              又贴近生活。两千年多来，上至帝王将相，下至黎庶百姓必读的修身宝典。
-              本课程通过指导大学生研读《论语》，本着以经解经的方式，深入学习儒家的圣贤文化。使大学生不仅了解孔子作为大成至圣先师的人格魅力，感悟儒家的以人为本的仁爱思想。二千多年以后的今天，我们着重学习儒家思想的智慧和精神实质，学习儒家的思维模式、待人的态度和处事的方法，学习儒家的内圣外王的修身之道和价值追求，建构正确的人生观、价值观。并以此引领新时代大学生学习国学，热爱国学的意识，培养莘莘学子以天下为己任的家国情怀，潜修修齐治平之道，开启福慧双增人生。
+             {{lesson.intro}}
             </div>
           </el-tab-pane>
           <el-tab-pane label="老师介绍" name="second">
@@ -51,6 +55,7 @@
 </template>
 
 <script>
+import { ZgetOneCourse } from "@/api/user/index";
 import { Tabs, TabPane } from "element-ui";
 export default {
   name: "IndexCourse",
@@ -58,11 +63,42 @@ export default {
     return {
       adatar: "",
       activeName: "first",
+      leid:this.$route.query.id,
+      lesson: {
+        name: "",
+        photo: "",
+        intro: "",
+        beginTime: "",
+      },
+      teacher: {
+        sex: "",
+        major: "",
+      },
     };
+  },
+  mounted: function () {
+    this.Getnews();
   },
   methods: {
     handleClick(tab, event) {
       console.log(tab, event);
+    },
+    Getnews() {
+    console.log("id值："+this.leid);
+      let data = {
+        id: this.leid,
+      };
+      ZgetOneCourse(data).then((result) => {
+        console.log("课程详情页取出课程信息", result);
+        if (result.msg == "OK") {
+          this.lesson.name=result.data.courseName
+          this.lesson.photo=result.data.cover
+          this.lesson.intro=result.data.details
+          this.lesson.beginTime=result.data.createTime
+        } else {
+          this.$message.error("获取课程信息失败");
+        }
+      });
     },
   },
   components: {
@@ -131,7 +167,7 @@ img {
   line-height: 20px;
 }
 .course_name {
-text-align: left;
+  text-align: left;
   font-size: 20px;
   color: #181e33;
   min-height: 60px;
@@ -164,8 +200,8 @@ span {
   button {
     float: right;
     margin: 7px 20px;
-    a{
-    color: white;
+    a {
+      color: white;
     }
   }
 }
