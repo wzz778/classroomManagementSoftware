@@ -2,7 +2,7 @@
   <div class="sign">
     <div class="signTop">
       <el-breadcrumb separator="/">
-        <el-breadcrumb-item 
+        <el-breadcrumb-item
           ><span @click="changeFatherData">返回</span></el-breadcrumb-item
         >
         <el-breadcrumb-item>课程任务</el-breadcrumb-item>
@@ -11,7 +11,7 @@
     </div>
     <div class="signTitle">
       <div class="name">
-        <img :src="adatar ? adatar : require('@/assets/yxy/classPic.jpg')" />
+        <img :src="ada ? ada : require('@/assets/yxy/classPic.jpg')" />
       </div>
       <div class="name">
         <p style="margin-top: 12px">签到</p>
@@ -22,15 +22,32 @@
               class="el-icon-timer"
               style="font-size: 16px; margin-right: 6px"
             ></i
-            >已结束</span
+            >{{ this.meet }}</span
           >
         </p>
       </div>
     </div>
     <div class="signMain">
-      <div class="detailed">
-        <div class="she" v-show="meet == '未签到'">
-          <div @click="meet = '已签到'">
+      <div class="bdetailed" v-show="meet == '签到未开始'">
+        <div class="wbegin">
+          <div>
+            <i
+              class="el-icon-message-solid"
+              style="
+                font-size: 60px;
+                margin-right: 6px;
+                color: rgb(24 103 210);
+                font-weight: bolder;
+              "
+            ></i>
+          </div>
+          <div style="margin-top: 15px">签到未开始</div>
+          <div>开始时间：2023-2-14 12：00</div>
+        </div>
+      </div>
+      <div class="detailed" v-show="meet == '签到中'">
+        <div class="she" v-show="adatar == '未签到'">
+          <div @click="adatar = '已签到'">
             <i
               class="el-icon-timer"
               style="
@@ -42,9 +59,9 @@
             ></i>
           </div>
           <div style="margin-top: 15px">尚未签到</div>
-          <div>截止时间：2023-1-15 12：00</div>
+          <div>截止时间：2023-1-30 12：00</div>
         </div>
-        <div class="endq" v-show="meet == '已签到'">
+        <div class="endq" v-show="adatar == '已签到'">
           <div>
             <i
               class="el-icon-success"
@@ -60,6 +77,23 @@
           <div>签到时间：2023-1-14 12：00</div>
         </div>
       </div>
+      <div class="edetailed" v-show="meet == '签到结束'">
+        <div class="wend">
+          <div>
+            <i
+              class="el-icon-close-notification"
+              style="
+                font-size: 60px;
+                margin-right: 6px;
+                color: rgb(24 103 210);
+                font-weight: bolder;
+              "
+            ></i>
+          </div>
+          <div style="margin-top: 15px">签到已结束</div>
+          <div>结束时间：2023-1-14 12：00</div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -73,20 +107,27 @@ export default {
   },
   data() {
     return {
-      adatar: "",
-      meet: "未签到",
+      ada: "",
+      adatar: "未签到",
+      meet: this.check,
       text: "我是子组件传递的数据，我要发送给父组件",
       jiao: "任务",
     };
   },
   methods: {
     changeFatherData() {
-      this.$emit('changeMsg', this.text, this.jiao);
+      this.$emit("changeMsg", this.text, this.jiao);
     },
   },
   components: {
     [Breadcrumb.name]: Breadcrumb,
     [BreadcrumbItem.name]: BreadcrumbItem,
+  },
+  watch: {
+    check(val) {
+      //当a值变化时
+      this.meet = this.check;
+    },
   },
 };
 </script>
@@ -148,6 +189,20 @@ img {
   margin: 0 auto;
   text-align: center;
 }
+.bdetailed {
+  position: relative;
+  width: 500px;
+  height: 200px;
+  margin: 0 auto;
+  text-align: center;
+}
+.edetailed {
+  position: relative;
+  width: 500px;
+  height: 200px;
+  margin: 0 auto;
+  text-align: center;
+}
 .she {
   position: absolute;
   top: 0;
@@ -169,5 +224,33 @@ img {
     height: 40px;
     line-height: 40px;
   }
+}
+.wbegin {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  div {
+    height: 40px;
+    line-height: 40px;
+  }
+}
+.wend {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  div {
+    height: 40px;
+    line-height: 40px;
+  }
+}
+i:hover {
+  cursor: pointer;
+}
+span:hover{
+cursor: pointer;
 }
 </style>

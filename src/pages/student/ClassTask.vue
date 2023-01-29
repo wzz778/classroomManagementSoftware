@@ -13,7 +13,7 @@
             v-for="o in 3"
             :key="o"
             class="text item"
-            @click="check = '签到'"
+            @click="check = '签到未开始'"
           >
             <div class="name">
               <img
@@ -36,7 +36,7 @@
             v-for="o in 4"
             :key="o"
             class="text item"
-            @click="check = '签到'"
+            @click="check = '签到中'"
           >
             <div class="name">
               <img
@@ -59,7 +59,7 @@
             v-for="o in 5"
             :key="o"
             class="text item"
-            @click="check = '签到'"
+            @click="check = '签到结束'"
           >
             <div class="name">
               <img
@@ -75,7 +75,7 @@
       </div>
     </div>
     <div class="qian">
-      <SignIn v-show="check == '签到'" :check="check" @changeMsg="changeMsg" />
+      <SignIn v-show="check != '任务'" :check="check" @changeMsg="changeMsg" />
     </div>
   </div>
 </template>
@@ -143,7 +143,9 @@ export default {
   display: flex;
   border-bottom: 1px solid #3a39392b;
 }
-
+.item:hover{
+cursor: pointer;
+}
 .box-card {
   width: 100%;
 }
