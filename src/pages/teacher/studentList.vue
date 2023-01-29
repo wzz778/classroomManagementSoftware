@@ -4,6 +4,7 @@
       :inputInfoObj="myTopConfiguration.inputInfoObj"
       :searchFn="searchFn"
       :seletcInfoObjOne="myTopConfiguration.seletcInfoObjOne"
+      :getInfo="getInfo"
       :buttonInfo="myTopConfiguration.buttonInfo"
     ></myTop>
     <!-- 列表 -->
@@ -28,6 +29,7 @@
 import myPaging from "@/components/teacher/utilComponents/myPaging.vue";
 import myList from "@/components/teacher/utilComponents/myList.vue";
 import myTop from "@/components/teacher/utilComponents/myTop.vue";
+import { courseStudents, deleteStudentFromCourse } from "@/api/teacher";
 export default {
   name: "StudentList",
   components: {
@@ -40,28 +42,25 @@ export default {
       myTopConfiguration: {
         seletcInfoObjOne: {
           showName: "班级",
+          type: "getAllGradeFn",
         },
       },
       myListConfiguration: {
         allType: [
           {
-            dateType: "grade",
+            dateType: "userName",
             showName: "姓名",
           },
           {
-            dateType: "code",
+            dateType: "sex",
             showName: "性别",
           },
           {
-            dateType: "name",
-            showName: "专业",
+            dateType: "email",
+            showName: "邮箱",
           },
           {
-            dateType: "createTime",
-            showName: "班级",
-          },
-          {
-            dateType: "createTime",
+            dateType: "nativePlace",
             showName: "籍贯",
           },
           {
@@ -74,7 +73,7 @@ export default {
           {
             type: "",
             callFn: this.editorFn,
-            showInfo: "编辑",
+            showInfo: "重置密码",
           },
           {
             type: "danger",
@@ -90,14 +89,17 @@ export default {
       pageSize: 10,
       allNums: 0,
       searchObj: null,
+      classId: "",
     };
   },
   methods: {
     pageChangeFn(val) {
       this.nowPage = val;
+      this.getStudentInfo();
     },
     sizeChangeFn(val) {
       this.pageSize = val;
+      this.getStudentInfo();
     },
     deleteFn(obj) {
       console.log(obj);
@@ -107,6 +109,12 @@ export default {
         type: "warning",
       })
         .then(() => {
+          deleteStudentFromCourse({
+            courseId: this.classId,
+            studentId: obj.studentId,
+          }).then((result) => {
+            console.log("移除课程", result);
+          });
         })
         .catch(() => {
           this.$message({
@@ -121,12 +129,31 @@ export default {
     searchFn(obj) {
       this.searchObj = obj;
     },
-    getAllGradeFn() {
-      
+    getInfo(id) {
+      console.log("id", id);
+      this.classId = id;
+      this.pageSize = 10;
+      this.allNums = 0;
+      this.nowPage = 1;
+      this.getStudentInfo();
+    },
+    getStudentInfo() {
+      courseStudents({
+        classId: this.classId,
+        nodePage: this.nowPage,
+        pageSize: this.pageSize,
+      })
+        .then((result) => {
+          console.log("班级", result);
+          this.myListConfiguration.tableData = result.data.records;
+          this.allNums = result.data.total;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
   },
-  mounted() {
-  },
+  mounted() {},
 };
 </script>
 

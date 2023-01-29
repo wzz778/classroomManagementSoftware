@@ -1,9 +1,10 @@
 <template>
   <div>
     <myTop
-      :inputInfoObj="myTopConfiguration.inputInfoObj"
+      :seletcInfoObjOne="myTopConfiguration.seletcInfoObjOne"
       :searchFn="searchFn"
       :buttonInfo="myTopConfiguration.buttonInfo"
+      :getInfo="getInfo"
     ></myTop>
     <!-- 列表 -->
     <myList
@@ -48,21 +49,13 @@
           >
           </el-date-picker>
         </el-form-item>
-        <el-form-item label="超过时间是否运行签到:">
-          <el-switch v-model="isSign"></el-switch>
-        </el-form-item>
-        <el-form-item label="签到班级:">
-          <el-select
-            v-model="classAll"
-            multiple
-            style="width: 80%"
-            placeholder="请选择"
-          >
+        <el-form-item label="课程:">
+          <el-select v-model="classAll" style="width: 80%" placeholder="请选择">
             <el-option
               v-for="item in options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
+              :key="item.id"
+              :label="item.courseName"
+              :value="item.id"
             >
             </el-option>
           </el-select>
@@ -81,6 +74,7 @@ import myPaging from "@/components/teacher/utilComponents/myPaging.vue";
 import myList from "@/components/teacher/utilComponents/myList.vue";
 import myTop from "@/components/teacher/utilComponents/myTop.vue";
 import { DatePicker, Switch } from "element-ui";
+import { myCourse, signCourse, getCourseSignInfo } from "@/api/teacher/";
 export default {
   name: "signList",
   components: {
@@ -93,9 +87,9 @@ export default {
   data() {
     return {
       myTopConfiguration: {
-        inputInfoObj: {
-          showName: "签到名称:",
-          transferName: "name",
+        seletcInfoObjOne: {
+          showName: "课程",
+          type: "getAllCourse",
         },
         buttonInfo: {
           type: "success",
@@ -152,38 +146,18 @@ export default {
       className: "",
       startTime: "",
       endTime: "",
-      isSign: "",
-      classAll: [],
-      options: [
-        {
-          value: "选项1",
-          label: "黄金糕",
-        },
-        {
-          value: "选项2",
-          label: "双皮奶",
-        },
-        {
-          value: "选项3",
-          label: "蚵仔煎",
-        },
-        {
-          value: "选项4",
-          label: "龙须面",
-        },
-        {
-          value: "选项5",
-          label: "北京烤鸭",
-        },
-      ],
+      classAll: "",
+      options: [],
     };
   },
   methods: {
     pageChangeFn(val) {
       this.nowPage = val;
+      this.getSignInfo();
     },
     sizeChangeFn(val) {
       this.pageSize = val;
+      this.getSignInfo();
     },
     deleteFn(obj) {
       console.log(obj);
@@ -215,6 +189,24 @@ export default {
         });
         return;
       }
+      if (this.classAll == "") {
+        this.$message({
+          message: "请选择对应课程",
+          type: "warning",
+        });
+        return;
+      }
+      signCourse({
+        createTime: this.startTime,
+        endTime: this.endTime,
+        id: this.classAll,
+      })
+        .then((result) => {
+          console.log(result);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
     handleClose(done) {
       this.$confirm("确认关闭？")
@@ -226,8 +218,35 @@ export default {
     addFn() {
       this.dialogVisible = true;
     },
+    getInfo(id) {
+      console.log("id", id);
+      this.classId = id;
+      this.pageSize = 10;
+      this.allNums = 0;
+      this.nowPage = 1;
+      this.getSignInfo();
+    },
+    getSignInfo() {
+      getCourseSignInfo({
+        courseId: this.classId,
+      })
+        .then((result) => {
+          console.log("签到信息", result);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    getCourse() {
+      myCourse({}).then((result) => {
+        console.log(result);
+        this.options = result.data.records;
+      });
+    },
   },
-  mounted() {},
+  mounted() {
+    this.getCourse();
+  },
 };
 </script>
 

@@ -55,3 +55,27 @@ export const createGrade = async (data) => requests({
     method: "POST",
     params: data
 })
+
+export const courseStudents = async (data) => requests({
+    url: "/teacher/courseStudents",
+    method: "GET",
+    params: data
+})
+
+export const deleteStudentFromCourse = async (data) => requests({
+    url: "/teacher/deleteStudentFromCourse",
+    method: "DELETE",
+    params: data
+})
+
+export const signCourse = async (data) => requests({
+    url: "/course/sign",
+    method: "GET",
+    params: data
+})
+
+export const getCourseSignInfo = async (data) => requests({
+    url: "/teacher/getCourseSignInfo",
+    method: "GET",
+    params: data
+})
