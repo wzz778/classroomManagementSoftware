@@ -50,7 +50,7 @@
         label="操作"
         >
         <template slot-scope="scope">
-            <el-button @click="editclick(scope.row.id)" type="primary" size="small">修改</el-button>
+            <el-button @click="editclick(scope.row)" type="primary" size="small">修改</el-button>
             <el-button @click="deleteClick(scope.row.id)" type="danger" size="small">删除</el-button>
         </template>
         </el-table-column>
@@ -64,18 +64,36 @@
       layout="total, sizes, prev, pager, next, jumper"
       :total="alltotal">
     </el-pagination>
-    <!-- <div>{{tableDatas}}</div> -->
+    <el-dialog style="z-index:2001;" title="课堂封面更改" append-to-body :visible.sync="dialogFormVisible">
+      <el-form :model="form">
+        <el-form-item label="班级名称" :label-width="formLabelWidth">
+          <el-input v-model="form.className" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="是否禁用" :label-width="formLabelWidth">
+          <el-switch
+            v-model="redeleted"
+            active-color="#13ce66"
+            inactive-color="#ff4949">
+          </el-switch>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
-import { Select, Option , Tag} from "element-ui";
+import { Select, Option , Tag,Switch} from "element-ui";
 import {getGrade,deleteGrade} from '@/api/admin/index'
 export default {
   name:'ClassList',
   components: {
     [Select.name]: Select,
     [Option.name]: Option,
-     [Tag.name]: Tag,
+    [Tag.name]: Tag,
+    [Switch.name]: Switch,
   },
     data() {
       return {
@@ -84,29 +102,32 @@ export default {
         level:"",
         pagesize:5,
         alltotal:100,
+        dialogFormVisible: false,
+        redeleted: false,
         searchform:{
           nodePage: 1,
           pageSize:5,
           gradeId:"",
           sex:''
-        }
+        },
+        form: {
+          className: "",
+          code: "",
+          createName: 2,
+          createTime: "",
+          deleted: true,
+          id: 0,
+        },
+        formLabelWidth: '80px'
       }
     },
     methods:{
       editclick(row) {
         console.log(row);
-        sessionStorage.setItem("formmessage",JSON.stringify(row))
-        this.$router.replace({
-            path:"edit",
-                query:{
-                    id:row.id,
-                }
-        })
+        this.dialogFormVisible=true;
+        this.form=row;
       },
       watchClick(row) {
-        console.log(row);
-      },
-      editClick(row) {
         console.log(row);
       },
       deleteClick(row) {
@@ -192,10 +213,26 @@ export default {
           return"管理"
         }
         }
-  },
-   mounted(){
-    this.chagepage()
-  }
+      },
+      watch:{
+        'form.deleted':{
+            immediate:true,//刚开始就立刻调用
+            deep:true,//配置该属性才可监视numbers中数据确切的改变  默认的false就会不显示changing
+            handler(){
+              this.redeleted=!this.form.deleted;
+            }
+        },
+        'redeleted':{
+            immediate:true,//刚开始就立刻调用
+            deep:true,//配置该属性才可监视numbers中数据确切的改变  默认的false就会不显示changing
+            handler(){
+              this.form.deleted=!this.redeleted;
+            }
+        }
+      },
+      mounted(){
+        this.chagepage()
+      }
 }
 </script>
 <style lang="less" scoped>

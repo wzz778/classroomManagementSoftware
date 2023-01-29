@@ -1,6 +1,7 @@
 const { defineConfig } = require('@vue/cli-service')
 module.exports = defineConfig({
   transpileDependencies: true,
+  lintOnSave:false,
   devServer: {
     proxy: {
       // 这里的/api是指定发送数据的url以/api开头（/api/***）
