@@ -98,6 +98,15 @@ export default [
                 }
 
             },
+            {
+                path:'userlist', 
+                component: () => import('@/pages/admin/Subject/userlist.vue'),
+                name:"SubjectUsersList",
+                meta:{
+                    title:"课堂人员",
+                }
+
+            },
         ]
     },
 ]

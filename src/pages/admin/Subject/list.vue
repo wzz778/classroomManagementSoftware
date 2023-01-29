@@ -51,7 +51,7 @@
         fixed="right"
         label="操作">
         <template slot-scope="scope">
-            <el-button @click="watchClick(scope.row.id)" type="text" size="small">详情</el-button>
+            <el-button @click="watchClick(scope.row)" type="text" size="small">人员</el-button>
             <el-button @click="editClick(scope.row)" type="text" size="small">编辑</el-button>
             <el-button @click="deleteClick(scope.row.id)" type="text" size="small">禁用</el-button>
         </template>
@@ -156,6 +156,10 @@ export default {
       },
       watchClick(row) {
         console.log(row);
+        this.$router.replace({
+            path:"userlist",
+        })
+        sessionStorage.setItem("AdminClassMessage",JSON.stringify(row))
       },
       editClick(row) {
         console.log(row);
