@@ -61,7 +61,7 @@ export default {
               });
             }
           })
-          .catch((err) => {
+          .catch(() => {
               this.$message({
                 type: "warning",
                 message: "操作失败",

@@ -194,6 +194,7 @@ export default {
       this.picSrc = "";
       this.isChange = false;
       this.changeId = "";
+      this.desc = "";
     },
     copyFn(value) {
       navigator.clipboard.writeText(value).then(() => {

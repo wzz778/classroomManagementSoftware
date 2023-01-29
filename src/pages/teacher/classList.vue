@@ -2,7 +2,6 @@
   <div>
     <myTop
       :inputInfoObj="myTopConfiguration.inputInfoObj"
-      :searchFn="searchFn"
       :buttonInfo="myTopConfiguration.buttonInfo"
     ></myTop>
     <!-- 列表 -->
@@ -38,7 +37,12 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="submitFn">确 定</el-button>
+        <el-button type="primary" @click="changeFn" v-if="isChange"
+          >修改</el-button
+        >
+        <el-button type="primary" @click="submitFn" v-if="!isChange"
+          >确 定</el-button
+        >
       </span>
     </el-dialog>
   </div>
@@ -48,7 +52,7 @@
 import myPaging from "@/components/teacher/utilComponents/myPaging.vue";
 import myList from "@/components/teacher/utilComponents/myList.vue";
 import myTop from "@/components/teacher/utilComponents/myTop.vue";
-import { createGrade, getGrade } from "@/api/teacher";
+import { createGrade, getGrade, updateGrade, deleteGrade } from "@/api/teacher";
 export default {
   name: "classList",
   components: {
@@ -59,10 +63,6 @@ export default {
   data() {
     return {
       myTopConfiguration: {
-        inputInfoObj: {
-          showName: "班级名称:",
-          transferName: "name",
-        },
         buttonInfo: {
           type: "success",
           clickFn: this.addFn,
@@ -77,7 +77,7 @@ export default {
             showName: "ID",
           },
           {
-            dateType: "grade",
+            dateType: "className",
             showName: "班级名称",
           },
           {
@@ -98,12 +98,17 @@ export default {
           {
             type: "",
             callFn: this.editorFn,
-            showInfo: "编辑",
+            showInfo: "修改",
           },
           {
             type: "danger",
             callFn: this.deleteFn,
             showInfo: "删除",
+          },
+          {
+            type: "success",
+            callFn: this.copyFn,
+            showInfo: "复制",
           },
         ],
         // 数据
@@ -116,14 +121,26 @@ export default {
       searchObj: null,
       dialogVisible: false,
       className: "",
+      isChange: false,
+      id: "",
     };
   },
   methods: {
     pageChangeFn(val) {
       this.nowPage = val;
+      this.getInfo();
     },
     sizeChangeFn(val) {
       this.pageSize = val;
+      this.getInfo();
+    },
+    judgePrevious() {
+      if (this.myListConfiguration.tableData.length == 1 && this.nowPage == 1) {
+        this.myListConfiguration.tableData = [];
+        return;
+      }
+      this.nowPage--;
+      this.getInfo();
     },
     deleteFn(obj) {
       console.log(obj);
@@ -132,7 +149,18 @@ export default {
         cancelButtonText: "取消",
         type: "warning",
       })
-        .then(() => {})
+        .then(() => {
+          deleteGrade({
+            gradeId: obj.id,
+          })
+            .then((result) => {
+              console.log("删除", result);
+              this.judgePrevious();
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        })
         .catch(() => {
           this.$message({
             type: "info",
@@ -142,9 +170,10 @@ export default {
     },
     editorFn(obj) {
       console.log(obj);
-    },
-    searchFn(obj) {
-      this.searchObj = obj;
+      this.className = obj.className;
+      this.id = obj.id;
+      this.isChange = true;
+      this.dialogVisible = true;
     },
     submitFn() {
       if (this.className.replace(/(^\s*)|(\s*$)/g, "") == "") {
@@ -157,12 +186,14 @@ export default {
       createGrade({
         className: this.className,
       })
-        .then(() => {
+        .then((result) => {
+          console.log("添加", result);
           this.$message({
             message: "添加成功",
             type: "success",
           });
           this.dialogVisible = false;
+          this.getInfo();
         })
         .catch((err) => {
           console.log(err);
@@ -175,20 +206,66 @@ export default {
         })
         .catch(() => {});
     },
+    // 添加
     addFn() {
+      this.className = "";
+      this.id = "";
+      this.isChange = false;
       this.dialogVisible = true;
     },
-    getInfo() {
-      getGrade()
+    // 复制
+    copyFn(data) {
+      navigator.clipboard.writeText(data.code).then(() => {
+        this.$message({
+          message: "班级口令已复制",
+          type: "success",
+        });
+      });
+    },
+    // 修改
+    changeFn() {
+      if (this.className.replace(/(^\s*)|(\s*$)/g, "") == "") {
+        this.$message({
+          message: "请输入班级名称",
+          type: "warning",
+        });
+        return;
+      }
+      updateGrade({
+        className: this.className,
+        id: this.id,
+      })
         .then((result) => {
-          console.log(result);
+          console.log("修改", result);
+          this.dialogVisible = false;
+          this.getInfo();
+          this.$message({
+            message: "修改成功",
+            type: "success",
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    // 获取信息
+    getInfo() {
+      getGrade({
+        beginIndex: this.nowPage,
+        size: this.pageSize,
+      })
+        .then((result) => {
+          this.allNums = result.data.total;
+          this.myListConfiguration.tableData = result.data.records;
         })
         .catch((err) => {
           console.log(err);
         });
     },
   },
-  mounted() {},
+  mounted() {
+    this.getInfo();
+  },
 };
 </script>
 

@@ -123,13 +123,20 @@ export default {
           // 发送请求
           addCourse(formdata)
             .then((result) => {
-              this.$message({
-                message: "创建成功",
-                type: "success",
-              });
-              this.$refs['form'].resetFields();
-              this.fileList = [];
-              this.picSrc = "";
+              if(result.status==200){
+                this.$message({
+                  message: "创建成功",
+                  type: "success",
+                });
+                this.$refs['form'].resetFields();
+                this.fileList = [];
+                this.picSrc = "";
+              }else{
+                this.$message({
+                  type: "warning",
+                  message: "操作失败",
+                });
+              }
             })
             .catch((err) => {
               console.log(err);
