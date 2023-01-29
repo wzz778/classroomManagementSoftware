@@ -154,7 +154,7 @@ export default {
             }
           });
         })
-        .catch((err) => {
+        .catch(() => {
           this.$message({
             type: "info",
             message: "已取消删除",
