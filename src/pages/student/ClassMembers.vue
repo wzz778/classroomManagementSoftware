@@ -2,9 +2,9 @@
   <div class="memebers">
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <i class="el-icon-s-custom"></i><span>教师（4人）</span>
+        <i class="el-icon-s-custom"></i><span>教师（1人）</span>
       </div>
-      <div v-for="o in 4" :key="o" class="text item">
+      <div v-for="o in 1" :key="o" class="text item">
         <div class="name">
           <img :src="aimg ? aimg : require('@/assets/bac01.jpeg')" />
         </div>
@@ -35,6 +35,7 @@ export default {
     return {
       aimg: "",
       adatar: "",
+      lesid:this.$route.query.id,
       tableData: [],
     };
   },
@@ -44,7 +45,7 @@ export default {
   methods: {
     Getstudent() {
       let data = {
-        classId: "2",
+        classId: this.lesid,
         nodePage: "1",
         pageSize: "1000",
       };

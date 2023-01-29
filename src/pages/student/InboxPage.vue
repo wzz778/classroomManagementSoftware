@@ -8,9 +8,10 @@
         tooltip-effect="dark"
         style="width: 100%"
         :cell-style="{ 'text-align': 'center' }"
+        height="calc('100% - 80px')"
         :header-cell-style="{
           'text-align': 'center',
-          height: '40px',
+          height: '80px',
           lineHeight: '40px',
           padding: 0,
         }"
@@ -23,6 +24,20 @@
           prop="title"
           tableData
         >
+          <template slot="header" slot-scope>
+            <div class="searchArea">
+              <el-input
+                v-model="searchText"
+                size="mini"
+                placeholder="输入关键字搜索"
+                style="height: 40px; line-height: 40px"
+              />
+              <div class="searchBtns">
+                <el-button type="primary" size="mini" plain>搜索</el-button>
+                <el-button type="warning" size="mini" plain>重置</el-button>
+              </div>
+            </div>
+          </template>
         </el-table-column>
         <el-table-column
           prop="person"
@@ -116,8 +131,29 @@ export default {
           date: "2016-05-07",
           person: "线性代数",
         },
+        {
+          title: "考试通知",
+          date: "2016-05-07",
+          person: "线性代数",
+        },
+        {
+          title: "考试通知",
+          date: "2016-05-07",
+          person: "线性代数",
+        },
+        {
+          title: "考试通知",
+          date: "2016-05-07",
+          person: "线性代数",
+        },
+        {
+          title: "考试通知",
+          date: "2016-05-07",
+          person: "线性代数",
+        },
       ],
       multipleSelection: [],
+      searchText:""
     };
   },
   methods: {
@@ -198,5 +234,16 @@ body > .el-container {
   line-height: 30px;
   text-align: center;
   margin-right: 50px;
+}
+
+.searchArea {
+  display: flex;
+  align-items: center;
+  .searchBtns {
+    width: 200px;
+  }
+  .el-input__inner{
+    height: 35px;
+  }
 }
 </style>

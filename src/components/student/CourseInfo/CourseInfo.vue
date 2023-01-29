@@ -2,13 +2,14 @@
   <el-container class="content">
     <el-header class="header">
       <div class="logoPic">LOGO</div>
-      <el-dropdown class="myBox" >
+      <el-dropdown class="myBox">
         <span class="el-dropdown-link">
           <div class="headPortrait"></div>
         </span>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item>首页</el-dropdown-item>
           <el-dropdown-item>我的</el-dropdown-item>
+          <el-dropdown-item @click.native="logout">退出登录</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </el-header>
@@ -19,19 +20,35 @@
           <div class="className">高等数学</div>
         </div>
         <el-menu :default-active="pagePath" class="el-menu-vertical-demo">
-          <router-link to="/student/classTask">
+          <router-link
+            :to="{
+              path: '/student/classTask',
+              query: {
+                id: this.courid,
+              },
+            }"
+          >
             <el-menu-item index="/student/classTask">
               <span slot="title"><i class="el-icon-s-claim"></i>课程任务</span>
             </el-menu-item>
           </router-link>
-          <router-link to="/student/classWork">
+          <router-link
+            :to="{
+              path: '/student/classWork',
+              query: {
+                id: this.courid,
+              },
+            }"
+          >
             <el-menu-item index="/student/classWork">
               <span slot="title"><i class="el-icon-edit"></i>课程作业</span>
             </el-menu-item>
           </router-link>
           <router-link to="/student/classDiscussion">
             <el-menu-item index="/student/classDiscussion">
-              <span slot="title"><i class="el-icon-chat-line-square"></i> 课程讨论</span>
+              <span slot="title"
+                ><i class="el-icon-chat-line-square"></i> 课程讨论</span
+              >
             </el-menu-item>
           </router-link>
           <router-link to="/student/studyGroup">
@@ -46,17 +63,35 @@
           </router-link>
           <router-link to="/student/learnDaily">
             <el-menu-item index="/student/learnDaily">
-              <span slot="title"><i class="el-icon-notebook-2"></i>学习情况</span>
+              <span slot="title"
+                ><i class="el-icon-notebook-2"></i>学习情况</span
+              >
             </el-menu-item>
           </router-link>
-          <router-link to="/student/ClassMembers">
+          <router-link
+            :to="{
+              path: '/student/ClassMembers',
+              query: {
+                id: this.courid,
+              },
+            }"
+          >
             <el-menu-item index="/student/ClassMembers">
               <span slot="title"><i class="el-icon-user"></i>课程成员</span>
             </el-menu-item>
           </router-link>
-          <router-link to="/student/IndexCourse">
+          <router-link
+            :to="{
+              path: '/student/IndexCourse',
+              query: {
+                id: this.courid,
+              },
+            }"
+          >
             <el-menu-item index="/student/IndexCourse">
-              <span slot="title"><i class="el-icon-collection"></i>关于课程</span>
+              <span slot="title"
+                ><i class="el-icon-collection"></i>关于课程</span
+              >
             </el-menu-item>
           </router-link>
         </el-menu>
@@ -67,11 +102,22 @@
 </template>
 
 <script>
-import { Container, Header, Aside, Main, Menu, MenuItem,Dropdown,DropdownMenu,DropdownItem } from "element-ui";
+import {
+  Container,
+  Header,
+  Aside,
+  Main,
+  Menu,
+  MenuItem,
+  Dropdown,
+  DropdownMenu,
+  DropdownItem,
+} from "element-ui";
 export default {
   data() {
     return {
       pagePath: this.$route.path,
+      courid: this.$route.query.id,
     };
   },
   components: {
@@ -81,15 +127,16 @@ export default {
     [Main.name]: Main,
     [Menu.name]: Menu,
     [MenuItem.name]: MenuItem,
-    [Dropdown.name]:Dropdown,
-    [DropdownMenu.name]:DropdownMenu,
-    [DropdownItem.name]:DropdownItem
+    [Dropdown.name]: Dropdown,
+    [DropdownMenu.name]: DropdownMenu,
+    [DropdownItem.name]: DropdownItem,
   },
 };
 </script>
 
 <style lang="less" scoped>
-body,html{
+body,
+html {
   height: 100vh;
 }
 .el-header,
@@ -112,8 +159,8 @@ body,html{
 .el-main {
   background-color: #e9eef3;
   color: #333;
-  text-align: center;
-  line-height: 160px;
+  // text-align: center;
+  // line-height: 160px;
   padding-bottom: 0;
 }
 
@@ -140,14 +187,14 @@ body > .el-container {
   }
   .mainContent {
     flex: 1;
-    .el-aside{
+    .el-aside {
       display: flex;
       height: 100vh;
       flex-direction: column;
-      .el-menu{
+      .el-menu {
         overflow: auto;
       }
-      .el-menu{
+      .el-menu {
         flex: 1;
       }
     }
@@ -155,7 +202,7 @@ body > .el-container {
 }
 
 /* 整个滚动条 */
- ::-webkit-scrollbar {
+::-webkit-scrollbar {
   /* 对应纵向滚动条的宽度 */
   width: 4px;
   /* 对应横向滚动条的宽度 */
@@ -163,13 +210,13 @@ body > .el-container {
 }
 
 /* 滚动条上的滚动滑块 */
- ::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb {
   background-color: #49b1f5;
   border-radius: 10px;
 }
 
 /* 滚动条轨道 */
- ::-webkit-scrollbar-track {
+::-webkit-scrollbar-track {
   background-color: #dbeffd;
   border-radius: 32px;
 }
@@ -202,11 +249,11 @@ body > .el-container {
   color: cornflowerblue;
 }
 
-.myBox{
+.myBox {
   float: right;
   margin-right: 50px;
 }
-.headPortrait{
+.headPortrait {
   display: inline-block;
   width: 50px;
   height: 50px;
@@ -218,7 +265,7 @@ body > .el-container {
   background-size: cover;
 }
 
-.logoPic{
+.logoPic {
   display: inline-block;
   width: 50px;
   height: 50px;
@@ -226,5 +273,4 @@ body > .el-container {
   float: left;
   margin-left: 60px;
 }
-
 </style>

@@ -38,6 +38,7 @@ export default {
     // ChangePassword,
     AccountCancellation
   },
+  
 };
 </script>
 
@@ -52,5 +53,6 @@ export default {
   height: 100vh;
   left: 50%;
   margin-left: -600px;
+  height: 100vh;
 }
 </style>

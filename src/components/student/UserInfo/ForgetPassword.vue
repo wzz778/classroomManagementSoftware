@@ -23,7 +23,6 @@
         <el-input
           placeholder="请输入账号绑定的邮箱"
           v-model="forgetPasswordInfo.email"
-          show-password
         ></el-input>
       </el-form-item>
       <div class="codeBox">
