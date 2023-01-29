@@ -26,7 +26,7 @@
           <i class="el-icon-s-custom"></i>
           <span slot="title">学生管理</span>
         </el-menu-item>
-        <el-menu-item index="/teacher/signList">
+        <el-menu-item index="/teacher/signDetails">
           <i class="el-icon-location"></i>
           <span slot="title">签到管理</span>
         </el-menu-item>

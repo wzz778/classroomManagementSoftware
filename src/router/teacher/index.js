@@ -12,10 +12,8 @@ import operationList from '@/pages/teacher/operationList'
 import attachmentList from '@/pages/teacher/attachmentList'
 // 作业详情
 import jobDetails from '@/pages/teacher/jobDetails'
-// 签到详情
-import signDetails from '@/pages/teacher/signDetails'
 // 签到管理
-import signList from '@/pages/teacher/signList'
+import signDetails from '@/pages/teacher/signDetails'
 // 成绩管理
 import performanceManagement from '@/pages/teacher/performanceManagement'
 // 讨论管理
@@ -70,13 +68,6 @@ export default [
             {
                 path: "signDetails",
                 component: signDetails,
-                meta: {
-                    title: "签到详情"
-                }
-            },
-            {
-                path: "signList",
-                component: signList,
                 meta: {
                     title: "签到管理"
                 }
