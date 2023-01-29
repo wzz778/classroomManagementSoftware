@@ -4,6 +4,7 @@ import IndexCourse from '@/pages/student/IndexCourse'
 import ClassMembers from '@/pages/student/ClassMembers'
 import CourseInfo from '@/components/student/CourseInfo/CourseInfo'
 import UserTop from '@/components/student/UserTop'
+import ClassSeed from '@/pages/student/ClassSeed'
 // 
 export default [
     {
@@ -49,5 +50,13 @@ export default [
                 },
             },
         ]
+    },
+    {
+        path: '/ClassSeed',
+        name: 'ClassSeed',
+        component: ClassSeed,
+        meta: {
+            title: "课程直播"
+        },
     },
 ]
