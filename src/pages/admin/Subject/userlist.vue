@@ -1,10 +1,11 @@
 <template>
   <div id="adminindex">
-    <!-- 年级：
-    <el-select v-model="level" placeholder="请选择活动区域">
-      <el-option  v-for="p of $store.state.admin.allgrade" :key="p.index" :label="p" :value="p"></el-option>
-    </el-select>
-    <el-button @click="find" type="primary" style="margin:0px 10px;">查询</el-button> -->
+    <el-form label-width="80px" style="width:300px;">
+      <el-form-item style="width:500px;margin-bottom: 0px;" label="课程ID">
+        <el-input style="width:150px;" v-model="searchform.classId" clearable></el-input>
+        <el-button @click="find" type="primary" style="margin:0px 10px;">查询</el-button>
+      </el-form-item>
+    </el-form>
     <el-table
         :data="tableData"
         :v-loading="true"
@@ -12,25 +13,29 @@
         style="width: 100%;margin:10px 0;">
         <el-table-column
         fixed
-        prop="id"
-        label="班级ID"
+        prop="studentId"
+        label="用户ID"
          width="50"
         empty-text
        >    
         </el-table-column>
         <el-table-column
-        prop="className"
-        label="班级名称"
+        prop="identity"
+        label="身份"
+        width="70"
+        > 
+        <template slot-scope="scope">
+          {{scope.row.identity|toidentity()}}
+        </template>
+        </el-table-column>
+        <el-table-column
+        prop="userName"
+        label="账号"
         > 
         </el-table-column>
         <el-table-column
-        prop="code"
-        label="班级码"
-        >
-        </el-table-column>
-        <el-table-column
-        prop="createName"
-        label="创建人ID"
+        prop="email"
+        label="邮箱"
         >
         </el-table-column>
         <el-table-column
@@ -39,19 +44,19 @@
         >
         </el-table-column>
         <el-table-column
-          prop="deleted"
+          prop="isDeleted"
           label="状态"
         >
           <template slot-scope="scope">
-            <el-tag :type="scope.row.deleted? 'warning' : 'success'">{{scope.row.deleted|toch()}}</el-tag>
+            <el-tag :type="scope.row.isDeleted? 'warning' : 'success'">{{scope.row.isDeleted|toch()}}</el-tag>
           </template>
         </el-table-column>
         <el-table-column
         label="操作"
         >
         <template slot-scope="scope">
-            <el-button @click="editclick(scope.row)" type="primary" size="small">修改</el-button>
-            <el-button @click="deleteClick(scope.row.id)" type="danger" size="small">删除</el-button>
+            <el-button @click="editclick(scope.row.studentId)" type="primary" size="small">修改</el-button>
+            <el-button @click="deleteClick(scope.row.studentId)" type="danger" size="small">删除</el-button>
         </template>
         </el-table-column>
     </el-table>
@@ -64,70 +69,54 @@
       layout="total, sizes, prev, pager, next, jumper"
       :total="alltotal">
     </el-pagination>
-    <el-dialog style="z-index:2001;" title="课堂封面更改" append-to-body :visible.sync="dialogFormVisible">
-      <el-form :model="form">
-        <el-form-item label="班级名称" :label-width="formLabelWidth">
-          <el-input v-model="form.className" autocomplete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="是否启用" :label-width="formLabelWidth">
-          <el-switch
-            v-model="redeleted"
-            active-color="#13ce66"
-            inactive-color="#ff4949">
-          </el-switch>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="handelSend()">确 定</el-button>
-      </div>
-    </el-dialog>
+    <!-- <div>{{tableDatas}}</div> -->
   </div>
 </template>
 <script>
-import { Select, Option , Tag,Switch} from "element-ui";
-import {getGrade,deleteGrade,updateGrade} from '@/api/admin/index'
+import { Select, Option , Tag} from "element-ui";
+import {courseStudents,deleteUser} from '@/api/admin/index'
 export default {
-  name:'ClassList',
+  name:'SubjectUsersList',
   components: {
     [Select.name]: Select,
     [Option.name]: Option,
     [Tag.name]: Tag,
-    [Switch.name]: Switch,
   },
     data() {
+      const item = {
+        id: '1',
+        subjectName: '语文',
+        levelName: '年级',
+        deleted:"34"
+      };
       return {
         currentPage: 1,
-        tableData:[],
+        tableData:Array(0).fill(item),
         level:"",
         pagesize:5,
         alltotal:100,
-        dialogFormVisible: false,
-        redeleted: false,
         searchform:{
           nodePage: 1,
           pageSize:5,
-          gradeId:"",
-          sex:''
-        },
-        form: {
-          className: "",
-          code: "",
-          createName: 2,
-          createTime: "",
-          deleted: true,
-          id: 0,
-        },
-        formLabelWidth: '80px'
+          classId:0,
+        }
       }
     },
     methods:{
       editclick(row) {
         console.log(row);
-        this.dialogFormVisible=true;
-        this.form=row;
+        sessionStorage.setItem("formmessage",JSON.stringify(row))
+        this.$router.replace({
+            path:"edit",
+                query:{
+                    id:row.id,
+                }
+        })
       },
       watchClick(row) {
+        console.log(row);
+      },
+      editClick(row) {
         console.log(row);
       },
       deleteClick(row) {
@@ -137,9 +126,7 @@ export default {
           type: "warning",
         })
         .then(() => {
-          deleteGrade({ gradeId:row })
-          .then((result) => {
-            console.log(result);
+          deleteUser({ id:row }).then((result) => {
             if(result.status==200){
               this.$message({
                 type: "success",
@@ -160,6 +147,7 @@ export default {
             message: "已取消删除",
           });
         });
+        console.log(row);
       },
       handleSizeChange(val) {
         this.searchform.pageSize=val;
@@ -174,7 +162,7 @@ export default {
         this.chagepage()
       },
       chagepage() {
-        getGrade({beginIndex:this.searchform.nodePage,size:this.searchform.pageSize})
+        courseStudents(this.searchform)
         .then(data=>{
           console.log(data);
           if(data.status==200){
@@ -189,29 +177,6 @@ export default {
             this.alltotal=req.total;
           }else if(data.status==555){
             this.tableData=[]
-          }
-        })
-        .catch(error=>{
-            console.log(error);
-        })
-      },
-      handelSend() {
-        console.log(this.form);
-        updateGrade(this.form)
-        .then(data=>{
-          console.log(data);
-          if(data.status==200){
-              this.chagepage()
-              this.$message({
-                message: "修改成功",
-                type: "success",
-              });
-              this.dialogFormVisible = true;
-          }else{
-            this.$message({
-              type: "warning",
-              message: "操作失败",
-            });
           }
         })
         .catch(error=>{
@@ -236,26 +201,12 @@ export default {
           return"管理"
         }
         }
-      },
-      watch:{
-        'form.deleted':{
-            immediate:true,//刚开始就立刻调用
-            deep:true,//配置该属性才可监视numbers中数据确切的改变  默认的false就会不显示changing
-            handler(){
-              this.redeleted=!this.form.deleted;
-            }
-        },
-        'redeleted':{
-            immediate:true,//刚开始就立刻调用
-            deep:true,//配置该属性才可监视numbers中数据确切的改变  默认的false就会不显示changing
-            handler(){
-              this.form.deleted=!this.redeleted;
-            }
-        }
-      },
-      mounted(){
-        this.chagepage()
-      }
+  },
+   mounted(){
+    let data=JSON.parse(sessionStorage.getItem('AdminClassMessage'));
+    this.searchform.classId=data.id;
+    this.chagepage()
+  }
 }
 </script>
 <style lang="less" scoped>

@@ -10,11 +10,15 @@ export const getHerCourse = async (params) =>requests({url:'/admin/getAllCourse'
 export const deleteCourse = async (params) => requests({url: "/course/deleteCourse",method: "DELETE",params})
 //添加课程
 export const addCourse = async (data) => requests({url: "/course/addCourse",method: "POST",data})
-//获取全部学科
+//获取全部课程
 export const getGrade = async (params) =>requests({url:'/grade/getGrade',method:'get',params});
+//获取该课堂的所有学生
+export const courseStudents = async (params) =>requests({url:'/teacher/courseStudents',method:'get',params});
 //删除某班级
 export const deleteGrade = async (params) => requests({url: "/grade/deleteGrade",method: "DELETE",params})
 //添加班级
 export const createGrade = async (params) => requests({url: "/grade/createGrade",method: "POST",params})
+//修改班级信息
+export const updateGrade = async (params) => requests({url: "/grade/updateGrade",method: "PUT",params})
 //更改封面
 export const updateCover = async (data) => requests({url: "/course/updateCover",method: "PUT",data})
