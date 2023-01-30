@@ -1,7 +1,6 @@
 <template>
   <div>
     <myTop
-      :inputInfoObj="myTopConfiguration.inputInfoObj"
       :searchFn="searchFn"
       :buttonInfo="myTopConfiguration.buttonInfo"
     ></myTop>
@@ -182,7 +181,7 @@ import gapFilling from "@/components/teacher/allQuestion/gapFilling";
 // 简答
 import shortAnswer from "@/components/teacher/allQuestion/shortAnswer";
 import { Row, Col, Card, DatePicker } from "element-ui";
-import { createHomework } from "@/api/teacher";
+import { createHomework, getHomework } from "@/api/teacher";
 export default {
   name: "operationList",
   components: {
@@ -202,10 +201,6 @@ export default {
   data() {
     return {
       myTopConfiguration: {
-        inputInfoObj: {
-          showName: "作业名称:",
-          transferName: "name",
-        },
         buttonInfo: {
           type: "success",
           clickFn: this.addFn,
@@ -220,28 +215,28 @@ export default {
             showName: "ID",
           },
           {
-            dateType: "grade",
-            showName: "班级名称",
-          },
-          {
-            dateType: "code",
-            showName: "班级口令",
+            dateType: "homeworkName",
+            showName: "作业名称",
           },
           {
             dateType: "name",
-            showName: "班级人数",
+            showName: "未作人数",
           },
           {
             dateType: "createTime",
             showName: "创建时间",
+          },
+          {
+            dateType: "endTime",
+            showName: "结束时间",
           },
         ],
         //   函数
         objFn: [
           {
             type: "",
-            callFn: this.editorFn,
-            showInfo: "编辑",
+            callFn: this.detailsFn,
+            showInfo: "详情",
           },
           {
             type: "danger",
@@ -316,8 +311,13 @@ export default {
           });
         });
     },
-    editorFn(obj) {
-      console.log(obj);
+    detailsFn(obj) {
+      this.$router.push({
+        path: "/teacher/jobDetails",
+        query: {
+          id: obj.id,
+        },
+      });
     },
     searchFn(obj) {
       this.searchObj = obj;
@@ -398,8 +398,24 @@ export default {
     cancelFn() {
       this.dialogVisible = false;
     },
+    getInfo() {
+      getHomework({
+        beginIndex: this.nowPage,
+        size: this.pageSize,
+      })
+        .then((result) => {
+          console.log(result);
+          this.allNums = result.data.total;
+          this.myListConfiguration.tableData = result.data.records;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
   },
-  mounted() {},
+  mounted() {
+    this.getInfo();
+  },
 };
 </script>
 

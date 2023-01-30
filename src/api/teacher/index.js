@@ -79,3 +79,9 @@ export const getCourseSignInfo = async (data) => requests({
     method: "GET",
     params: data
 })
+
+export const getHomework = async (data) => requests({
+    url: "/homework/getHomework",
+    method: "GET",
+    params: data
+})
