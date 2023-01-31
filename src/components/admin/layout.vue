@@ -27,7 +27,6 @@
             <span slot="title">用户管理</span>
           </template>
           <el-menu-item index="/admin/users/list">用户列表</el-menu-item>
-          <el-menu-item index="/admin/users/edit">用户创编</el-menu-item>
         </el-submenu>
         <el-submenu index="/admin/class">
           <template slot="title">

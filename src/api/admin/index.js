@@ -4,10 +4,16 @@ import requests from "../request.js";
 export const getAllUser = async (params) =>requests({url:'/admin/getAllUser',method:'get',params});
 //删除某用户
 export const deleteUser = async (params) => requests({url: "/admin/deleteUser",method: "DELETE",params})
+//重置某用户密码
+export const resetPassword = async (params) => requests({url: "admin/resetPassword",method: "POST",params})
+//更改某用户信息
+export const updateUserInfo = async (params) => requests({url: "admin/updateUserInfo",method: "PUT",params})
 //获取全部学科
 export const getHerCourse = async (params) =>requests({url:'/admin/getAllCourse',method:'get',params});
 //删除某学科
 export const deleteCourse = async (params) => requests({url: "/course/deleteCourse",method: "DELETE",params})
+//获取个人创作的学科
+export const myCourse = async (data) => requests({url: "/teacher/myCourse",method: 'GET',params: data})
 //添加课程
 export const addCourse = async (data) => requests({url: "/course/addCourse",method: "POST",data})
 //获取全部课程
@@ -22,3 +28,7 @@ export const createGrade = async (params) => requests({url: "/grade/createGrade"
 export const updateGrade = async (params) => requests({url: "/grade/updateGrade",method: "PUT",params})
 //更改封面
 export const updateCover = async (data) => requests({url: "/course/updateCover",method: "PUT",data})
+//添加话题
+export const publishTopic = async (params) => requests({url: "/discuss/publishTopic",method: "POST",params})
+//添加话题
+export const getTopic = async (params) => requests({url: "/discuss/getTopic",method: "GET",params})
