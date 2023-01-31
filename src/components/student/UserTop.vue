@@ -100,7 +100,7 @@ export default {
   beforeCreate() {
     document
       .querySelector("body")
-      .setAttribute("style", "background-color: #f1f1f1;overflow-y: hidden;");
+      .setAttribute("style", "background-color: #f1f1f1;");
   },
   // 销毁前清除（非必须,不清除的话完全可以）
   beforeDestroy() {
