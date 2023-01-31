@@ -20,6 +20,8 @@ import performanceManagement from '@/pages/teacher/performanceManagement'
 import classroomDiscussion from '@/pages/teacher/classroomDiscussion'
 // 观看直播
 import watchLive from '@/pages/teacher/watchLive'
+// 任务管理
+import taskManagement from '@/pages/teacher/taskManagement'
 export default [
     {
         path: "/teacher",
@@ -86,6 +88,13 @@ export default [
                 component: classroomDiscussion,
                 meta: {
                     title: "讨论管理"
+                }
+            },
+            {
+                path: "taskManagement",
+                component: taskManagement,
+                meta: {
+                    title: "任务管理"
                 }
             }
         ]

@@ -119,3 +119,21 @@ export const getFiles = async (data) => requests({
     method: "GET",
     params: data
 })
+
+export const publishTask = async (data) => requests({
+    url: "/homework/publishTask",
+    method: "POST",
+    params: data
+})
+
+export const getTask = async (data) => requests({
+    url: "/homework/getTask",
+    method: "GET",
+    params: data
+})
+
+export const randomName = async (data) => requests({
+    url: "/teacher/randomName",
+    method: "GET",
+    params: data
+})

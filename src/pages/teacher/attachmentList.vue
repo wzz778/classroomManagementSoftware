@@ -223,6 +223,7 @@ export default {
           });
           this.clearAll();
           this.dialogVisible = false;
+          this.getInfo();
         })
         .catch((err) => {
           console.log(err);
