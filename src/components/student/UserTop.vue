@@ -11,15 +11,16 @@
     >
       <el-submenu index="1">
         <template slot="title">用户名</template>
-        <el-menu-item index="2-1">账号管理</el-menu-item>
+        <el-menu-item index="2-1"><router-link  to="/user/UserInfo" style="color:white;">账号管理</router-link></el-menu-item>
         <el-menu-item index="2-2">退出登录</el-menu-item>
       </el-submenu>
-      <el-menu-item index="2">消息中心</el-menu-item>
+      <el-menu-item index="2"><router-link  to="/user/InboxPage">消息中心</router-link></el-menu-item>
       <el-menu-item index="3">
         <el-button type="text" @click="open"
           >输入邀请码</el-button
         ></el-menu-item
       >
+      <el-menu-item index="4"><router-link  to="/user/IndexBase">课程空间</router-link></el-menu-item>
     </el-menu>
     <router-view :change="msg"></router-view>
     <div class="footer">
@@ -94,6 +95,16 @@ export default {
     handleSelect(key, keyPath) {
       console.log(key, keyPath);
     },
+  },
+    // 组件内路由进入组件时
+  beforeCreate() {
+    document
+      .querySelector("body")
+      .setAttribute("style", "background-color: #f1f1f1;overflow-y: hidden;");
+  },
+  // 销毁前清除（非必须,不清除的话完全可以）
+  beforeDestroy() {
+    document.querySelector("body").removeAttribute("style");
   },
 };
 </script>
