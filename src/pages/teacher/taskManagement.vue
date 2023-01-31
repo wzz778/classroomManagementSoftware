@@ -1,11 +1,9 @@
 <template>
   <div>
     <myTop
-      :inputInfoObj="myTopConfiguration.inputInfoObj"
-      :searchFn="searchFn"
       :seletcInfoObjOne="myTopConfiguration.seletcInfoObjOne"
-      :getInfo="getInfo"
       :buttonInfo="myTopConfiguration.buttonInfo"
+      :getInfo="getInfo"
     ></myTop>
     <!-- 列表 -->
     <myList
@@ -29,56 +27,63 @@
 import myPaging from "@/components/teacher/utilComponents/myPaging.vue";
 import myList from "@/components/teacher/utilComponents/myList.vue";
 import myTop from "@/components/teacher/utilComponents/myTop.vue";
-import {
-  courseStudents,
-  deleteStudentFromCourse,
-  resetPassword,
-} from "@/api/teacher";
+// 单选
+import singleOption from "@/components/teacher/allQuestion/singleOption";
+// 多选
+import multiSelect from "@/components/teacher/allQuestion/multiSelect";
+// 判断
+import judgeQuestion from "@/components/teacher/allQuestion/judgeQuestion";
+// 填空
+import gapFilling from "@/components/teacher/allQuestion/gapFilling";
+// 简答
+import shortAnswer from "@/components/teacher/allQuestion/shortAnswer";
+import { Row, Col, Card, DatePicker } from "element-ui";
+import { getTask } from "@/api/teacher";
 export default {
-  name: "StudentList",
+  name: "operationList",
   components: {
     myPaging,
     myList,
     myTop,
+    singleOption,
+    multiSelect,
+    judgeQuestion,
+    gapFilling,
+    shortAnswer,
+    [Row.name]: Row,
+    [Col.name]: Col,
+    [Card.name]: Card,
+    [DatePicker.name]: DatePicker,
   },
   data() {
     return {
       myTopConfiguration: {
         seletcInfoObjOne: {
-          showName: "班级",
-          type: "getAllGradeFn",
+          showName: "课程",
+          type: "getAllCourse",
         },
       },
       myListConfiguration: {
         allType: [
           {
-            dateType: "userName",
-            showName: "姓名",
+            dateType: "task.taskName",
+            showName: "任务名",
           },
           {
-            dateType: "sex",
-            showName: "性别",
+            dateType: "finish",
+            showName: "已做人数",
           },
           {
-            dateType: "email",
-            showName: "邮箱",
+            dateType: "allCount",
+            showName: "总人数",
           },
           {
-            dateType: "nativePlace",
-            showName: "籍贯",
-          },
-          {
-            dateType: "createTime",
-            showName: "上学期成绩",
+            dateType: "task.createTime",
+            showName: "发布时间时间",
           },
         ],
         //   函数
         objFn: [
-          {
-            type: "",
-            callFn: this.resetPassword,
-            showInfo: "重置密码",
-          },
           {
             type: "danger",
             callFn: this.deleteFn,
@@ -92,38 +97,27 @@ export default {
       nowPage: 1,
       pageSize: 10,
       allNums: 0,
-      searchObj: null,
-      classId: "",
+      dialogVisible: false,
+      courseId: "",
     };
   },
   methods: {
     pageChangeFn(val) {
       this.nowPage = val;
-      this.getStudentInfo();
+      this.getTaskInfo();
     },
     sizeChangeFn(val) {
       this.pageSize = val;
-      this.getStudentInfo();
+      this.getTaskInfo();
     },
     deleteFn(obj) {
+      console.log(obj);
       this.$confirm("确定要删除班级吗?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       })
-        .then(() => {
-          deleteStudentFromCourse({
-            courseId: this.classId,
-            studentId: obj.studentId,
-          }).then((result) => {
-            console.log("移除课程", result);
-            this.$message({
-              message: "已移除",
-              type: "success",
-            });
-            this.getStudentInfo();
-          });
-        })
+        .then(() => {})
         .catch(() => {
           this.$message({
             type: "info",
@@ -131,39 +125,36 @@ export default {
           });
         });
     },
-    resetPassword(obj) {
-      resetPassword({
-        id: obj.studentId,
-      })
-        .then((result) => {
-          this.$message({
-            message: "已重置,初始密码为：123456",
-            type: "success",
-          });
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+    detailsFn(obj) {
+      this.$router.push({
+        path: "/teacher/jobDetails",
+        query: {
+          id: obj.id,
+        },
+      });
     },
-    searchFn(obj) {
-      this.searchObj = obj;
+    getAllGradeFn() {},
+    handleClose(done) {
+      this.$confirm("确认关闭？")
+        .then(() => {
+          done();
+        })
+        .catch(() => {});
     },
     getInfo(id) {
-      this.classId = id;
-      this.pageSize = 10;
-      this.allNums = 0;
-      this.nowPage = 1;
-      this.getStudentInfo();
+      this.courseId = id;
+      this.getTaskInfo();
     },
-    getStudentInfo() {
-      courseStudents({
-        classId: this.classId,
-        nodePage: this.nowPage,
-        pageSize: this.pageSize,
+    getTaskInfo() {
+      getTask({
+        beginIndex: this.nowPage,
+        size: this.pageSize,
+        courseId: this.courseId,
       })
         .then((result) => {
-          this.myListConfiguration.tableData = result.data.records;
-          this.allNums = result.data.total;
+          console.log(result);
+          this.allNums = result.data.allCount;
+          this.myListConfiguration.tableData = result.data.list;
         })
         .catch((err) => {
           console.log(err);

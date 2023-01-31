@@ -27,7 +27,7 @@
       prop="date"
       label="操作"
       v-if="objFn"
-      :width="objFn.length == 4 ? 300 : 200"
+      :width="objFn.length == 3 ? 300 : 200"
     >
       <template slot-scope="scope">
         <template v-for="tempObj in objFn">
