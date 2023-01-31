@@ -29,7 +29,11 @@
 import myPaging from "@/components/teacher/utilComponents/myPaging.vue";
 import myList from "@/components/teacher/utilComponents/myList.vue";
 import myTop from "@/components/teacher/utilComponents/myTop.vue";
-import { courseStudents, deleteStudentFromCourse } from "@/api/teacher";
+import {
+  courseStudents,
+  deleteStudentFromCourse,
+  resetPassword,
+} from "@/api/teacher";
 export default {
   name: "StudentList",
   components: {
@@ -72,7 +76,7 @@ export default {
         objFn: [
           {
             type: "",
-            callFn: this.editorFn,
+            callFn: this.resetPassword,
             showInfo: "重置密码",
           },
           {
@@ -102,7 +106,6 @@ export default {
       this.getStudentInfo();
     },
     deleteFn(obj) {
-      console.log(obj);
       this.$confirm("确定要删除班级吗?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -114,6 +117,11 @@ export default {
             studentId: obj.studentId,
           }).then((result) => {
             console.log("移除课程", result);
+            this.$message({
+              message: "已移除",
+              type: "success",
+            });
+            this.getStudentInfo();
           });
         })
         .catch(() => {
@@ -123,14 +131,24 @@ export default {
           });
         });
     },
-    editorFn(obj) {
-      console.log(obj);
+    resetPassword(obj) {
+      resetPassword({
+        id: obj.studentId,
+      })
+        .then((result) => {
+          this.$message({
+            message: "已重置,初始密码为：123456",
+            type: "success",
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
     searchFn(obj) {
       this.searchObj = obj;
     },
     getInfo(id) {
-      console.log("id", id);
       this.classId = id;
       this.pageSize = 10;
       this.allNums = 0;
@@ -144,7 +162,6 @@ export default {
         pageSize: this.pageSize,
       })
         .then((result) => {
-          console.log("班级", result);
           this.myListConfiguration.tableData = result.data.records;
           this.allNums = result.data.total;
         })

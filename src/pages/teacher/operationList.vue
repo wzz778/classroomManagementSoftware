@@ -2,7 +2,9 @@
   <div>
     <myTop
       :searchFn="searchFn"
+      :seletcInfoObjOne="myTopConfiguration.seletcInfoObjOne"
       :buttonInfo="myTopConfiguration.buttonInfo"
+      :getInfo="getInfo"
     ></myTop>
     <!-- 列表 -->
     <myList
@@ -181,7 +183,7 @@ import gapFilling from "@/components/teacher/allQuestion/gapFilling";
 // 简答
 import shortAnswer from "@/components/teacher/allQuestion/shortAnswer";
 import { Row, Col, Card, DatePicker } from "element-ui";
-import { createHomework, getHomework } from "@/api/teacher";
+import { createHomework, getHomework, deleteHomework } from "@/api/teacher";
 export default {
   name: "operationList",
   components: {
@@ -201,6 +203,10 @@ export default {
   data() {
     return {
       myTopConfiguration: {
+        seletcInfoObjOne: {
+          showName: "课程",
+          type: "getAllCourse",
+        },
         buttonInfo: {
           type: "success",
           clickFn: this.addFn,
@@ -282,6 +288,7 @@ export default {
       name: "",
       startTime: "",
       endTime: "",
+      courseId: "",
     };
   },
   computed: {
@@ -292,9 +299,11 @@ export default {
   methods: {
     pageChangeFn(val) {
       this.nowPage = val;
+      this.getHomeWorkInfo();
     },
     sizeChangeFn(val) {
       this.pageSize = val;
+      this.getHomeWorkInfo();
     },
     deleteFn(obj) {
       console.log(obj);
@@ -303,7 +312,21 @@ export default {
         cancelButtonText: "取消",
         type: "warning",
       })
-        .then(() => {})
+        .then(() => {
+          deleteHomework({
+            homeworkId: obj.id,
+          })
+            .then(() => {
+              this.getHomeWorkInfo();
+              this.$message({
+                type: "success",
+                message: "已删除",
+              });
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        })
         .catch(() => {
           this.$message({
             type: "info",
@@ -398,13 +421,17 @@ export default {
     cancelFn() {
       this.dialogVisible = false;
     },
-    getInfo() {
+    getInfo(id) {
+      this.courseId = id;
+      this.getHomeWorkInfo();
+    },
+    getHomeWorkInfo() {
       getHomework({
         beginIndex: this.nowPage,
         size: this.pageSize,
+        courseId: this.courseId,
       })
         .then((result) => {
-          console.log(result);
           this.allNums = result.data.total;
           this.myListConfiguration.tableData = result.data.records;
         })
@@ -413,9 +440,7 @@ export default {
         });
     },
   },
-  mounted() {
-    this.getInfo();
-  },
+  mounted() {},
 };
 </script>
 

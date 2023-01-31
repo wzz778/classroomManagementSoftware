@@ -164,7 +164,21 @@ export default {
         id: this.classAll,
       })
         .then((result) => {
-          console.log(result);
+          if (result.msg == "OK") {
+            this.$message({
+              type: "success",
+              message: "已发布",
+            });
+            this.clearAll();
+            this.dialogVisible = false;
+            return;
+          }
+          this.$message({
+            type: "warning",
+            message: result.msg,
+          });
+          this.dialogVisible = false;
+          this.clearAll();
         })
         .catch((err) => {
           console.log(err);
@@ -192,7 +206,6 @@ export default {
       getCourseSignInfo({
         courseId: this.course,
       }).then((result) => {
-        console.log("根据课程", result);
         this.signedUser = result.data.signedUser;
         this.unSignUser = result.data.unSignUser;
       });
@@ -237,6 +250,11 @@ export default {
           console.log(err);
         });
     },
+  },
+  clearAll() {
+    this.startTime = "";
+    this.endTime = "";
+    this.classAll = "";
   },
   mounted() {
     this.getAllGradeFn();

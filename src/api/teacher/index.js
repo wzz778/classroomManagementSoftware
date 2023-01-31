@@ -95,3 +95,27 @@ export const createPlayUrl = async () => requests({
     url: "/createPlayUrl",
     method: 'POST'
 })
+
+export const resetPassword = async (data) => requests({
+    url: "/admin/resetPassword",
+    method: 'POST',
+    params: data
+})
+
+export const deleteHomework = async (data) => requests({
+    url: "/homework/deleteHomework",
+    method: "DELETE",
+    params: data
+})
+
+export const uploadFile = async (data) => requests({
+    url: "/teacher/uploadFile",
+    method: "POST",
+    data: data
+})
+
+export const getFiles = async (data) => requests({
+    url: "/course/getFiles",
+    method: "GET",
+    params: data
+})
