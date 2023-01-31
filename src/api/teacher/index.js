@@ -85,3 +85,13 @@ export const getHomework = async (data) => requests({
     method: "GET",
     params: data
 })
+// 获取直播推流地址
+export const createPushUrl = async () => requests({
+    url: "/createPushUrl",
+    method: 'POST'
+})
+// 获取直播拉流地址
+export const createPlayUrl = async () => requests({
+    url: "/createPlayUrl",
+    method: 'POST'
+})

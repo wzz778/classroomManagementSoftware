@@ -18,6 +18,8 @@ import signDetails from '@/pages/teacher/signDetails'
 import performanceManagement from '@/pages/teacher/performanceManagement'
 // 讨论管理
 import classroomDiscussion from '@/pages/teacher/classroomDiscussion'
+// 观看直播
+import watchLive from '@/pages/teacher/watchLive'
 export default [
     {
         path: "/teacher",
@@ -87,5 +89,12 @@ export default [
                 }
             }
         ]
+    },
+    {
+        path: "/watchLive",
+        component: watchLive,
+        meta: {
+            title: "观看直播"
+        }
     }
 ]
