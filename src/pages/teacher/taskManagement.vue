@@ -89,6 +89,11 @@ export default {
             callFn: this.deleteFn,
             showInfo: "删除",
           },
+          {
+            type: "",
+            callFn: this.detailsFn,
+            showInfo: "详情",
+          },
         ],
         // 数据
         tableData: [],
@@ -133,7 +138,6 @@ export default {
         },
       });
     },
-    getAllGradeFn() {},
     handleClose(done) {
       this.$confirm("确认关闭？")
         .then(() => {
@@ -152,7 +156,6 @@ export default {
         courseId: this.courseId,
       })
         .then((result) => {
-          console.log(result);
           this.allNums = result.data.allCount;
           this.myListConfiguration.tableData = result.data.list;
         })

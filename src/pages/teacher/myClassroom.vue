@@ -210,10 +210,17 @@ export default {
     changeClass() {
       let formdata = new FormData();
       for (let i = 0; i < this.fileList.length; i++) {
+        if (this.fileList[i].raw.type.split("/")[0] != "image") {
+          this.$message({
+            message: "请上传图片",
+            type: "warning",
+          });
+          return;
+        }
         // 我们上传的文件保存在每个文件对象的raw里边
         formdata.append("newCover", this.fileList[i].raw);
       }
-      // formdata.append("id", id);
+      formdata.append("id", id);
       // 修改图片
       let obj = {
         formdata: formdata,
