@@ -11,10 +11,10 @@
     <span style="margin-left: 20px"></span>
     <el-button type="primary" @click="chagepage"><i class="el-icon-search"></i>  查询</el-button>
     <el-button type="success" @click="addTopic"><i class="el-icon-plus"></i>  添加话题</el-button>
-    <TopicList v-for="(p) of tableData"  :key="p.topic.id" style="width:100%" :headImg="p.user.photo" :title="p.user.name" :number="p.topic.createTime" :content="p.topic.topicName"/>
-    <!-- <li v-for="p of tableData"  :key="p.topic.id">
-      {{p.topic.topicName}}--{{p.topic.id}}
-    </li> -->
+    <!-- <TopicList v-for="p of tableData"  :key="p.discuss.id" style="width:100%" headImg="https://online-examination-1311156839.cos.ap-nanjing.myqcloud.com/photo/20230114130755_-589934592.webp" title="试卷总数" number="18"/> -->
+      <!-- {{p.id}}-{{p.name}}-{{p.age}}
+    </TopicList> -->
+    <TopicList ref="topiclist" style="width:100%" headImg="https://online-examination-1311156839.cos.ap-nanjing.myqcloud.com/photo/20230114130755_-589934592.webp" title="试卷总数" number="18"/>
     <el-dialog style="z-index:2001;" title="发布话题" append-to-body :visible.sync="dialogFormVisible">
       <el-form
         label-position="right"
@@ -53,7 +53,7 @@ import { } from "element-ui";
 import { myCourse ,publishTopic,getTopic} from "@/api/admin/index";
 import TopicList from '@/components/admin/TopicList'
 export default {
-  name: "classroomDiscussion",
+  name: "discussionDetails",
   components: {
     [Option.name]: Option,
     TopicList
@@ -69,7 +69,62 @@ export default {
         topicContent:"",
         courseId:11
       },
-      tableData:[],
+      tableData:[
+      {
+        "user": {
+          "studentId": 10,
+          "userName": "20030302123",
+          "password": "$2a$10$LwPMjd0ubsLXV0ZP5kIhpuMCJHLp8kaQMy5O0go9lXtrLmppRwRqG",
+          "email": "3190493163@qq.com",
+          "photo": "https://online-examination-1311156839.cos.ap-nanjing.myqcloud.com/photo/20230131135914_2000000000.jpg",
+          "sex": "女",
+          "name": "无",
+          "gradeId": 0,
+          "nativePlace": "无",
+          "identity": 0,
+          "createTime": "2023-01-31 13:59:49",
+          "updateTime": null,
+          "isDeleted": 0
+        },
+        "discuss": {
+          "id": 2,
+          "topicId": 2,
+          "sendId": 10,
+          "fromId": null,
+          "level": 1,
+          "superId": 0,
+          "content": "11111111111",
+          "createTime": "2023-01-31 16:16:40"
+        },
+      },
+      {
+        "user": {
+          "studentId": 10,
+          "userName": "20030302123",
+          "password": "$2a$10$LwPMjd0ubsLXV0ZP5kIhpuMCJHLp8kaQMy5O0go9lXtrLmppRwRqG",
+          "email": "3190493163@qq.com",
+          "photo": "https://online-examination-1311156839.cos.ap-nanjing.myqcloud.com/photo/20230131135914_2000000000.jpg",
+          "sex": "女",
+          "name": "无",
+          "gradeId": 0,
+          "nativePlace": "无",
+          "identity": 0,
+          "createTime": "2023-01-31 13:59:49",
+          "updateTime": null,
+          "isDeleted": 0
+        },
+        "discuss": {
+          "id": 3,
+          "topicId": 2,
+          "sendId": 10,
+          "fromId": null,
+          "level": 1,
+          "superId": 0,
+          "content": "11111111111",
+          "createTime": "2023-01-31 16:16:56"
+        },
+      },
+      ],
       searchform:{
         beginIndex: 1,
         size:5,
@@ -89,11 +144,11 @@ export default {
   },
   methods: {
     handleSizeChange(val) {
-      this.searchform.beginIndex=val;
+      this.searchform.pageSize=val;
       this.chagepage()
     },
     handleCurrentChange(val) {
-      this.searchform.beginIndex=val;
+      this.searchform.nodePage=val;
       this.chagepage()
     },
     getAllCourse() {
@@ -107,30 +162,21 @@ export default {
           console.log(err);
         });
     },
-    try(){
-      console.log("try");
-    },
     chagepage(){
+      console.log(this.searchform);
       getTopic(this.searchform)
         .then(data=>{
           console.log(data);
           if(data.status==200){
             let req=data.data;
-            this.tableData=req.list;
-            // console.log(this.tableData);
-            // let le=this.tableData.length;
-            // let lastdata=this.tableData[le-1]
-            // console.log(lastdata);
-            // this.tableData.pop()
-            // this.tableData.push(lastdata)
-            // console.log(this.tableData);
-            if(req.list.length==0){
+            this.tableData=req.records;
+            if(req.records.length==0){
               if(this.searchform.nodePage!=1){
                 this.searchform.nodePage--;
                 this.chagepage()
               }
             }
-            this.alltotal=req.allCount;
+            this.alltotal=req.total;
           }else if(data.status==555){
             this.tableData=[]
           }
@@ -138,7 +184,7 @@ export default {
         .catch(error=>{
             console.log(error);
         })
-        // console.log(this.tableData);
+        console.log(this.tableData);
     },
     addTopic(){
       this.dialogFormVisible=true;
@@ -158,48 +204,6 @@ export default {
               });
               this.dialogFormVisible=false;
               this.$refs['form'].resetFields();
-
-
-
-              // this.chagepage()
-              getTopic(this.searchform)
-                .then(data=>{
-                  console.log(data);
-                  if(data.status==200){
-                    let req=data.data;
-                    this.tableData=req.list;
-                    this.tableData.push(req.list[req.list.length-1])
-                    console.log(this.tableData);
-                    // let le=this.tableData.length;
-                    // let lastdata=this.tableData[le-1]
-                    // console.log(lastdata);
-                    // // this.tableData.pop()
-                    // this.tableData.push(lastdata)
-                    // console.log(this.tableData);
-                    if(req.list.length==0){
-                      if(this.searchform.nodePage!=1){
-                        this.searchform.nodePage--;
-                        this.chagepage()
-                      }
-                    }
-                    this.alltotal=req.allCount;
-                  }else if(data.status==555){
-                    this.tableData=[]
-                  }
-                })
-                .catch(error=>{
-                    console.log(error);
-                })
-
-
-              // console.log(this.tableData);
-              // let le=this.tableData.length;
-              // console.log(le);
-              // let newtable=this.tableData[le-1]
-              // console.log(newtable);
-              // this.tableData.push(newtable)
-              // console.log(this.tableData);
-              // this.tableData=this.numberArr.splice(index, 1, sum);
             }else{
               this.$message({
                 type: "warning",
@@ -220,16 +224,6 @@ export default {
       this.$refs[formName].resetFields();
     },
   },
-//   watch:{
-//     tableData:{
-//       immediate:true,//刚开始就立刻调用
-//       deep:true,//配置该属性才可监视numbers中数据确切的改变  默认的false就会不显示changing
-//       handler(){
-//         // console.log(this);
-//         this.tableData=this.numberArr.splice(index, 1, sum);
-//       }
-//     }
-// },
   mounted() {
       this.getAllCourse();
       // this.$refs.topiclist.$on('deleteTopic',this.deleteTopic) //绑定自定义事件

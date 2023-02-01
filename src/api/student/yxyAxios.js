@@ -32,3 +32,15 @@ export const getUserInfo=async()=>requests({
     url:'user/getUserInfo',
     method:'GET'
 })
+
+export const updatePhoto=async(data)=>requests({
+    url:'user/updatePhoto',
+    method:'PUT',
+    data:data
+})
+
+export const updatePassword=async(data)=>requests({
+    url:'user/updatePassword',
+    method:'PUT',
+    params:data
+})

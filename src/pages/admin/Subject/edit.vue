@@ -8,10 +8,10 @@
       ref="form"
     >
       <el-form-item label="课堂名称" prop="courseName">
-        <el-input v-model="form.courseName" clearable></el-input>
+        <el-input v-model.trim="form.courseName" clearable></el-input>
       </el-form-item>
       <el-form-item  label="课堂简介" prop="details">
-        <el-input type="textarea"  v-model="form.details" clearable></el-input>
+        <el-input type="textarea"  v-model.trim="form.details" clearable></el-input>
       </el-form-item>
       <el-form-item label="上传图片">
         <el-upload

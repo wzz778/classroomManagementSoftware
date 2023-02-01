@@ -134,16 +134,6 @@ export default {
       });
     },
   },
-  // 组件内路由进入组件时
-  beforeCreate() {
-    document
-      .querySelector("body")
-      .setAttribute("style", "background-color: #f1f1f1;;");
-  },
-  // 销毁前清除（非必须,不清除的话完全可以）
-  beforeDestroy() {
-    document.querySelector("body").removeAttribute("style");
-  },
 };
 </script>
 

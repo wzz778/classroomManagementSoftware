@@ -67,11 +67,11 @@
       :total="alltotal">
     </el-pagination>
     <el-dialog style="z-index:2001;" title="课堂封面更改" append-to-body :visible.sync="dialogFormVisible">
-    <el-form
-      label-position="right"
-      label-width="100px"
-      ref="form"
-    >
+      <el-form
+        label-position="right"
+        label-width="100px"
+        ref="form"
+      >
       <!-- <el-form-item label="课堂名称" prop="courseName">
         <el-input v-model="form.courseName" clearable></el-input>
       </el-form-item>

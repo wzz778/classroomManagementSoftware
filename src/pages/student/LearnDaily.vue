@@ -36,6 +36,7 @@
 </template>
 
 <script>
+import {getUserInfo} from "@/api/student/yxyAxios"
 import { Progress } from "element-ui";
 export default {
   name: "LearnDaily",
@@ -56,8 +57,15 @@ export default {
     [Progress.name]: Progress,
   },
   mounted(){
-    console.log("token是:",this.$store);
-    console.log(this.$store.state.token);
+    console.log('token',this.$store.state);
+    getUserInfo().then((res) => {
+        console.log(res);
+      if (res.status == 200) {
+        console.log("用户信息：",res);
+      } else {
+        console.log("error");
+      }
+    })
   }
 };
 </script>

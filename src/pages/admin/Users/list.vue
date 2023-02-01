@@ -21,6 +21,14 @@
        >    
         </el-table-column>
         <el-table-column
+        fixed
+        prop="name"
+        label="用户名称"
+         width="100"
+        empty-text
+       >    
+        </el-table-column>
+        <el-table-column
         prop="identity"
         label="身份"
         width="70"
@@ -32,6 +40,7 @@
         <el-table-column
         prop="userName"
         label="账号"
+        width="130"
         > 
         </el-table-column>
         <el-table-column
@@ -44,19 +53,21 @@
         label="创建时间"
         >
         </el-table-column>
-        <el-table-column
+        <!-- <el-table-column
           prop="isDeleted"
           label="状态"
         >
           <template slot-scope="scope">
             <el-tag :type="scope.row.isDeleted? 'warning' : 'success'">{{scope.row.isDeleted|toch()}}</el-tag>
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column
         label="操作"
+        width="240"
         >
         <template slot-scope="scope">
-            <el-button @click="editclick(scope.row.studentId)" type="primary" size="small">修改</el-button>
+            <!-- <el-button @click="editclick(scope.row.studentId)" type="primary" size="small">修改</el-button> -->
+            <el-button @click="resetclick(scope.row.studentId)" type="warning" size="small">重置密码</el-button>
             <el-button @click="deleteClick(scope.row.studentId)" type="danger" size="small">删除</el-button>
         </template>
         </el-table-column>
@@ -70,12 +81,28 @@
       layout="total, sizes, prev, pager, next, jumper"
       :total="alltotal">
     </el-pagination>
-    <!-- <div>{{tableDatas}}</div> -->
+      <el-dialog style="z-index:2001;" title="课堂封面更改" append-to-body :visible.sync="dialogFormVisible">
+        <el-form
+          label-position="right"
+          label-width="80px"
+          ref="form">
+        <el-form-item label="课堂名称" prop="courseName">
+          <el-input v-model="form.courseName" clearable></el-input>
+        </el-form-item>
+        <el-form-item  label="课堂简介" prop="details">
+          <el-input type="textarea"  v-model="form.details" clearable></el-input>
+        </el-form-item>
+          <el-button type="primary" @click="handelEditSend()"
+            >确认更改</el-button
+          >
+          <el-button @click="resetForm()">重置</el-button>
+      </el-form>
+      </el-dialog>
   </div>
 </template>
 <script>
 import { Select, Option , Tag} from "element-ui";
-import {getAllUser,deleteUser} from '@/api/admin/index'
+import {resetPassword,getAllUser,deleteUser} from '@/api/admin/index'
 export default {
   name:'UsersList',
   components: {
@@ -96,6 +123,11 @@ export default {
         level:"",
         pagesize:5,
         alltotal:100,
+        dialogFormVisible:false,
+        form:{
+          courseName:"",
+          details:"",
+        },
         searchform:{
           nodePage: 1,
           pageSize:5,
@@ -105,24 +137,15 @@ export default {
       }
     },
     methods:{
-      editclick(row) {
-        console.log(row);
-        sessionStorage.setItem("formmessage",JSON.stringify(row))
-        this.$router.replace({
-            path:"edit",
-                query:{
-                    id:row.id,
-                }
-        })
-      },
+      // editClick(row) {
+      //   console.log(row);
+      //   this.dialogFormVisible=true;
+      // },
       watchClick(row) {
         console.log(row);
       },
-      editClick(row) {
-        console.log(row);
-      },
       deleteClick(row) {
-        this.$confirm("确定要删除课程吗?", "提示", {
+        this.$confirm("确定要删除用户吗?", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning",
@@ -149,7 +172,35 @@ export default {
             message: "已取消删除",
           });
         });
-        console.log(row);
+      },
+      resetclick(row){
+        this.$confirm("确定要重置该用户的密码吗?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        })
+        .then(() => {
+          resetPassword({ id:row }).then((result) => {
+            if(result.status==200){
+              this.$message({
+                type: "success",
+                message: "重置成功!",
+              });
+              this.chagepage();
+            }else{
+              this.$message({
+                type: "warning",
+                message: "操作失败",
+              });
+            }
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消重置",
+          });
+        });
       },
       handleSizeChange(val) {
         this.searchform.pageSize=val;
@@ -187,13 +238,13 @@ export default {
       },
     },
     filters:{
-      toch(value){      
-          if(!value){
-            return "启用"
-          }else{
-            return "停用"
-          }
-      },//1368
+      // toch(value){      
+      //     if(!value){
+      //       return "启用"
+      //     }else{
+      //       return "停用"
+      //     }
+      // },//1368
       toidentity(value){
         if(value==0){
           return"学生"

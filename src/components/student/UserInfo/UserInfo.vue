@@ -1,5 +1,5 @@
 <template>
-  <div class="allPage">
+  <div class="allPage_userInfo">
     <el-tabs :tab-position="tabPosition" style="height: 200px">
       <el-tab-pane label="基本信息">
         <ChangeInfo></ChangeInfo>
@@ -38,15 +38,18 @@ export default {
     // ChangePassword,
     AccountCancellation
   },
+  mounted(){
+    console.log("tokentoken:",this.$store.state.token);
+  }
   
 };
 </script>
 
-<style lang="less" scoped>
-.el-tabs__content{
-    display: none;
-}
-.allPage{
+<style lang="less">
+// .el-tabs__content{
+//     display: none;
+// }
+.allPage_userInfo{
   display: inline-block;
   position: relative;
   width: 1200px;
@@ -54,5 +57,8 @@ export default {
   left: 50%;
   margin-left: -600px;
   height: 100vh;
+}
+textarea{
+  min-height: 80px !important;
 }
 </style>

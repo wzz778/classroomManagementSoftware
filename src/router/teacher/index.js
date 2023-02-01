@@ -18,6 +18,8 @@ import signDetails from '@/pages/teacher/signDetails'
 import performanceManagement from '@/pages/teacher/performanceManagement'
 // 讨论管理
 import classroomDiscussion from '@/pages/teacher/classroomDiscussion'
+// 讨论详情
+import discussionDetails from '@/pages/teacher/discussionDetails'
 // 观看直播
 import watchLive from '@/pages/teacher/watchLive'
 // 任务管理
@@ -88,6 +90,13 @@ export default [
             {
                 path: "classroomDiscussion",
                 component: classroomDiscussion,
+                meta: {
+                    title: "讨论管理"
+                }
+            },
+            {
+                path: "discussionDetails",
+                component: discussionDetails,
                 meta: {
                     title: "讨论管理"
                 }
