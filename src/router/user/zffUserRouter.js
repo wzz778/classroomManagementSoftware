@@ -6,7 +6,7 @@ import CourseInfo from '@/components/student/CourseInfo/CourseInfo'
 import UserTop from '@/components/student/UserTop'
 import ClassSeed from '@/pages/student/ClassSeed'
 import InboxPage from '@/pages/student/InboxPage'
-import UserInfo from '@/components/student/UserInfo/UserInfo'
+import UserInfo from '@/pages/student/UserInfo'
 // 
 export default [
     {
