@@ -1,15 +1,21 @@
 <template>
   <el-container style="height: 100%; border: 1px solid #eee">
-    <el-aside class="siderBar" width="200px" style="background-color: rgb(238, 241, 246)">
+    <el-aside
+      class="siderBar"
+      width="200px"
+      style="background-color: rgb(238, 241, 246)"
+    >
       <div class="paperInfo">
-        <div class="paperName">202301013试卷</div>
-        <div class="paperCourse">线性代数</div>
-        <div class="timeInterval">2023/01/01~2023/01/03</div>
+        <div class="paperName">{{ paperData.homeworkName }}</div>
+        <div class="timeInterval">
+          {{ paperData.beginTime }}~
+          <div>{{ paperData.endTime }}</div>
+        </div>
       </div>
       <div class="topicTab">
         <h4>题号</h4>
         <a
-          v-for="(topic, index) in topics.questions"
+          v-for="(topic, index) in paperData.questionCount"
           :key="index"
           @click="toTopic('#t' + index)"
         >
@@ -24,9 +30,9 @@
           >
         </a>
       </div>
-      <div class="remarkArea">备注：这是一个试卷这是一个试卷这是一个试卷这是一个试卷这是一个试卷这是一个试卷</div>
+      <div class="remarkArea">备注：{{ paperData.remark }}</div>
       <div class="btn">
-        <el-button type="primary" @click="submitAnswer">提交试卷</el-button>
+        <el-button type="primary" @click="submitAnswerFun">提交试卷</el-button>
       </div>
     </el-aside>
 
@@ -41,47 +47,45 @@
       </el-header>
       <el-main>
         <div class="topicPart">
-          <div v-for="(topic, index) in topics.questions" :key="index">
-            <h3 class="topicPartName" v-if="titles.hasOwnProperty(index)">
-              {{ titles[index] }}
-            </h3>
-            <!-- 单选 -->
-            <div
-              class="topicItem"
-              :id="'t' + index"
-              v-if="topic.questionContent.type == 1"
-            >
+          <div v-for="(topic, index) in topics" :key="index">
+            <div class="topicItem" :id="'t' + index">
               <div
                 class="topicTitle"
-                v-html="index + 1 + '、' + topic.questionContent.topicInfo"
+                v-html="
+                  index +
+                  1 +
+                  '、' +
+                  topic.questionContent.topicInfo +
+                  '(' +
+                  topic.score +
+                  '分)'
+                "
               ></div>
-              <div class="choiceItem">
-                <el-radio-group v-model="userAnswer[index]">
-                  <div
-                    v-for="(op, index) in topic.questionContent.optionsInfo"
-                    :key="index"
-                    class="radioItem"
-                  >
-                    <el-radio :label="op.options"></el-radio>
-                    <span
-                      style="height: 30px; font-size: 15px"
-                      v-html="op.value"
-                    ></span>
-                  </div>
-                </el-radio-group>
-              </div>
-            </div>
-            <!-- 多选 -->
-            <div
-              class="topicItem"
-              :id="'t' + index"
-              v-if="topic.questionContent.type == 2"
-            >
-              <div class="topicItem">
-                <div
-                  class="topicTitle"
-                  v-html="index + 1 + '、' + topic.questionContent.topicInfo"
-                ></div>
+              <!-- 单选 、判断-->
+              <template
+                v-if="
+                  topic.questionContent.type == 1 ||
+                  topic.questionContent.type == 3
+                "
+              >
+                <div class="choiceItem">
+                  <el-radio-group v-model="userAnswer[index]">
+                    <div
+                      v-for="(op, index) in topic.questionContent.optionsInfo"
+                      :key="index"
+                      class="radioItem"
+                    >
+                      <el-radio :label="op.options"></el-radio>
+                      <span
+                        style="height: 30px; font-size: 15px"
+                        v-html="op.value"
+                      ></span>
+                    </div>
+                  </el-radio-group>
+                </div>
+              </template>
+              <!-- 多选 -->
+              <template v-if="topic.questionContent.type == 2">
                 <div class="choiceMoreItem">
                   <el-checkbox-group v-model="userAnswer[index]">
                     <div
@@ -98,19 +102,8 @@
                     </div>
                   </el-checkbox-group>
                 </div>
-              </div>
-            </div>
-            <!-- 判断 -->
-            <div
-              class="topicItem"
-              :id="'t' + index"
-              v-if="topic.questionContent.type == 3"
-            >
-              <div class="topicItem">
-                <div
-                  class="topicTitle"
-                  v-html="index + 1 + '、' + topic.questionContent.topicInfo"
-                ></div>
+              </template>
+              <!-- <template v-if="topic.questionContent.type == 3">
                 <div class="shortAnswerItem">
                   <el-radio-group
                     v-model="userAnswer[index]"
@@ -120,54 +113,23 @@
                     <el-radio :label="true">正确</el-radio>
                   </el-radio-group>
                 </div>
-              </div>
-            </div>
-
-            <!-- 填空 -->
-            <div
-              class="topicItem"
-              :id="'t' + index"
-              v-if="topic.questionContent.type == 4"
-            >
-              <div class="topicItem">
-                <div
-                  class="topicTitle"
-                  v-html="index + 1 + '、' + topic.questionContent.topicInfo"
-                ></div>
+              </template> -->
+              <!-- 填空简答 -->
+              <template
+                v-if="
+                  topic.questionContent.type == 4 ||
+                  topic.questionContent.type == 5
+                "
+              >
                 <div class="blankItem">
                   <div class="inputBlank">
-                    <el-input
-                      type="textarea"
-                      :rows="2"
-                      placeholder="请输入内容"
-                      v-model="userAnswer[index]"
-                    >
-                    </el-input>
+                    <div
+                      class="answerAreaBox"
+                      @click="richTextFun(index, $event)"
+                    ></div>
                   </div>
                 </div>
-              </div>
-            </div>
-            <!-- 简答 -->
-            <div
-              class="topicItem"
-              :id="'t' + index"
-              v-if="topic.questionContent.type == 5"
-            >
-              <div class="topicItem">
-                <div
-                  class="topicTitle"
-                  v-html="index + 1 + '、' + topic.questionContent.topicInfo"
-                ></div>
-                <div class="shortAnswerItem">
-                  <el-input
-                    type="textarea"
-                    :rows="2"
-                    placeholder="请输入内容"
-                    v-model="userAnswer[index]"
-                  >
-                  </el-input>
-                </div>
-              </div>
+              </template>
             </div>
           </div>
         </div>
@@ -191,6 +153,7 @@ import {
   Submenu,
   MenuItem,
   MenuItemGroup,
+  MessageBox ,
   Tag,
   Button,
   Input,
@@ -200,19 +163,14 @@ import {
   CheckboxGroup,
   Backtop,
 } from "element-ui";
-// import { getPapers } from "@/myAxios/user/yxyAxios";
+import { getHomeworkById, submitAnswer } from "@/api/student/yxyAxios";
 export default {
   name: "DoPaper",
   data() {
     return {
       paperData: "",
       topics: "",
-      titles: {},
       userAnswer: {},
-      // hr: "",
-      // min: "",
-      // sec: "",
-      // count:''
     };
   },
   components: {
@@ -237,6 +195,7 @@ export default {
     [CheckboxGroup.name]: CheckboxGroup,
     [Checkbox.name]: Checkbox,
     [Backtop.name]: Backtop,
+    [MessageBox.name]:MessageBox
   },
   methods: {
     // checkMore(val) {
@@ -248,65 +207,78 @@ export default {
     toTopic(idName) {
       document.querySelector(idName).scrollIntoView(true);
     },
-    submitAnswer() {
-      console.log(this.userAnswer);
+    submitAnswerFun() {
+      this.$confirm("确定提交试卷？", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          console.log(JSON.stringify(this.userAnswer));
+          // let data = {
+          //   duration: 0,
+          //   hid: 15,
+          //   id: 0,
+          //   status: 0,
+          //   userAnswer: [
+          //     {
+          //       answer: JSON.stringify(this.userAnswer),
+          //       type: 0,
+          //     },
+          //   ],
+          //   userId: 0,
+          // };
+          // console.log(data);
+          // submitAnswer(data).then(res=>{
+          //   console.log(res);
+          // })
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消提交",
+          });
+        });
     },
-    //倒计时
-    // countdown() {
-    //   const end = Date.parse(new Date("2022-12-12 19:59:23"));
-    //   const now = Date.parse(new Date());
-    //   const msec = end-now;
-    //   console.log(this.count);
-    //   console.log("msec",msec);
-    //   if (msec < 0) return;
-    //   let day = parseInt(msec / 1000 / 60 / 60 / 24);
-    //   let hr = parseInt((msec / 1000 / 60 / 60) % 24);
-    //   let min = parseInt((msec / 1000 / 60) % 60);
-    //   let sec = parseInt((msec / 1000) % 60);
-    //   this.day = day;
-    //   this.hr = hr > 9 ? hr : "0" + hr;
-    //   this.min = min > 9 ? min : "0" + min;
-    //   this.sec = sec > 9 ? sec : "0" + sec;
-    //   const that = this;
-    //   if (min >= 0 && sec >= 0) {
-    //     //倒计时结束关闭订单
-    //     if (min == 0 && sec == 0) {
-    //       return;
-    //     }
-    //     setTimeout(function () {
-    //       that.countdown();
-    //     }, 1000);
-    //   }
-    // },
+    richTextFun(index, event) {
+      this.$myRichText({ oriHtml: this.userAnswer[index] })
+        .then((res) => {
+          event.target.innerHTML = res;
+          this.userAnswer[index] = res;
+        })
+        .catch(() => {});
+    },
   },
-  // mounted() {
-  //   let getPaperInfo = {
-  //     beginIndex: 1,
-  //     size: 1,
-  //     id: this.$route.query.pid,
-  //   };
-  //   getPapers(getPaperInfo).then((res) => {
-  //     console.log(res.data);
-  //     this.paperData = res.data.records[0];
-  //     this.topics = this.paperData.ob;
-  //     this.count = this.paperData.suggestTime;
-  //     for (let i = 0; i < this.topics.questions.length; i++) {
-  //       this.topics.questions[i].questionContent = JSON.parse(
-  //         this.topics.questions[i].questionContent
-  //       );
-  //       if (this.topics.questions[i].questionContent.type == 2) {
-  //         this.$set(this.userAnswer, i, []);
-  //       } else {
-  //         this.$set(this.userAnswer, i, "");
-  //       }
-  //     }
-  //     Object.values(JSON.parse(res.data.records[0].paperFrame)).forEach(
-  //       (key) => {
-  //         this.titles[key.beginIndex] = key.value;
-  //       }
-  //     );
-  //   });
-  // },
+  mounted() {
+    let data = {
+      // homeworkId: this.$route.query.pid,
+      homeworkId: 16,
+    };
+    getHomeworkById(data).then((res) => {
+      console.log(res);
+      this.paperData = res.data.homework;
+      this.paperData.remark = this.paperData.remark || "无";
+      this.topics = res.data.homework.question;
+      // this.paperData = res.data.records[0];
+      // this.topics = this.paperData.ob;
+      // this.count = this.paperData.suggestTime;
+      for (let i = 0; i < this.paperData.questionCount; i++) {
+        this.topics[i].questionContent = JSON.parse(
+          this.topics[i].questionContent
+        );
+        if (this.topics[i].questionContent.type == 2) {
+          this.$set(this.userAnswer, i, []);
+        } else {
+          this.$set(this.userAnswer, i, "");
+        }
+      }
+      // Object.values(JSON.parse(res.data.records[0].paperFrame)).forEach(
+      //   (key) => {
+      //     this.titles[key.beginIndex] = key.value;
+      //   }
+      // );
+    });
+  },
 };
 </script>
 
@@ -331,7 +303,7 @@ html {
 }
 
 /* 整个滚动条 */
- ::-webkit-scrollbar {
+::-webkit-scrollbar {
   /* 对应纵向滚动条的宽度 */
   width: 4px;
   /* 对应横向滚动条的宽度 */
@@ -339,13 +311,13 @@ html {
 }
 
 /* 滚动条上的滚动滑块 */
- ::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb {
   background-color: #49b1f5;
   border-radius: 32px;
 }
 
 /* 滚动条轨道 */
- ::-webkit-scrollbar-track {
+::-webkit-scrollbar-track {
   background-color: #dbeffd;
   border-radius: 32px;
 }
@@ -458,10 +430,8 @@ html {
   margin-left: 20px;
 }
 .topicTitle {
-  display: flex;
-  span {
-    line-height: 30px;
-  }
+  display: inline-block;
+  line-height: 30px;
 }
 .radioItem {
   display: flex;
@@ -499,6 +469,18 @@ html {
 .topicTab {
   h4 {
     text-align: center;
+  }
+}
+
+.answerAreaBox {
+  width: 90%;
+  min-height: 60px;
+  line-height: 30px;
+  font-size: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  &:hover {
+    border: 1px solid rgb(139, 180, 233);
   }
 }
 </style>

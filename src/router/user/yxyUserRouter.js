@@ -10,16 +10,20 @@ import LearnDaily from '@/pages/student/LearnDaily'
 // import ClassStudents from '@/pages/student/ClassStudents'
 import IndexCourse from '@/pages/student/IndexCourse'
 import DoPaper from '@/pages/student/DoPaper'
-import UserInfo from '@/components/student/UserInfo/UserInfo'
+import UserInfo from '@/pages/student/UserInfo'
 import ClassMembers from '@/pages/student/ClassMembers'
 import InboxPage from '@/pages/student/InboxPage'
 import GroupChat from '@/pages/student/GroupChat'
-
+import CorrectHomework from '@/pages/student/CorrectHomework'
+import BrowseHomework from '@/pages/student/BrowseHomework'
 // 
 export default [
     {
         path:'/login',
-        component:LoginPage
+        component:LoginPage,
+        meta: {
+            title: "欢迎"
+        },
     },
     {
         path:'/student',
@@ -27,52 +31,102 @@ export default [
         children:[
             {
                 path:'classTask',
-                component:ClassTask
+                component:ClassTask,
+                meta: {
+                    title: "课程任务"
+                },
             },
             {
                 path:'ClassWork',
-                component:ClassWork
+                component:ClassWork,
+                meta: {
+                    title: "课程作业"
+                },
             },
             {
                 path:'classDiscussion',
-                component:ClassDiscussion
+                component:ClassDiscussion,
+                meta: {
+                    title: "课程讨论"
+                },
             },
             {
                 path:'studyGroup',
-                component:StudyGroup
+                component:StudyGroup,
+                meta: {
+                    title: "我的小组"
+                },
             },
             {
                 path:'shareData',
-                component:ShareData
+                component:ShareData,
+                meta: {
+                    title: "共享资料"
+                },
             },
             {
                 path:'learnDaily',
-                component:LearnDaily
+                component:LearnDaily,
+                meta: {
+                    title: "学习情况"
+                },
             },
             {
                 path:'classStudents',
-                component:ClassMembers
+                component:ClassMembers,
+                meta: {
+                    title: "课程成员"
+                },
             },
             {
                 path:'aboutClass',
-                component:IndexCourse
+                component:IndexCourse,
+                meta: {
+                    title: "关于课程"
+                },
             },
             {
                 path:'groupChat',
-                component:GroupChat
+                component:GroupChat,
+                meta: {
+                    title: "小组讨论"
+                },
             }
         ]
     },
     {
         path:'/doPaper',
-        component:DoPaper
+        component:DoPaper,
+        meta: {
+            title: "做作业"
+        },
     },
     {
         path:'/userInfo',
         component:UserInfo,
+        meta: {
+            title: "账号管理"
+        },
     },
     {
         path:'/Inbox',
-        component:InboxPage
+        component:InboxPage,
+        meta: {
+            title: "消息中心"
+        },
+    },
+    {
+        path:'/correctHomework',
+        component:CorrectHomework,
+        meta:{
+            title:"批改作业"
+        }
+    },
+    {
+        path:'/browseHomework',
+        component:BrowseHomework,
+        meta:{
+            title:"浏览作业"
+        }
     }
 ]

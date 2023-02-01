@@ -28,6 +28,11 @@ export const logout=async()=>requests({
     method:'GET'
 })
 
+export const getAllAddress=async()=>requests({
+    url:'user/allAddress',
+    method:'GET'
+})
+
 export const getUserInfo=async()=>requests({
     url:'user/getUserInfo',
     method:'GET'
@@ -43,4 +48,24 @@ export const updatePassword=async(data)=>requests({
     url:'user/updatePassword',
     method:'PUT',
     params:data
+})
+
+export const updateInfo=async(data)=>requests({
+    url:'user/updateUserInfo',
+    method:'PUT',
+    params:data
+})
+
+// 通过id获取试卷
+export const getHomeworkById=async(data)=>requests({
+    url:'homework/getHomeworkById',
+    method:'GET',
+    params:data
+})
+
+//提交试卷
+export const submitAnswer=async(data)=>requests({
+    url:'homework/submitAnswer',
+    method:'POST',
+    data:data
 })

@@ -2,9 +2,7 @@
 const actions = {}
 // 准备mutations(操作数据,键值一般大写)
 const mutations = {
-    // GETTOKEN(state,val){
-    //     state.token=val
-    // }
+    
 }
 // 准备state(存放数据)
 const state = {
