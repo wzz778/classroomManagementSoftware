@@ -12,10 +12,11 @@ export const myCourse = async (data) => requests({
 })
 
 export const updateCover = async (data) => requests({
-    url: "/course/updateCover",
+    url: "/course/updateCoverOrDetail",
     method: "PUT",
     params: {
-        id: data.id
+        id: data.id,
+        detail: data.detail
     },
     data: data.formdata
 })
@@ -87,13 +88,14 @@ export const getHomework = async (data) => requests({
 })
 // 获取直播推流地址
 export const createPushUrl = async () => requests({
-    url: "/createPushUrl",
+    url: "/live/createPushUrl",
     method: 'POST'
 })
 // 获取直播拉流地址
-export const createPlayUrl = async () => requests({
-    url: "/createPlayUrl",
-    method: 'POST'
+export const createPlayUrl = async (data) => requests({
+    url: "/live/createPlayUrl",
+    method: 'POST',
+    params: data
 })
 
 export const resetPassword = async (data) => requests({

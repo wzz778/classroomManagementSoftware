@@ -93,7 +93,7 @@ export default {
       createPushUrl()
         .then((result) => {
           console.log(result);
-          this.pushUrl = result.replace("rtmp", "webrtc");
+          this.pushUrl = result.data.address.replace("rtmp", "webrtc");
           this.livePusher = new TXLivePusher();
           this.startLive();
         })
@@ -149,8 +149,8 @@ export default {
     },
     ansQusetionDetails() {
       this.$router.push({
-        path:"/teacher/ansQuestion"
-      })
+        path: "/teacher/ansQuestion",
+      });
     },
   },
   mounted() {},

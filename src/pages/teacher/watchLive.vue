@@ -1,24 +1,16 @@
 <template>
   <div id="watchBacSty">
-    <div id="operator">
+    <div id="operator" ref="operator">
       <button id="release" @click="dialogVisible = true">发布弹幕</button>
-      <div>
-        <span style="color: white">弹幕&nbsp;</span>
-        <el-switch
-          v-model="value1"
-          active-color="#13ce66"
-          inactive-color="#ff4949"
-        >
-        </el-switch>
-      </div>
+      <span style="color: white">弹幕&nbsp;</span>
+      <el-switch
+        v-model="value1"
+        active-color="#13ce66"
+        inactive-color="#ff4949"
+      >
+      </el-switch>
     </div>
     <canvas id="canvas" ref="canvas"></canvas>
-    <!-- <video
-      src="@/讲课.mp4"
-      ref="video"
-      id="player-container-id"
-      controls
-    ></video> -->
     <video
       id="player-container-id"
       preload="auto"
@@ -26,16 +18,19 @@
       ref="video"
       webkit-playsinline
     ></video>
-    <el-dialog title="提示" :visible.sync="dialogVisible" width="60%">
+    <el-dialog
+      ref="dialog"
+      title="提示"
+      :visible.sync="dialogVisible"
+      width="60%"
+    >
       <el-form ref="form" label-width="80px">
         <el-form-item label="弹幕内容">
           <el-input v-model="message"></el-input>
         </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="sendBarrage">确 定</el-button>
-      </span>
+      </el-form>
     </el-dialog>
   </div>
 </template>
@@ -54,6 +49,7 @@ export default {
       dialogVisible: false,
       message: "",
       barage: null,
+      timer: null,
     };
   },
   components: {
@@ -65,10 +61,18 @@ export default {
       this.watchLive();
     },
     watchLive() {
-        createPlayUrl().then((result) => {
-          this.watchUrl = result;
-          this.player.src(this.watchUrl); // url 播放地址
-        });
+      createPlayUrl({
+        bizid: window.localStorage.a,
+      }).then((result) => {
+        console.log(result);
+        this.watchUrl = result;
+        this.player.src(this.watchUrl); // url 播放地址
+        setTimeout(() => {
+          this.$refs.canvas.nextElementSibling.appendChild(this.$refs.canvas);
+          this.$refs.canvas.parentElement.appendChild(this.$refs.operator);
+          this.$refs.canvas.parentElement.appendChild(this.$refs.dialog.$el);
+        }, 1000);
+      });
     },
     sendBarrage() {
       console.log("发送弹幕");
@@ -95,7 +99,6 @@ export default {
         this.barage.pause();
       });
     },
-
     getDate(len) {
       let data = [];
       /* 一个弹幕数据中需要有弹幕的具体值，弹幕的字体大小，弹幕的颜色，它出现在视频中的时间，以及他的速度
@@ -111,11 +114,25 @@ export default {
       }
       return data;
     },
+    move() {},
+    showOperator() {
+      this.$refs.video.onmouseleave = () => {
+        this.$refs.operator.style.display = "block";
+        if (this.timer) {
+          clearTimeout(this.timer);
+        }
+        this.timer = setTimeout(() => {
+          this.$refs.operator.style.display = "none";
+        }, 4000);
+      };
+      // this.$refs.canvas.onmouseleave = this.move();
+    },
   },
   mounted() {
     this.$nextTick().then(() => {
       this.watchLiveInit();
       this.barrageInit();
+      this.showOperator();
     });
   },
 };
@@ -131,8 +148,8 @@ export default {
 
 #operator {
   position: absolute;
-  right: 10px;
-  bottom: 20px;
+  left: 200px;
+  bottom: -5px;
   z-index: 100;
 }
 
@@ -146,14 +163,14 @@ export default {
   width: 90%;
   height: 88%;
   position: fixed;
-  z-index: 10;
+  /* z-index: 10; */
   margin: 0 auto;
   top: 0;
 }
 
 #player-container-id {
   display: block;
-  width: 90%;
+  width: 100%;
   height: 99vh;
   margin: 0 auto;
   position: absolute;

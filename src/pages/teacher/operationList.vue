@@ -264,10 +264,6 @@ export default {
             dateType: "createTime",
             showName: "创建时间",
           },
-          {
-            dateType: "endTime",
-            showName: "结束时间",
-          },
         ],
         //   函数
         objFn: [
@@ -474,6 +470,7 @@ export default {
           this.clearAll();
           this.dialogVisible = false;
           this.showQuestion = false;
+          this.getInfo();
         })
         .catch((err) => {
           console.log(err);
