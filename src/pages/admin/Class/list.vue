@@ -85,13 +85,11 @@
   </div>
 </template>
 <script>
-import { Select, Option , Tag,Switch} from "element-ui";
+import {Tag,Switch} from "element-ui";
 import {getGrade,deleteGrade,updateGrade} from '@/api/admin/index'
 export default {
   name:'ClassList',
   components: {
-    [Select.name]: Select,
-    [Option.name]: Option,
     [Tag.name]: Tag,
     [Switch.name]: Switch,
   },

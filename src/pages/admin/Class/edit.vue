@@ -8,7 +8,7 @@
       ref="form"
     >
       <el-form-item label="班级名" prop="title">
-        <el-input v-model="form.title"></el-input>
+        <el-input v-model.trim="form.title"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="submitForm('form')"

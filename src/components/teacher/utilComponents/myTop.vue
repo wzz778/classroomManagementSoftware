@@ -49,7 +49,7 @@
 
 <script>
 import { Col, Row, Dropdown, DropdownMenu, DropdownItem } from "element-ui";
-import { getGrade, myCourse } from "@/api/teacher";
+import { getGrade, myCourse } from "@/api/teacher";myCourse
 
 export default {
   name: "myTop",
