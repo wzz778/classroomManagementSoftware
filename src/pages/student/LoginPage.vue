@@ -72,7 +72,11 @@
               v-model="password"
               show-password
             ></el-input>
-            <el-button type="primary" style="height:40px" class="loginBtn" @click.prevent="loginFun"
+            <el-button
+              type="primary"
+              style="height: 40px"
+              class="loginBtn"
+              @click.prevent="loginFun"
               >登录</el-button
             >
             <div class="rollBtns">
@@ -125,20 +129,25 @@
                 v-model="forgetCode"
                 style="width: 200px"
               ></el-input>
-              <el-button
+              <!-- <el-button
                 class="forgetGetCodeBtn"
                 type="primary"
                 plain
                 size="small"
                 @click="getCode"
                 >获取验证码</el-button
-              >
+              > -->
+              <GetCode
+                :judgeEmailRes="judgeEmailRes"
+                :email="forgetEmail"
+                :style="{width:'100px',height:'40px','margin-left':'38px'}"
+              ></GetCode>
             </div>
             <el-button
               type="primary"
               class="forgetBtn"
               @click="forgetPasswordFun"
-              style="height:40px"
+              style="height: 40px"
               >确认</el-button
             >
             <div class="rollBtns">
@@ -155,6 +164,7 @@
 
 <script>
 import { Input, Button, Icon, Message } from "element-ui";
+import GetCode from "@/components/student/GetCode/GetCode";
 import { toLogin, getCode, forgetPassword } from "@/api/student/yxyAxios";
 import jwt_decode from "jwt-decode";
 export default {
@@ -194,6 +204,7 @@ export default {
     [Input.name]: Input,
     [Button.name]: Button,
     [Icon.name]: Icon,
+    GetCode,
   },
   methods: {
     loginFun() {
@@ -289,16 +300,16 @@ export default {
       } else if (this.judgeEmailRes == false) {
         Message.warning("邮箱不合规范！");
       } else {
-        let data={
-          email:this.forgetEmail,
-          code:this.forgetCode,
-          newPassword:this.forgetPassword
-        }
+        let data = {
+          email: this.forgetEmail,
+          code: this.forgetCode,
+          newPassword: this.forgetPassword,
+        };
         forgetPassword(data).then((res) => {
-          if(res.status==200){
-            Message.success("修改成功！")
-          }else{
-            Message.error("网络异常，修改失败！")
+          if (res.status == 200) {
+            Message.success("修改成功！");
+          } else {
+            Message.error("网络异常，修改失败！");
           }
         });
       }

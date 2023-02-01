@@ -18,7 +18,8 @@
         </div>
       </div>
       <div class="unchangeableInfo">
-        <div class="studentName">姓名：{{ userInfo.userName }}</div>
+        <div class="studentAccount">账号：{{ userInfo.userName }}</div>
+        <div class="studentName">姓名：{{userInfo.name}}</div>
         <div class="studentClass">班级：{{ userInfo.gradeId }}</div>
         <div class="studentEmail">邮箱：{{ userInfo.email }}</div>
       </div>
@@ -31,7 +32,7 @@
           >女</el-radio
         >
       </div>
-      <div class="major">
+      <!-- <div class="major">
         专业：
         <el-select v-model="major" placeholder="major">
           <el-option
@@ -42,42 +43,25 @@
           >
           </el-option>
         </el-select>
-      </div>
+      </div> -->
       <div class="nativePlace">
         籍贯：
-        <el-select v-model="province" placeholder="province">
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          >
-          </el-option>
-        </el-select>
-        <el-select style="margin-left: 20px" v-model="city" placeholder="city">
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          >
-          </el-option>
-        </el-select>
+        <el-cascader
+          v-model="userAddress"
+          :props=addrssDate
+          :options=addressOptions
+          @change="handleChange"
+          separator=""
+          style="{height:200px.overflow:auto}"
+        ></el-cascader>
       </div>
       <div class="btns">
         <el-button
           type="primary"
-          plain
           size="medium"
-          :style="{ width: '70px', height: '30px' }"
+          :style="{ width: '100px', height: '40px' }"
+          @click="updateInfoFun"
           >修改</el-button
-        >
-        <el-button
-          type="danger"
-          plain
-          size="medium"
-          :style="{ width: '70px', height: '30px' }"
-          >取消</el-button
         >
       </div>
     </div>
@@ -85,44 +69,32 @@
 </template>
 
 <script>
-import { getUserInfo, updatePhoto } from "@/api/student/yxyAxios";
-import { Radio, Select, Option, Button, Upload } from "element-ui";
+import {
+  getUserInfo,
+  updatePhoto,
+  updateInfo,
+  getAllAddress,
+} from "@/api/student/yxyAxios";
+import { Radio, Select, Option, Button, Upload, Message,Cascader } from "element-ui";
 export default {
   name: "ChangeInfo",
   data() {
     return {
-      sex: "男",
-      options: [
-        {
-          value: "北京",
-          label: "北京",
-        },
-        {
-          value: "上海",
-          label: "上海",
-        },
-        {
-          value: "天津",
-          label: "天津",
-        },
-        {
-          value: "深圳",
-          label: "深圳",
-        },
-        {
-          value: "河南",
-          label: "河南",
-        },
-      ],
-      province: "河南省",
-      city: "许昌市",
-      major: "",
+      sex: "",
+      addressOptions: [],
+      userAddress:[],
       userInfo: "",
       photo: {
         backgroundImage: "",
       },
       imageUrl: "",
       fileList: [],
+      addrssDate:{
+        // emitPath: false, // 只返回该节点的值
+        value: "addressName", // 自定义要映射的键名
+        label: "addressName",
+        children: "citys"
+      }
     };
   },
   components: {
@@ -131,11 +103,30 @@ export default {
     [Option.name]: Option,
     [Button.name]: Button,
     [Upload.name]: Upload,
+    [Cascader.name]:Cascader
   },
   methods: {
+    getUserInfoFun() {
+      getUserInfo().then((res) => {
+        if (res.status == 200) {
+          this.userInfo = res.data;
+          this.sex = res.data.sex;
+          this.userAddress= res.data.nativePlace.split('/');
+          if(res.data.nativePlace!='无'){
+            this.userAddress=res.data.nativePlace.split('/');
+          }
+          this.photo.backgroundImage = "url(" + res.data.photo + ")";
+        } else {
+          console.log("error");
+        }
+      });
+    },
     handleAvatarSuccess(res, file) {
       this.imageUrl = URL.createObjectURL(file.raw);
     },
+    /**
+     * 修改头像
+     */
     beforeAvatarUpload(file) {
       const isJPG = file.raw.type === "image/jpeg";
       const isLt2M = file.raw.size / 1024 / 1024 < 2;
@@ -148,40 +139,68 @@ export default {
       }
       let formData = new FormData();
       formData.append("photo", file.raw);
-      console.log(file);
       updatePhoto(formData).then((res) => {
-        console.log(res);
+        if (res.status == 200) {
+          Message.success("修改成功!");
+          this.getUserInfoFun();
+        }
       });
     },
-    updatePhoto() {
-      console.log();
+    /**
+     * 更新信息
+     */
+    updateInfoFun() {
+      if(this.userAddress==undefined){
+        Message.warning('请选择籍贯');
+      }else{
+        let data = {
+        sex: this.sex,
+        nativePlace:this.userAddress.join('/')
+      };
+      updateInfo(data).then((res) => {
+        if (res.status == 200) {
+          Message.success("修改成功!");
+          this.getUserInfoFun();
+        } else {
+          Message.error("网络异常，修改失败");
+        }
+      });
+      } 
     },
-    // photoFile(e) {
-    //   console.log(e.target.value);
-    //   let data = {
-    //     photo: e.target.value,
-    //   };
-    //   updatePhoto(data).then((res) => {
-    //     console.log(res);
-    //   });
-    // },
+    /**
+     * 获取籍贯
+     */
+    getAllAddressFun() {
+      getAllAddress().then((res) => {
+        console.log("籍贯：", res);
+        console.log(this.addressOptions);
+        if (res.status == 200) {
+          let data=JSON.stringify(res.data.address.provinces).replace(/provinceName/g,"addressName");
+          data=data.replace(/cityName/g,"addressName")
+          this.addressOptions = JSON.parse(data);
+          console.log(this.addressOptions);
+        } else {
+          Message.warning("网络异常，获取籍贯失败");
+        }
+      });
+    },
+     handleChange(value) {
+      this.userAddress=value
+        console.log(this.userAddress);
+      }
   },
   mounted() {
-    getUserInfo().then((res) => {
-      if (res.status == 200) {
-        console.log(res);
-        this.userInfo = res.data;
-        this.sex = res.data.sex;
-        this.major = res.data.major;
-        this.photo.backgroundImage = "url(" + res.data.photo + ")";
-      } else {
-        console.log("error");
-      }
-    });
+    this.getUserInfoFun();
+    this.getAllAddressFun();
   },
 };
 </script>
 
+<style lang="less">
+  .el-cascader-panel{
+    height: 300px;
+  }
+</style>
 <style lang="less" scoped>
 * {
   padding: 0;
@@ -263,38 +282,39 @@ export default {
   .studentSex {
     margin-top: 20px;
   }
-  .major {
+  .nativePlace {
     margin: 50px 0;
   }
 }
 
 .btns {
-  display: flex;
-  justify-content: space-around;
-  margin-top: 20px;
+  margin-top: 40px;
+  button {
+    float: right;
+  }
 }
 
-.avatar-uploader .el-upload {
-  border: 1px dashed #d9d9d9;
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-.avatar-uploader .el-upload:hover {
-  border-color: #409eff;
-}
-.avatar-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 178px;
-  height: 178px;
-  line-height: 178px;
-  text-align: center;
-}
-.avatar {
-  width: 178px;
-  height: 178px;
-  display: block;
-}
+// .avatar-uploader .el-upload {
+//   border: 1px dashed #d9d9d9;
+//   border-radius: 6px;
+//   cursor: pointer;
+//   position: relative;
+//   overflow: hidden;
+// }
+// .avatar-uploader .el-upload:hover {
+//   border-color: #409eff;
+// }
+// .avatar-uploader-icon {
+//   font-size: 28px;
+//   color: #8c939d;
+//   width: 178px;
+//   height: 178px;
+//   line-height: 178px;
+//   text-align: center;
+// }
+// .avatar {
+//   width: 178px;
+//   height: 178px;
+//   display: block;
+// }
 </style>
