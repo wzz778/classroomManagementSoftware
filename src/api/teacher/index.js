@@ -139,3 +139,16 @@ export const randomName = async (data) => requests({
     method: "GET",
     params: data
 })
+
+export const addMessage = async (data) => requests({
+    url: "/message/addMessage",
+    method: "POST",
+    params: data
+})
+
+// 发送弹幕
+export const sendMessage = async (data) => requests({
+    url: "/live/sendMessage",
+    method: "POST",
+    params: data
+})

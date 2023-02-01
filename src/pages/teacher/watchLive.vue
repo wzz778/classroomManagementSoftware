@@ -26,7 +26,20 @@
     >
       <el-form ref="form" label-width="80px">
         <el-form-item label="弹幕内容">
-          <el-input v-model="message"></el-input>
+          <el-input v-model="message" placeholder="请输入弹幕内容"></el-input>
+        </el-form-item>
+        <el-form-item label="字体颜色">
+          <el-color-picker v-model="color"> </el-color-picker>
+        </el-form-item>
+        <el-form-item>
+          <div class="block">
+            <el-slider v-model="fontSize" show-input> </el-slider>
+          </div>
+        </el-form-item>
+        <el-form-item label="弹幕速度">
+          <div class="block">
+            <el-slider v-model="speed" show-input> </el-slider>
+          </div>
         </el-form-item>
         <el-button @click="dialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="sendBarrage">确 定</el-button>
@@ -36,8 +49,8 @@
 </template>
 
 <script>
-import { createPlayUrl } from "@/api/teacher";
-import { Switch } from "element-ui";
+import { createPlayUrl, sendMessage } from "@/api/teacher";
+import { Switch, ColorPicker, Slider } from "element-ui";
 import Barrage from "@/utilJs/barrage.js";
 export default {
   name: "watchLive",
@@ -50,10 +63,15 @@ export default {
       message: "",
       barage: null,
       timer: null,
+      color: "",
+      fontSize: 26,
+      speed: 1,
     };
   },
   components: {
     [Switch.name]: Switch,
+    [ColorPicker.name]: ColorPicker,
+    [Slider.name]: Slider,
   },
   methods: {
     watchLiveInit() {
@@ -62,7 +80,7 @@ export default {
     },
     watchLive() {
       createPlayUrl({
-        bizid: window.localStorage.a,
+        bizid: this.$router.query.id,
       }).then((result) => {
         console.log(result);
         this.watchUrl = result;
@@ -75,21 +93,35 @@ export default {
       });
     },
     sendBarrage() {
-      console.log("发送弹幕");
-      this.barage.setBarrage({
-        color: "red",
-        fontSize: 26,
-        speed: 1,
+      if (this.speed < 1) {
+        this.speed = 1;
+      }
+      if (this.speed >= 30) {
+        this.speed = 30;
+      }
+      let obj = {
+        color: this.color,
+        fontSize: this.fontSize,
+        speed: this.speed,
         value: this.message,
         time: this.$refs.video.currentTime,
+      };
+      sendMessage({
+        message: JSON.stringify(obj),
+        bizid: this.$router.query.id,
+      }).then((result) => {
+        console.log("发布弹幕", result);
       });
       this.dialogVisible = false;
+    },
+    clearAll() {
+      (this.speed = 1), (this.color = ""), (this.message = "");
     },
     barrageInit() {
       this.barage = new Barrage({
         canvas: this.$refs.canvas,
         video: this.$refs.video,
-        data: this.getDate(1),
+        data: [],
       });
       this.$refs.video.addEventListener("play", () => {
         this.barage.isPlay = true;
@@ -99,22 +131,6 @@ export default {
         this.barage.pause();
       });
     },
-    getDate(len) {
-      let data = [];
-      /* 一个弹幕数据中需要有弹幕的具体值，弹幕的字体大小，弹幕的颜色，它出现在视频中的时间，以及他的速度
-       */
-      for (let i = 0; i < len; i++) {
-        data.push({
-          value: `第${i}条弹幕`,
-          fontSize: 26,
-          color: "red",
-          time: i * 2,
-          speed: 1,
-        });
-      }
-      return data;
-    },
-    move() {},
     showOperator() {
       this.$refs.video.onmouseleave = () => {
         this.$refs.operator.style.display = "block";
@@ -127,12 +143,33 @@ export default {
       };
       // this.$refs.canvas.onmouseleave = this.move();
     },
+    onmessage(msg) {
+      console.log(msg.data);
+      this.barage.setBarrage(JSON.parse(msg.data));
+    },
+    onerror(err) {
+      console.log("错误", err);
+      console.log("打开ws：" + this.ws.readyState);
+      this.$message.error("连接失败");
+    },
+    onopen() {
+      console.log("打开ws：" + this.ws.readyState);
+    },
+    wsInit() {
+      this.ws = new WebSocket(
+        `ws://110.40.205.103:8577/webSocket/${window.localStorage.a}`
+      );
+      this.ws.onmessage = this.onmessage;
+      this.ws.onerror = this.onerror;
+      this.ws.onopen = this.onopen;
+    },
   },
   mounted() {
     this.$nextTick().then(() => {
       this.watchLiveInit();
       this.barrageInit();
       this.showOperator();
+      this.wsInit();
     });
   },
 };

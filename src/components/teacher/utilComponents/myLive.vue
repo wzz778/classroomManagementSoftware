@@ -53,7 +53,7 @@
 </template>
 
 <script>
-import { createPushUrl, randomName } from "@/api/teacher/";
+import { createPushUrl, randomName, addMessage } from "@/api/teacher/";
 import { Radio } from "element-ui";
 export default {
   name: "liveUtil",
@@ -85,6 +85,7 @@ export default {
         },
       ],
       trueOptions: "",
+      bizid: "",
     };
   },
   methods: {
@@ -93,9 +94,18 @@ export default {
       createPushUrl()
         .then((result) => {
           console.log(result);
+          this.bizid = result.data.bizid;
           this.pushUrl = result.data.address.replace("rtmp", "webrtc");
           this.livePusher = new TXLivePusher();
           this.startLive();
+          return addMessage({
+            content: this.bizid,
+            courseId: this.$router.query.id,
+            type: 5,
+          });
+        })
+        .then((result) => {
+          console.log("发布信息", result);
         })
         .catch((err) => {
           console.log(err);
@@ -150,6 +160,14 @@ export default {
     ansQusetionDetails() {
       this.$router.push({
         path: "/teacher/ansQuestion",
+      });
+    },
+    jump() {
+      this.$router.push({
+        path: "/watchLive",
+        query: {
+          id: this.bizid,
+        },
       });
     },
   },
