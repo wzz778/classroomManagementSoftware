@@ -41,25 +41,29 @@
     <div class="sign">
       <div class="signItem">
         <span>已签</span>
+        <div class="noInfo" v-show="signedUser.length == 0">
+          <span>还没有已签到的人</span>
+        </div>
         <div class="signStudent">
           <div class="studentItem" v-for="item in signedUser" :key="item.id">
             <span class="studentInfo">
               <img :src="item.photo" alt="" />
               <span>{{ item.userName }}</span>
             </span>
-            <button class="operatorBtn">删除</button>
           </div>
         </div>
       </div>
       <div class="signItem">
         <span>未签</span>
+        <div class="noInfo" v-show="unSignUser.length == 0">
+          <span>还没有未签到的人</span>
+        </div>
         <div class="signStudent">
           <div class="studentItem" v-for="item in unSignUser" :key="item.id">
             <span class="studentInfo">
               <img :src="item.photo" alt="" />
               <span>{{ item.userName }}</span>
             </span>
-            <button class="operatorBtn">补签</button>
           </div>
         </div>
       </div>
@@ -206,13 +210,22 @@ export default {
       getCourseSignInfo({
         courseId: this.course,
       }).then((result) => {
-        this.signedUser = result.data.signedUser;
-        this.unSignUser = result.data.unSignUser;
+        if (result.msg != "OK") {
+          this.$message({
+            message: "该课程没有学生",
+            type: "warning",
+          });
+          this.signedUser = [];
+          this.unSignUser = [];
+          return;
+        }
+        this.signedUser = result.data.signedUser ? result.data.signedUser : [];
+        this.unSignUser = result.data.unSignUser ? result.data.unSignUser : [];
       });
     },
     searchByClass() {
       // 判断是否为空
-      if (this.className.replace(/(^\s*)|(\s*$)/g, "") == "") {
+      if (this.className == "") {
         this.$message({
           message: "请选择班级",
           type: "warning",
@@ -220,6 +233,21 @@ export default {
         return;
       }
       this.course = "";
+      getCourseSignInfo({
+        gradeId: this.className,
+      }).then((result) => {
+        if (result.msg != "OK") {
+          this.$message({
+            message: "该班级没有学生",
+            type: "warning",
+          });
+          this.signedUser = [];
+          this.unSignUser = [];
+          return;
+        }
+        this.signedUser = result.data.signedUser ? result.data.signedUser : [];
+        this.unSignUser = result.data.unSignUser ? result.data.unSignUser : [];
+      });
     },
     getAllGradeFn() {
       getGrade({
@@ -250,11 +278,11 @@ export default {
           console.log(err);
         });
     },
-  },
-  clearAll() {
-    this.startTime = "";
-    this.endTime = "";
-    this.classAll = "";
+    clearAll() {
+      this.startTime = "";
+      this.endTime = "";
+      this.classAll = "";
+    },
   },
   mounted() {
     this.getAllGradeFn();
@@ -327,5 +355,11 @@ export default {
 
 .studentInfo > span {
   margin-left: 20px;
+}
+
+.noInfo > span {
+  display: inline-block;
+  width: 100%;
+  text-align: center;
 }
 </style>
