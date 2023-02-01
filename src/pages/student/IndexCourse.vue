@@ -4,11 +4,15 @@
       <div class="intro">
         <div class="main">
           <div class="intro_img">
-            <img :src="lesson.photo ? lesson.photo : require('@/assets/bac01.jpeg')" />
+            <img
+              :src="
+                lesson.photo ? lesson.photo : require('@/assets/bac01.jpeg')
+              "
+            />
           </div>
           <div class="intro_text">
             <div class="teacher">
-              <div class="course_name">{{lesson.name}}</div>
+              <div class="course_name">{{ lesson.name }}</div>
               <p style="text-align: left">
                 主讲人:<span>叶子</span>教室团队：<span>一人</span>
               </p>
@@ -22,6 +26,7 @@
                 <li>行政班级：计科213</li>
                 <li>编号：1111</li>
               </ul>
+              <myLive/>
               <el-button type="primary" round
                 ><router-link to="/user/IndexBase"
                   >进入课程</router-link
@@ -37,7 +42,7 @@
         <el-tabs v-model="activeName" @tab-click="handleClick">
           <el-tab-pane label="课程概述" name="first">
             <div class="les">
-             {{lesson.intro}}
+              {{ lesson.intro }}
             </div>
           </el-tab-pane>
           <el-tab-pane label="老师介绍" name="second">
@@ -55,6 +60,7 @@
 </template>
 
 <script>
+import myLive from "@/components/teacher/utilComponents/myLive.vue";
 import { ZgetOneCourse } from "@/api/user/index";
 import { Tabs, TabPane } from "element-ui";
 export default {
@@ -63,7 +69,7 @@ export default {
     return {
       adatar: "",
       activeName: "first",
-      leid:this.$route.query.id,
+      leid: this.$route.query.id,
       lesson: {
         name: "",
         photo: "",
@@ -84,17 +90,17 @@ export default {
       console.log(tab, event);
     },
     Getnews() {
-    console.log("id值："+this.leid);
+      console.log("id值：" + this.leid);
       let data = {
         id: this.leid,
       };
       ZgetOneCourse(data).then((result) => {
         console.log("课程详情页取出课程信息", result);
         if (result.msg == "OK") {
-          this.lesson.name=result.data.courseName
-          this.lesson.photo=result.data.cover
-          this.lesson.intro=result.data.details
-          this.lesson.beginTime=result.data.createTime
+          this.lesson.name = result.data.courseName;
+          this.lesson.photo = result.data.cover;
+          this.lesson.intro = result.data.details;
+          this.lesson.beginTime = result.data.createTime;
         } else {
           this.$message.error("获取课程信息失败");
         }
@@ -104,6 +110,7 @@ export default {
   components: {
     [Tabs.name]: Tabs,
     [TabPane.name]: TabPane,
+    myLive,
   },
 };
 </script>

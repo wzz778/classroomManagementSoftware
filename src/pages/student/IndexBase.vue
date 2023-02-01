@@ -20,53 +20,11 @@
                   />
                 </router-link>
                 <h3>{{ o.courseName }}</h3>
-                <p>叶子</p>
+                <p>{{ o.teacher }}</p>
                 <p>创建时间：{{ o.createTime }}</p>
               </div>
             </div></el-col
           >
-          <!-- <el-col :span="6"
-            ><div class="grid-content bg-purple">
-              <div>
-                <router-link to="/student/classTask">
-                  <img
-                    :src="adatar ? adatar : require('@/assets/bac01.jpeg')"
-                  />
-                </router-link>
-                <h3>离散数学</h3>
-                <p>叶子</p>
-                <p>班级：1班</p>
-              </div>
-            </div></el-col
-          >
-          <el-col :span="6"
-            ><div class="grid-content bg-purple">
-              <div>
-                <router-link to="/student/classTask">
-                  <img
-                    :src="adatar ? adatar : require('@/assets/bac01.jpeg')"
-                  />
-                </router-link>
-                <h3>离散数学</h3>
-                <p>叶子</p>
-                <p>班级：1班</p>
-              </div>
-            </div></el-col
-          >
-          <el-col :span="6"
-            ><div class="grid-content bg-purple">
-              <div class="coursein">
-                <router-link to="/student/classTask">
-                  <img
-                    :src="adatar ? adatar : require('@/assets/bac01.jpeg')"
-                  />
-                </router-link>
-                <h3>离散数学</h3>
-                <p>叶子</p>
-                <p>班级：1班</p>
-              </div>
-            </div></el-col
-          > -->
         </el-row>
       </div>
     </div>
@@ -74,7 +32,7 @@
 </template>
 
 <script>
-import { ZgetEntered, ZgetOneCourse } from "@/api/user/index";
+import { ZgetEntered, ZgetOneCourse, ZgetTeacherInfo } from "@/api/user/index";
 export default {
   name: "IndexBase",
   data() {
@@ -128,7 +86,19 @@ export default {
       ZgetOneCourse(cid).then((result) => {
         console.log("取出课程信息", result);
         if (result.msg == "OK") {
-          this.carr.push(result.data);
+          var obj = result.data;
+          let tid = {
+            id: result.data.creatorId,
+          };
+          ZgetTeacherInfo(tid).then((response) => {
+            console.log("取出教师信息", response);
+            if (response.msg == "OK") {
+              obj["teacher"] = response.data.name;
+              this.carr.push(obj);
+            } else {
+              this.$message.error("获取教师信息失败");
+            }
+          });
         } else {
           this.$message.error("获取课程信息失败");
         }

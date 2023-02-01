@@ -23,7 +23,7 @@ export const ZgetOneCourse= async (data) =>requests({
     method:'get',
     params:data,
 });
-//点击签到改变状态（未使用）
+//点击签到改变状态（未使用,有bug）
 export const Zsign= async (data) =>requests({
     url:'user/sign',
     method:'post',
@@ -32,6 +32,18 @@ export const Zsign= async (data) =>requests({
 //获取单个课程任务（已使用）
 export const ZgetTask= async (data) =>requests({
     url:'homework/getTask',
+    method:'get',
+    params:data,
+});
+//获取单个课程作业（有bug，id只能传2，7）
+export const ZgetHomework= async (data) =>requests({
+    url:'homework/getHomework',
+    method:'get',
+    params:data,
+});
+//获取教师信息（正在使用）
+export const ZgetTeacherInfo= async (data) =>requests({
+    url:'user/getTeacherInfo',
     method:'get',
     params:data,
 });
