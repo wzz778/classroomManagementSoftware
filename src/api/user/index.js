@@ -23,3 +23,15 @@ export const ZgetOneCourse= async (data) =>requests({
     method:'get',
     params:data,
 });
+//点击签到改变状态（未使用）
+export const Zsign= async (data) =>requests({
+    url:'user/sign',
+    method:'post',
+    params:data,
+});
+//获取单个课程任务（已使用）
+export const ZgetTask= async (data) =>requests({
+    url:'homework/getTask',
+    method:'get',
+    params:data,
+});

@@ -91,27 +91,28 @@ export default {
   watch: {
     change: {
       handler(newVal, oldVal) {
-        console.info("value changed 1", newVal,oldVal);
+        console.info("value changed 1", newVal, oldVal);
         this.sarr = [];
         this.carr = [];
         this.Getclass();
       },
-      deep: true
+      deep: true,
     },
   },
   methods: {
     Getclass() {
       return new Promise((resolve, reject) => {
         let data = {
-          nodePage: "1",
-          pageSize: "1",
+          nodePage: "",
+          pageSize: "",
         };
         ZgetEntered(data).then((response) => {
           console.log("取出学生的课程", response);
           if (response.msg == "OK") {
-            this.sarr = response.data;
-            for (let q = 0; q < response.data.length; q++) {
-              console.log("猜想：" + response.data[q] + this.sarr[q]);
+            this.adatar = response.data.total;
+            this.sarr = response.data.records;
+            for (let q = 0; q < response.data.records.length; q++) {
+              console.log("猜想：" + response.data.records[q] + this.sarr[q]);
               this.getAllclass(this.sarr[q]);
             }
           } else {
