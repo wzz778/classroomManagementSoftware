@@ -96,7 +96,7 @@
           </router-link>
         </el-menu>
       </el-aside>
-      <el-main><router-view></router-view></el-main>
+      <el-main class="mainContent"><router-view></router-view></el-main>
     </el-container>
   </el-container>
 </template>
@@ -138,6 +138,7 @@ export default {
 body,
 html {
   height: 100vh;
+  overflow: hidden;
 }
 .el-header,
 .el-footer {
@@ -180,7 +181,7 @@ body > .el-container {
   height: 100vh;
   flex-direction: column;
   .header {
-    height: 60px;
+    // height: 60px;
     background-color: #fff;
     border-bottom: 2px solid cornflowerblue;
     // box-shadow:0px -10px red inset
@@ -189,7 +190,6 @@ body > .el-container {
     flex: 1;
     .el-aside {
       display: flex;
-      height: 100vh;
       flex-direction: column;
       .el-menu {
         overflow: auto;
@@ -272,5 +272,8 @@ body > .el-container {
   margin-top: 5px;
   float: left;
   margin-left: 60px;
+}
+.mainContent{
+  overflow: auto;
 }
 </style>

@@ -30,5 +30,13 @@ export const updateGrade = async (params) => requests({url: "/grade/updateGrade"
 export const updateCover = async (data) => requests({url: "/course/updateCover",method: "PUT",data})
 //添加话题
 export const publishTopic = async (params) => requests({url: "/discuss/publishTopic",method: "POST",params})
-//添加话题
+//获取话题
 export const getTopic = async (params) => requests({url: "/discuss/getTopic",method: "GET",params})
+// //删除话题
+export const deleteTopic = async (params) => requests({url: "/discuss/deleteTopic",method: "DELETE",params})
+//添加评论
+export const publishDiscuss = async (params) => requests({url: "/discuss/publishDiscuss",method: "POST",params})
+//获取评论
+export const getAllDiscuss = async (params) => requests({url: "/discuss/getAllDiscuss",method: "GET",params})
+// //删除评论
+export const deleteDiscuss = async (params) => requests({url: "/discuss/deleteDiscuss",method: "DELETE",params})

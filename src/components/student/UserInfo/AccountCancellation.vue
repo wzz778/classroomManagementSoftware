@@ -8,7 +8,7 @@
       maxlength="150"
       show-word-limit
       :autosize="{ minRows: 4 }"
-      style="min-height: 96px"
+      :style="{'min-height': '50px'}"
     >
     </el-input>
     <el-button class="cancellationBtn" type="primary">提交</el-button>

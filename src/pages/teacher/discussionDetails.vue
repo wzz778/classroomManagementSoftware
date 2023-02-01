@@ -1,20 +1,11 @@
 <template>
   <div>
-    <el-select v-model="course" placeholder="请选择">
-      <el-option
-        v-for="item in courseArr"
-        :key="item.id"
-        :label="item.courseName"
-        :value="item.id"
-      ></el-option>
-    </el-select>
-    <span style="margin-left: 20px"></span>
-    <el-button type="primary" @click="chagepage"><i class="el-icon-search"></i>  查询</el-button>
-    <el-button type="success" @click="addTopic"><i class="el-icon-plus"></i>  添加话题</el-button>
-    <!-- <TopicList v-for="p of tableData"  :key="p.discuss.id" style="width:100%" headImg="https://online-examination-1311156839.cos.ap-nanjing.myqcloud.com/photo/20230114130755_-589934592.webp" title="试卷总数" number="18"/> -->
-      <!-- {{p.id}}-{{p.name}}-{{p.age}}
-    </TopicList> -->
-    <TopicList ref="topiclist" style="width:100%" headImg="https://online-examination-1311156839.cos.ap-nanjing.myqcloud.com/photo/20230114130755_-589934592.webp" title="试卷总数" number="18"/>
+    <span>话题内容：</span>
+    <!-- <TopicList ref="topiclist" style="width:100%" headImg="https://online-examination-1311156839.cos.ap-nanjing.myqcloud.com/photo/20230114130755_-589934592.webp" title="试卷总数" number="18"/> -->
+    <span>回复内容：</span>
+    <div class="discussionBox">
+      <TopicList ref="topiclist" style="width:100%" headImg="https://online-examination-1311156839.cos.ap-nanjing.myqcloud.com/photo/20230114130755_-589934592.webp" title="试卷总数" number="18"/>
+    </div>
     <el-dialog style="z-index:2001;" title="发布话题" append-to-body :visible.sync="dialogFormVisible">
       <el-form
         label-position="right"
@@ -45,6 +36,7 @@
     layout="total, sizes, prev, pager, next, jumper"
     :total="alltotal">
   </el-pagination>
+  <el-button type="success" @click="addTopic"><i class="el-icon-plus"></i>  添加话题</el-button>
   </div>
 </template>
 
@@ -52,16 +44,16 @@
 import { } from "element-ui";
 import { myCourse ,publishTopic,getTopic} from "@/api/admin/index";
 import TopicList from '@/components/admin/TopicList'
+import DiscussList from '@/components/admin/DiscussList'
 export default {
   name: "discussionDetails",
   components: {
     [Option.name]: Option,
-    TopicList
+    TopicList,
+    DiscussList
   },
   data() {
     return {
-      courseArr: [],
-      course: "",
       dialogFormVisible:false,
       alltotal:100,
       form:{
@@ -164,56 +156,56 @@ export default {
     },
     chagepage(){
       console.log(this.searchform);
-      getTopic(this.searchform)
-        .then(data=>{
-          console.log(data);
-          if(data.status==200){
-            let req=data.data;
-            this.tableData=req.records;
-            if(req.records.length==0){
-              if(this.searchform.nodePage!=1){
-                this.searchform.nodePage--;
-                this.chagepage()
-              }
-            }
-            this.alltotal=req.total;
-          }else if(data.status==555){
-            this.tableData=[]
-          }
-        })
-        .catch(error=>{
-            console.log(error);
-        })
+      // getTopic(this.searchform)
+      //   .then(data=>{
+      //     console.log(data);
+      //     if(data.status==200){
+      //       let req=data.data;
+      //       this.tableData=req.records;
+      //       if(req.records.length==0){
+      //         if(this.searchform.nodePage!=1){
+      //           this.searchform.nodePage--;
+      //           this.chagepage()
+      //         }
+      //       }
+      //       this.alltotal=req.total;
+      //     }else if(data.status==555){
+      //       this.tableData=[]
+      //     }
+      //   })
+      //   .catch(error=>{
+      //       console.log(error);
+      //   })
         console.log(this.tableData);
     },
     addTopic(){
       this.dialogFormVisible=true;
     },
-    deleteTopic(id){
-      console.log(id);
-    },
+    // deleteTopic(id){
+    //   console.log(id);
+    // },
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          publishTopic(this.form)
-          .then((result) => {
-            if(result.status==200){
-              this.$message({
-                message: "创建成功",
-                type: "success",
-              });
-              this.dialogFormVisible=false;
-              this.$refs['form'].resetFields();
-            }else{
-              this.$message({
-                type: "warning",
-                message: "操作失败",
-              });
-            }
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+          // publishTopic(this.form)
+          // .then((result) => {
+          //   if(result.status==200){
+          //     this.$message({
+          //       message: "创建成功",
+          //       type: "success",
+          //     });
+          //     this.dialogFormVisible=false;
+          //     this.$refs['form'].resetFields();
+          //   }else{
+          //     this.$message({
+          //       type: "warning",
+          //       message: "操作失败",
+          //     });
+          //   }
+          // })
+          // .catch((err) => {
+          //   console.log(err);
+          // });
         } else {
           console.log("error submit!!");
           return false;
@@ -231,5 +223,11 @@ export default {
 };
 </script>
 
-<style>
+<style lang="less" scoped>
+  .discussionBox{
+    width: 100%;
+    padding: 5px;
+    background-color: #f6f6f6;
+    border-radius: 5px;
+  }
 </style>
