@@ -26,13 +26,17 @@
           <i class="el-icon-s-custom"></i>
           <span slot="title">学生管理</span>
         </el-menu-item>
-        <el-menu-item index="/teacher/signList">
+        <el-menu-item index="/teacher/signDetails">
           <i class="el-icon-location"></i>
           <span slot="title">签到管理</span>
         </el-menu-item>
         <el-menu-item index="/teacher/operationList">
           <i class="el-icon-s-order"></i>
           <span slot="title">作业管理</span>
+        </el-menu-item>
+        <el-menu-item index="/teacher/taskManagement">
+          <i class="el-icon-date"></i>
+          <span slot="title">任务管理</span>
         </el-menu-item>
         <el-menu-item index="/teacher/performanceManagement">
           <i class="el-icon-s-marketing"></i>

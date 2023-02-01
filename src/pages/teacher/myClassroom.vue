@@ -4,6 +4,7 @@
       <el-button @click="dialogVisible = true" type="success"
         >添加课程</el-button
       >
+      <myLive></myLive>
     </div>
     <div class="card">
       <template v-for="(item, index) in myCourse">
@@ -90,6 +91,7 @@
 <script>
 import { Upload } from "element-ui";
 import { addCourse, myCourse, updateCover, deleteCourse } from "@/api/teacher";
+import myLive from "@/components/teacher/utilComponents/myLive";
 export default {
   name: "myClassroom",
   data() {
@@ -106,6 +108,7 @@ export default {
   },
   components: {
     [Upload.name]: Upload,
+    myLive: myLive,
   },
   methods: {
     handleClose(done) {
@@ -194,6 +197,7 @@ export default {
       this.picSrc = "";
       this.isChange = false;
       this.changeId = "";
+      this.desc = "";
     },
     copyFn(value) {
       navigator.clipboard.writeText(value).then(() => {

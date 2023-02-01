@@ -4,6 +4,9 @@ import IndexCourse from '@/pages/student/IndexCourse'
 import ClassMembers from '@/pages/student/ClassMembers'
 import CourseInfo from '@/components/student/CourseInfo/CourseInfo'
 import UserTop from '@/components/student/UserTop'
+import ClassSeed from '@/pages/student/ClassSeed'
+import InboxPage from '@/pages/student/InboxPage'
+import UserInfo from '@/components/student/UserInfo/UserInfo'
 // 
 export default [
     {
@@ -16,6 +19,22 @@ export default [
                 component: IndexBase,
                 meta: {
                     title: "课程空间"
+                },
+            },
+            {
+                path: 'InboxPage',
+                name: 'InboxPage',
+                component: InboxPage,
+                meta: {
+                    title: "消息中心"
+                },
+            },
+            {
+                path: 'UserInfo',
+                name: 'UserInfo',
+                component: UserInfo,
+                meta: {
+                    title: "账号管理"
                 },
             },
         ]
@@ -49,5 +68,13 @@ export default [
                 },
             },
         ]
+    },
+    {
+        path: '/ClassSeed',
+        name: 'ClassSeed',
+        component: ClassSeed,
+        meta: {
+            title: "课程直播"
+        },
     },
 ]

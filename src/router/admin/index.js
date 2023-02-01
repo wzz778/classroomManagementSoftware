@@ -35,15 +35,6 @@ export default [
                     title:"用户列表"
                 }
             },
-            {
-                path:'edit', 
-                component: () => import('@/pages/admin/Users/edit.vue'),
-                name:"UsersEdit",
-                meta:{
-                    title:"用户创编",
-                }
-
-            },
         ]
     },
     {
@@ -95,6 +86,15 @@ export default [
                 name:"SubjectEdit",
                 meta:{
                     title:"课堂创编",
+                }
+
+            },
+            {
+                path:'userlist', 
+                component: () => import('@/pages/admin/Subject/userlist.vue'),
+                name:"SubjectUsersList",
+                meta:{
+                    title:"课堂人员",
                 }
 
             },

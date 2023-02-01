@@ -51,7 +51,7 @@
         fixed="right"
         label="操作">
         <template slot-scope="scope">
-            <el-button @click="watchClick(scope.row.id)" type="text" size="small">详情</el-button>
+            <el-button @click="watchClick(scope.row)" type="text" size="small">人员</el-button>
             <el-button @click="editClick(scope.row)" type="text" size="small">编辑</el-button>
             <el-button @click="deleteClick(scope.row.id)" type="text" size="small">禁用</el-button>
         </template>
@@ -67,11 +67,11 @@
       :total="alltotal">
     </el-pagination>
     <el-dialog style="z-index:2001;" title="课堂封面更改" append-to-body :visible.sync="dialogFormVisible">
-    <el-form
-      label-position="right"
-      label-width="100px"
-      ref="form"
-    >
+      <el-form
+        label-position="right"
+        label-width="100px"
+        ref="form"
+      >
       <!-- <el-form-item label="课堂名称" prop="courseName">
         <el-input v-model="form.courseName" clearable></el-input>
       </el-form-item>
@@ -156,6 +156,10 @@ export default {
       },
       watchClick(row) {
         console.log(row);
+        this.$router.replace({
+            path:"userlist",
+        })
+        sessionStorage.setItem("AdminClassMessage",JSON.stringify(row))
       },
       editClick(row) {
         console.log(row);

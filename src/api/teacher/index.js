@@ -55,3 +55,85 @@ export const createGrade = async (data) => requests({
     method: "POST",
     params: data
 })
+
+export const courseStudents = async (data) => requests({
+    url: "/teacher/courseStudents",
+    method: "GET",
+    params: data
+})
+
+export const deleteStudentFromCourse = async (data) => requests({
+    url: "/teacher/deleteStudentFromCourse",
+    method: "DELETE",
+    params: data
+})
+
+export const signCourse = async (data) => requests({
+    url: "/course/sign",
+    method: "GET",
+    params: data
+})
+
+export const getCourseSignInfo = async (data) => requests({
+    url: "/teacher/getCourseSignInfo",
+    method: "GET",
+    params: data
+})
+
+export const getHomework = async (data) => requests({
+    url: "/homework/getHomework",
+    method: "GET",
+    params: data
+})
+// 获取直播推流地址
+export const createPushUrl = async () => requests({
+    url: "/createPushUrl",
+    method: 'POST'
+})
+// 获取直播拉流地址
+export const createPlayUrl = async () => requests({
+    url: "/createPlayUrl",
+    method: 'POST'
+})
+
+export const resetPassword = async (data) => requests({
+    url: "/admin/resetPassword",
+    method: 'POST',
+    params: data
+})
+
+export const deleteHomework = async (data) => requests({
+    url: "/homework/deleteHomework",
+    method: "DELETE",
+    params: data
+})
+
+export const uploadFile = async (data) => requests({
+    url: "/teacher/uploadFile",
+    method: "POST",
+    data: data
+})
+
+export const getFiles = async (data) => requests({
+    url: "/course/getFiles",
+    method: "GET",
+    params: data
+})
+
+export const publishTask = async (data) => requests({
+    url: "/homework/publishTask",
+    method: "POST",
+    params: data
+})
+
+export const getTask = async (data) => requests({
+    url: "/homework/getTask",
+    method: "GET",
+    params: data
+})
+
+export const randomName = async (data) => requests({
+    url: "/teacher/randomName",
+    method: "GET",
+    params: data
+})

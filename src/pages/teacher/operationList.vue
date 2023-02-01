@@ -1,9 +1,9 @@
 <template>
   <div>
     <myTop
-      :inputInfoObj="myTopConfiguration.inputInfoObj"
-      :searchFn="searchFn"
+      :seletcInfoObjOne="myTopConfiguration.seletcInfoObjOne"
       :buttonInfo="myTopConfiguration.buttonInfo"
+      :getInfo="getInfo"
     ></myTop>
     <!-- 列表 -->
     <myList
@@ -38,26 +38,6 @@
         <el-form-item label="作业名称">
           <el-input placeholder="请输入内容" v-model="name" clearable>
           </el-input>
-        </el-form-item>
-        <el-form-item label="开始时间:">
-          <el-date-picker
-            v-model="startTime"
-            value-format="yyyy-MM-dd HH:mm:ss"
-            style="width: 100%"
-            type="datetime"
-            placeholder="选择日期"
-          >
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="结束时间:">
-          <el-date-picker
-            v-model="endTime"
-            value-format="yyyy-MM-dd HH:mm:ss"
-            type="datetime"
-            style="width: 100%"
-            placeholder="选择日期"
-          >
-          </el-date-picker>
         </el-form-item>
         <el-form-item label="备注">
           <el-input type="textarea" v-model="desc"></el-input>
@@ -164,6 +144,53 @@
         </template>
       </el-form>
     </el-dialog>
+    <!-- 发布为任务 -->
+    <el-dialog
+      title="提示"
+      :visible.sync="taskYn"
+      width="60%"
+      :before-close="handleClose"
+    >
+      <el-form label-width="80px">
+        <el-form-item label="课程">
+          <el-select v-model="choiceCourse" multiple placeholder="请选择">
+            <el-option
+              v-for="(item, index) in gradeArr"
+              :key="index"
+              :label="item.courseName"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="任务名称">
+          <el-input v-model="taskName" placeholder="请输入名字"></el-input>
+        </el-form-item>
+        <el-form-item label="开始时间:">
+          <el-date-picker
+            v-model="startTime"
+            value-format="yyyy-MM-dd HH:mm:ss"
+            style="width: 100%"
+            type="datetime"
+            placeholder="选择日期"
+          >
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="结束时间:">
+          <el-date-picker
+            v-model="endTime"
+            value-format="yyyy-MM-dd HH:mm:ss"
+            type="datetime"
+            style="width: 100%"
+            placeholder="选择日期"
+          >
+          </el-date-picker>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="taskYn = false">取 消</el-button>
+        <el-button type="primary" @click="publishTaskSubmit">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -182,7 +209,13 @@ import gapFilling from "@/components/teacher/allQuestion/gapFilling";
 // 简答
 import shortAnswer from "@/components/teacher/allQuestion/shortAnswer";
 import { Row, Col, Card, DatePicker } from "element-ui";
-import { createHomework } from "@/api/teacher";
+import {
+  createHomework,
+  getHomework,
+  deleteHomework,
+  publishTask,
+  myCourse,
+} from "@/api/teacher";
 export default {
   name: "operationList",
   components: {
@@ -202,9 +235,9 @@ export default {
   data() {
     return {
       myTopConfiguration: {
-        inputInfoObj: {
-          showName: "作业名称:",
-          transferName: "name",
+        seletcInfoObjOne: {
+          showName: "课程",
+          type: "getAllCourse",
         },
         buttonInfo: {
           type: "success",
@@ -220,33 +253,38 @@ export default {
             showName: "ID",
           },
           {
-            dateType: "grade",
-            showName: "班级名称",
-          },
-          {
-            dateType: "code",
-            showName: "班级口令",
+            dateType: "homeworkName",
+            showName: "作业名称",
           },
           {
             dateType: "name",
-            showName: "班级人数",
+            showName: "未作人数",
           },
           {
             dateType: "createTime",
             showName: "创建时间",
+          },
+          {
+            dateType: "endTime",
+            showName: "结束时间",
           },
         ],
         //   函数
         objFn: [
           {
             type: "",
-            callFn: this.editorFn,
-            showInfo: "编辑",
+            callFn: this.detailsFn,
+            showInfo: "详情",
           },
           {
             type: "danger",
             callFn: this.deleteFn,
             showInfo: "删除",
+          },
+          {
+            type: "success",
+            callFn: this.publishTaskFn,
+            showInfo: "发布为任务",
           },
         ],
         // 数据
@@ -287,6 +325,12 @@ export default {
       name: "",
       startTime: "",
       endTime: "",
+      courseId: "",
+      homeworkId: "",
+      taskYn: false,
+      choiceCourse: [],
+      gradeArr: [],
+      taskName: "",
     };
   },
   computed: {
@@ -295,11 +339,64 @@ export default {
     },
   },
   methods: {
+    publishTaskFn(obj) {
+      this.homeworkId = obj.homeworkId;
+      this.taskYn = true;
+    },
+    publishTaskSubmit() {
+      if (this.taskName.replace(/(^\s*)|(\s*$)/g, "") == "") {
+        this.$message({
+          message: "请输入任务名字",
+          type: "warning",
+        });
+        return;
+      }
+      if (Date.parse(this.startTime) > Date.parse(this.endTime)) {
+        this.$message({
+          message: "结束时间不能先于开始时间",
+          type: "warning",
+        });
+        return;
+      }
+      if (this.choiceCourse.length == 0) {
+        this.$message({
+          message: "请选择课程",
+          type: "warning",
+        });
+        return;
+      }
+      let arr = [];
+      for (let i = 0; i < this.choiceCourse.length; i++) {
+        arr.push(
+          publishTask({
+            belongCourseId: this.choiceCourse[i],
+            homeworkId: this.homeworkId,
+            taskName: this.taskName,
+            // 作业类型是1
+            type: 1,
+            beginTime: this.startTime,
+            endTime: this.endTime,
+          })
+        );
+      }
+      Promise.all(arr)
+        .then((result) => {
+          console.log(result);
+          this.choiceCourse = [];
+          this.taskName = "";
+          this.taskYn = false;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
     pageChangeFn(val) {
       this.nowPage = val;
+      this.getHomeWorkInfo();
     },
     sizeChangeFn(val) {
       this.pageSize = val;
+      this.getHomeWorkInfo();
     },
     deleteFn(obj) {
       console.log(obj);
@@ -308,7 +405,21 @@ export default {
         cancelButtonText: "取消",
         type: "warning",
       })
-        .then(() => {})
+        .then(() => {
+          deleteHomework({
+            homeworkId: obj.id,
+          })
+            .then(() => {
+              this.getHomeWorkInfo();
+              this.$message({
+                type: "success",
+                message: "已删除",
+              });
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        })
         .catch(() => {
           this.$message({
             type: "info",
@@ -316,11 +427,13 @@ export default {
           });
         });
     },
-    editorFn(obj) {
-      console.log(obj);
-    },
-    searchFn(obj) {
-      this.searchObj = obj;
+    detailsFn(obj) {
+      this.$router.push({
+        path: "/teacher/jobDetails",
+        query: {
+          id: obj.id,
+        },
+      });
     },
     getAllGradeFn() {},
     submitFn() {
@@ -329,13 +442,6 @@ export default {
         this.$store.state.teacher.questions,
         this.$store.state.teacher.answer
       );
-      if (Date.parse(this.startTime) > Date.parse(this.endTime)) {
-        this.$message({
-          message: "结束时间不能先于开始时间",
-          type: "warning",
-        });
-        return;
-      }
       if (this.$store.state.teacher.questions.length == 0) {
         this.$message({
           message: "请添加问题",
@@ -356,8 +462,6 @@ export default {
         homeworkName: this.name,
         questionCount: this.$store.state.teacher.questions.length,
         question: this.$store.state.teacher.questions,
-        beginTime: this.startTime,
-        endTime: this.endTime,
       };
       createHomework(obj)
         .then((result) => {
@@ -398,8 +502,38 @@ export default {
     cancelFn() {
       this.dialogVisible = false;
     },
+    getInfo(id) {
+      this.courseId = id;
+      this.getHomeWorkInfo();
+    },
+    getHomeWorkInfo() {
+      getHomework({
+        beginIndex: this.nowPage,
+        size: this.pageSize,
+        courseId: this.courseId,
+      })
+        .then((result) => {
+          this.allNums = result.data.total;
+          this.myListConfiguration.tableData = result.data.records;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    getAllCourse() {
+      myCourse({})
+        .then((result) => {
+          this.gradeArr = result.data.records;
+          this.value = this.gradeArr[0].id;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
   },
-  mounted() {},
+  mounted() {
+    this.getAllCourse();
+  },
 };
 </script>
 

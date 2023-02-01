@@ -16,32 +16,28 @@
         <el-col :span="5">
           <el-form-item label="班级:">
             <el-select v-model="className" placeholder="请选择班级">
-              <el-option label="区域一" value="shanghai"></el-option>
-              <el-option label="区域二" value="beijing"></el-option>
+              <el-option
+                v-for="(item, index) in gradeArr"
+                :key="index"
+                :label="item.className"
+                :value="item.id"
+              ></el-option>
             </el-select>
           </el-form-item>
         </el-col>
         <el-col :span="5">
           <el-form-item label="性别:">
             <el-select v-model="sex" placeholder="请选择性别">
-              <el-option label="区域一" value="shanghai"></el-option>
-              <el-option label="区域二" value="beijing"></el-option>
+              <el-option label="男" value="男"></el-option>
+              <el-option label="女" value="女"></el-option>
             </el-select>
-          </el-form-item>
-        </el-col>
-        <el-col :span="5">
-          <el-form-item label="学生姓名:">
-            <el-input
-              v-model="studentName"
-              placeholder="请输出查询姓名"
-            ></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="5">
           <el-form-item label="完成情况:">
             <el-select v-model="finishType" placeholder="请选择完成情况">
-              <el-option label="已交" value="shanghai"></el-option>
-              <el-option label="未交" value="beijing"></el-option>
+              <el-option label="已交" value="1"></el-option>
+              <el-option label="未交" value="-1"></el-option>
             </el-select>
           </el-form-item>
         </el-col>
@@ -91,6 +87,7 @@ import { CanvasRenderer } from "echarts/renderers";
 import { Row, Col } from "element-ui";
 import myPaging from "@/components/teacher/utilComponents/myPaging.vue";
 import myList from "@/components/teacher/utilComponents/myList.vue";
+import { getGrade } from "@/api/teacher";
 
 // 注册必须的组件
 echarts.use([
@@ -165,6 +162,7 @@ export default {
       nowPage: 1,
       pageSize: 10,
       allNums: 0,
+      gradeArr: [],
     };
   },
   methods: {
@@ -218,8 +216,28 @@ export default {
     editorFn(obj) {
       console.log(obj);
     },
+    getAllGradeFn() {
+      getGrade({
+        beginIndex: 1,
+        size: 1,
+      })
+        .then((result) => {
+          return getGrade({
+            beginIndex: 1,
+            size: result.data.total,
+          });
+        })
+        .then((result) => {
+          this.gradeArr = result.data.records;
+          this.value = this.gradeArr[0].id;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
   },
   mounted() {
+    this.getAllGradeFn();
     this.drawJobPeople();
   },
 };

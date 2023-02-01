@@ -1,6 +1,11 @@
 const { defineConfig } = require('@vue/cli-service')
+const NodePolyfillPlugin = require('node-polyfill-webpack-plugin')
 module.exports = defineConfig({
+  configureWebpack: {
+    plugins: [new NodePolyfillPlugin()],
+  },
   transpileDependencies: true,
+  lintOnSave:false,
   devServer: {
     proxy: {
       // 这里的/api是指定发送数据的url以/api开头（/api/***）

@@ -6,7 +6,9 @@ import VueRouter from 'vue-router'
 import less from 'less'
 //引入element(常用:图标,按钮,表单,输入框,选择框,表格,分页,弹窗提示.菜单)
 import { MessageBox, Message, Icon, Button, Form, FormItem, Input, Select, Option, Table, TableColumn, Pagination, Dialog, Menu, MenuItem ,Submenu,Row,Col} from 'element-ui'
-
+//引入直播插件
+import {vueBaberrage} from 'vue-baberrage'
+Vue.use(vueBaberrage)
 // 引入路由器
 import router from './router/index'
 //引入vuex配置文件

@@ -8,10 +8,10 @@
       ref="form"
     >
       <el-form-item label="课堂名称" prop="courseName">
-        <el-input v-model="form.courseName" clearable></el-input>
+        <el-input v-model.trim="form.courseName" clearable></el-input>
       </el-form-item>
       <el-form-item  label="课堂简介" prop="details">
-        <el-input type="textarea"  v-model="form.details" clearable></el-input>
+        <el-input type="textarea"  v-model.trim="form.details" clearable></el-input>
       </el-form-item>
       <el-form-item label="上传图片">
         <el-upload
@@ -123,13 +123,20 @@ export default {
           // 发送请求
           addCourse(formdata)
             .then((result) => {
-              this.$message({
-                message: "创建成功",
-                type: "success",
-              });
-              this.$refs['form'].resetFields();
-              this.fileList = [];
-              this.picSrc = "";
+              if(result.status==200){
+                this.$message({
+                  message: "创建成功",
+                  type: "success",
+                });
+                this.$refs['form'].resetFields();
+                this.fileList = [];
+                this.picSrc = "";
+              }else{
+                this.$message({
+                  type: "warning",
+                  message: "操作失败",
+                });
+              }
             })
             .catch((err) => {
               console.log(err);

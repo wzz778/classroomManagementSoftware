@@ -12,14 +12,18 @@ import operationList from '@/pages/teacher/operationList'
 import attachmentList from '@/pages/teacher/attachmentList'
 // 作业详情
 import jobDetails from '@/pages/teacher/jobDetails'
-// 签到详情
-import signDetails from '@/pages/teacher/signDetails'
 // 签到管理
-import signList from '@/pages/teacher/signList'
+import signDetails from '@/pages/teacher/signDetails'
 // 成绩管理
 import performanceManagement from '@/pages/teacher/performanceManagement'
 // 讨论管理
 import classroomDiscussion from '@/pages/teacher/classroomDiscussion'
+// 讨论详情
+import discussionDetails from '@/pages/teacher/discussionDetails'
+// 观看直播
+import watchLive from '@/pages/teacher/watchLive'
+// 任务管理
+import taskManagement from '@/pages/teacher/taskManagement'
 export default [
     {
         path: "/teacher",
@@ -71,13 +75,6 @@ export default [
                 path: "signDetails",
                 component: signDetails,
                 meta: {
-                    title: "签到详情"
-                }
-            },
-            {
-                path: "signList",
-                component: signList,
-                meta: {
                     title: "签到管理"
                 }
             },
@@ -94,7 +91,28 @@ export default [
                 meta: {
                     title: "讨论管理"
                 }
+            },
+            {
+                path: "discussionDetails",
+                component: discussionDetails,
+                meta: {
+                    title: "讨论管理"
+                }
+            },
+            {
+                path: "taskManagement",
+                component: taskManagement,
+                meta: {
+                    title: "任务管理"
+                }
             }
         ]
+    },
+    {
+        path: "/watchLive",
+        component: watchLive,
+        meta: {
+            title: "观看直播"
+        }
     }
 ]
