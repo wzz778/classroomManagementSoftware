@@ -19,7 +19,7 @@
         </div>
       </div>
     </div>
-    <div class="topicListright">
+    <div class="topicListright" v-if="this.showmore">
       <a href="javascript:;" @click="deleteTopic"
         ><i class="el-icon-delete"></i
       ></a>
@@ -68,10 +68,12 @@ export default {
         });
     },
     lookDetails() {
+      if(this.showmore){
         this.$router.push({
                 path:"discussionDetails",
         })
         localStorage.setItem("topicForm",this.jsonText);
+      }
         // this.$store.commit("admin/topicForm", this.jsonText);
     },
   },
@@ -96,6 +98,10 @@ export default {
     content: {
       type: String,
       default: "4543634", //默认值,
+    },
+    showmore: {
+      type: Boolean,
+      default: true, //默认值,
     },
   },
   mounted() {
