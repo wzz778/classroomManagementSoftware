@@ -134,7 +134,7 @@ export default {
       this.$router.push({
         path: "/teacher/jobDetails",
         query: {
-          id: obj.id,
+          id: obj.task.id,
         },
       });
     },

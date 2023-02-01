@@ -53,7 +53,12 @@
 </template>
 
 <script>
-import { createPushUrl, randomName, addMessage } from "@/api/teacher/";
+import {
+  createPushUrl,
+  randomName,
+  addMessage,
+  publishQuestion,
+} from "@/api/teacher/";
 import { Radio } from "element-ui";
 export default {
   name: "liveUtil",
@@ -162,14 +167,42 @@ export default {
         path: "/teacher/ansQuestion",
       });
     },
-    jump() {
-      this.$router.push({
-        path: "/watchLive",
-        query: {
-          id: this.bizid,
-        },
-      });
-    },
+    submitFn(){
+      if (this.question.replace(/(^\s*)|(\s*$)/g, "") == "") {
+        this.$message({
+          message: "请输入题干",
+          type: "warning",
+        });
+        return;
+      }
+      if (this.trueOptions == "") {
+        this.$message({
+          message: "请输入正确答案",
+          type: "warning",
+        });
+        return;
+      }
+      for (let i = 0; i < this.showOptions.length; i++) {
+        if (this.showOptions[i].value.replace(/(^\s*)|(\s*$)/g, "") == "") {
+          this.$message({
+            message: `请输入第${i + 1}选项的值`,
+            type: "warning",
+          });
+          return;
+        }
+      }
+      let obj = {
+        question: JSON.stringify({
+          topicInfo: this.questionStem,
+          optionsInfo: {
+            ...this.showOptions,
+          },
+        }),
+        answer: this.trueOptions,
+        correct: this.parsing,
+      };
+      publishQuestion(obj)
+    }
   },
   mounted() {},
 };

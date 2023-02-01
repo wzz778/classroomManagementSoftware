@@ -87,7 +87,7 @@ import { CanvasRenderer } from "echarts/renderers";
 import { Row, Col } from "element-ui";
 import myPaging from "@/components/teacher/utilComponents/myPaging.vue";
 import myList from "@/components/teacher/utilComponents/myList.vue";
-import { getGrade } from "@/api/teacher";
+import { getGrade, getTaskInfo } from "@/api/teacher";
 
 // 注册必须的组件
 echarts.use([
@@ -242,10 +242,21 @@ export default {
           console.log(err);
         });
     },
+    getInfo() {
+      getTaskInfo({
+        beginIndex: this.nowPage,
+        size: this.pageSize,
+        taskId: this.$route.query.id,
+      }).then((result) => {
+        console.log(result);
+      });
+    },
   },
   mounted() {
     this.getAllGradeFn();
     this.drawJobPeople();
+    this.draw();
+    this.getInfo();
   },
 };
 </script>

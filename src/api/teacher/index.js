@@ -152,3 +152,15 @@ export const sendMessage = async (data) => requests({
     method: "POST",
     params: data
 })
+
+export const getTaskInfo = async (data) => requests({
+    url: "/homework/getTaskInfo",
+    method: "GET",
+    params: data
+})
+
+export const publishQuestion = async (data) => requests({
+    url: "/homework/publishQuestion",
+    method: "POST",
+    data: data
+})
