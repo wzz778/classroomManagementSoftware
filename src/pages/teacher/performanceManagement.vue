@@ -25,8 +25,8 @@
         <el-col :span="5">
           <el-form-item label="性别:">
             <el-select v-model="sex" placeholder="请选择性别">
-              <el-option label="区域一" value="shanghai"></el-option>
-              <el-option label="区域二" value="beijing"></el-option>
+              <el-option label="男" value="男"></el-option>
+              <el-option label="女" value="女"></el-option>
             </el-select>
           </el-form-item>
         </el-col>
@@ -157,6 +157,16 @@ export default {
       nowPage: 1,
       pageSize: 10,
       allNums: 0,
+      scope: [
+        {
+          value: 35,
+          name: "未交(35)",
+        },
+        {
+          value: 65,
+          name: "已交(65)",
+        },
+      ],
     };
   },
   methods: {
@@ -172,16 +182,7 @@ export default {
         series: [
           {
             type: "pie",
-            data: [
-              {
-                value: 35,
-                name: "未交(35)",
-              },
-              {
-                value: 65,
-                name: "已交(65)",
-              },
-            ],
+            data: this.scope,
           },
         ],
       });

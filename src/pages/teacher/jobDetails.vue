@@ -163,34 +163,41 @@ export default {
       pageSize: 10,
       allNums: 0,
       gradeArr: [],
+      myChart: null,
+      dataInfo: [
+        {
+          value: 35,
+          name: "未交(35)",
+        },
+        {
+          value: 65,
+          name: "已交(65)",
+        },
+      ],
     };
   },
   methods: {
     drawJobPeople() {
       // 基于准备好的dom，初始化echarts实例
-      var myChart = echarts.init(document.getElementById("classPeople"));
+      this.myChart = echarts.init(document.getElementById("classPeople"));
+    },
+    draw() {
       // 绘制图表
-      myChart.setOption({
-        tooltip: {},
-        title: {
-          text: "作业收缴情况  65/100",
-        },
-        series: [
-          {
-            type: "pie",
-            data: [
-              {
-                value: 35,
-                name: "未交(35)",
-              },
-              {
-                value: 65,
-                name: "已交(65)",
-              },
-            ],
+      this.myChart.setOption(
+        {
+          tooltip: {},
+          title: {
+            text: "作业收缴情况",
           },
-        ],
-      });
+          series: [
+            {
+              type: "pie",
+              data: this.dataInfo,
+            },
+          ],
+        },
+        true
+      );
     },
     pageChangeFn(val) {
       this.nowPage = val;

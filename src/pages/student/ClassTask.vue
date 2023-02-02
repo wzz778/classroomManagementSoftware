@@ -5,13 +5,12 @@
         <span>高等数学</span>
       </div>
       <div class="taskState">
-        <span>未开始(3)</span>
+        <span>未开始({{notStart.length}})</span>
       </div>
       <div class="zuo">
         <el-card class="box-card">
           <div
-            v-for="o in 3"
-            :key="o"
+            v-for="o in notStart" :key="o.task.id"
             class="text item"
             @click="check = '签到未开始'"
           >
@@ -21,20 +20,19 @@
               />
             </div>
             <div class="name">
-              <span> {{ "任务尚未开始 " + o }}</span>
-              <span class="tasktime">开始时间：2023-1-20</span>
+              <span> {{o.task.taskName}}</span>
+              <span class="tasktime">开始时间：{{o.task.beginTime}}</span>
             </div>
           </div>
         </el-card>
       </div>
       <div class="taskState">
-        <span>进行中(4)</span>
+        <span>进行中({{progress.length}})</span>
       </div>
       <div class="zuo">
         <el-card class="box-card">
           <div
-            v-for="o in 4"
-            :key="o"
+            v-for="o in progress" :key="o.task.id"
             class="text item"
             @click="check = '签到中'"
           >
@@ -44,20 +42,19 @@
               />
             </div>
             <div class="name">
-              <span> {{ "任务进行中 " + o }}</span>
-              <span class="tasktime">截至时间：2023-1-22</span>
+              <span> {{ o.task.taskName}}</span>
+              <span class="tasktime">截至时间：{{o.task.endTime}}</span>
             </div>
           </div>
         </el-card>
       </div>
       <div class="taskState">
-        <span>已结束(5)</span>
+        <span>已结束({{end.length}})</span>
       </div>
       <div class="zuo">
         <el-card class="box-card">
           <div
-            v-for="o in 5"
-            :key="o"
+            v-for="o in end" :key="o.task.id"
             class="text item"
             @click="check = '签到结束'"
           >
@@ -67,8 +64,8 @@
               />
             </div>
             <div class="name">
-              <span> {{ "签到已结束 " + o }}</span>
-              <span class="tasktime">截止时间：2023-1-12</span>
+              <span> {{o.task.taskName }}</span>
+              <span class="tasktime">截止时间：{{o.task.endTime}}</span>
             </div>
           </div>
         </el-card>
@@ -82,6 +79,7 @@
 
 <script>
 import { Card } from "element-ui";
+import { ZgetTask } from "@/api/user/index";
 import SignIn from "@/components/student/CourseInfo/SignIn";
 export default {
   name: "ClassTask",
@@ -90,17 +88,57 @@ export default {
       radio: "1",
       adatar: "",
       check: "任务",
-      cid: this.$route.query.id
+      cid: this.$route.query.id,
+      //任务状态分类数组
+      notStart: [],
+      progress: [],
+      end: [],
     };
   },
   components: {
     [Card.name]: Card,
     SignIn,
   },
+  mounted: function () {
+    this.getTask();
+  },
   methods: {
     changeMsg(text, value) {
       console.log(text, value);
       this.check = value;
+    },
+    getTask() {
+      this.end = [];
+      this.notStart = [];
+      this.progress = [];
+      let data = {
+        beginIndex: "1",
+        courseId: this.cid,
+        size: "1000",
+      };
+      ZgetTask(data).then((result) => {
+        console.log("取出课程任务", result);
+        if (result.msg == "OK") {
+          if (result.data.allCount == 0) {
+            this.$message({
+              type: "success",
+              message: "暂无任务",
+            });
+          } else {
+            for (let i = 0; i < result.data.list.length; i++) {
+              if (new Date(result.data.list[i].task.beginTime) > new Date()) {
+                this.notStart.push(result.data.list[i]);
+              } else if (new Date(result.data.list[i].task.endTime) < new Date()) {
+                this.end.push(result.data.list[i]);
+              } else {
+                this.progress.push(result.data.list[i]);
+              }
+            }
+          }
+        } else {
+          this.$message.error("获取课程任务失败");
+        }
+      });
     },
   },
 };
@@ -143,8 +181,8 @@ export default {
   display: flex;
   border-bottom: 1px solid #3a39392b;
 }
-.item:hover{
-cursor: pointer;
+.item:hover {
+  cursor: pointer;
 }
 .box-card {
   width: 100%;

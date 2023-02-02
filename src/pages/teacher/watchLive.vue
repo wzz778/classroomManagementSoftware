@@ -1,24 +1,16 @@
 <template>
   <div id="watchBacSty">
-    <div id="operator">
+    <div id="operator" ref="operator">
       <button id="release" @click="dialogVisible = true">发布弹幕</button>
-      <div>
-        <span style="color: white">弹幕&nbsp;</span>
-        <el-switch
-          v-model="value1"
-          active-color="#13ce66"
-          inactive-color="#ff4949"
-        >
-        </el-switch>
-      </div>
+      <span style="color: white">弹幕&nbsp;</span>
+      <el-switch
+        v-model="value1"
+        active-color="#13ce66"
+        inactive-color="#ff4949"
+      >
+      </el-switch>
     </div>
     <canvas id="canvas" ref="canvas"></canvas>
-    <!-- <video
-      src="@/讲课.mp4"
-      ref="video"
-      id="player-container-id"
-      controls
-    ></video> -->
     <video
       id="player-container-id"
       preload="auto"
@@ -26,23 +18,39 @@
       ref="video"
       webkit-playsinline
     ></video>
-    <el-dialog title="提示" :visible.sync="dialogVisible" width="60%">
+    <el-dialog
+      ref="dialog"
+      title="提示"
+      :visible.sync="dialogVisible"
+      width="60%"
+    >
       <el-form ref="form" label-width="80px">
         <el-form-item label="弹幕内容">
-          <el-input v-model="message"></el-input>
+          <el-input v-model="message" placeholder="请输入弹幕内容"></el-input>
         </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
+        <el-form-item label="字体颜色">
+          <el-color-picker v-model="color"> </el-color-picker>
+        </el-form-item>
+        <el-form-item>
+          <div class="block">
+            <el-slider v-model="fontSize" show-input> </el-slider>
+          </div>
+        </el-form-item>
+        <el-form-item label="弹幕速度">
+          <div class="block">
+            <el-slider v-model="speed" show-input> </el-slider>
+          </div>
+        </el-form-item>
         <el-button @click="dialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="sendBarrage">确 定</el-button>
-      </span>
+      </el-form>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { createPlayUrl } from "@/api/teacher";
-import { Switch } from "element-ui";
+import { createPlayUrl, sendMessage } from "@/api/teacher";
+import { Switch, ColorPicker, Slider } from "element-ui";
 import Barrage from "@/utilJs/barrage.js";
 export default {
   name: "watchLive",
@@ -54,10 +62,16 @@ export default {
       dialogVisible: false,
       message: "",
       barage: null,
+      timer: null,
+      color: "",
+      fontSize: 26,
+      speed: 1,
     };
   },
   components: {
     [Switch.name]: Switch,
+    [ColorPicker.name]: ColorPicker,
+    [Slider.name]: Slider,
   },
   methods: {
     watchLiveInit() {
@@ -65,27 +79,49 @@ export default {
       this.watchLive();
     },
     watchLive() {
-        createPlayUrl().then((result) => {
-          this.watchUrl = result;
-          this.player.src(this.watchUrl); // url 播放地址
-        });
+      createPlayUrl({
+        bizid: this.$router.query.id,
+      }).then((result) => {
+        console.log(result);
+        this.watchUrl = result;
+        this.player.src(this.watchUrl); // url 播放地址
+        setTimeout(() => {
+          this.$refs.canvas.nextElementSibling.appendChild(this.$refs.canvas);
+          this.$refs.canvas.parentElement.appendChild(this.$refs.operator);
+          this.$refs.canvas.parentElement.appendChild(this.$refs.dialog.$el);
+        }, 1000);
+      });
     },
     sendBarrage() {
-      console.log("发送弹幕");
-      this.barage.setBarrage({
-        color: "red",
-        fontSize: 26,
-        speed: 1,
+      if (this.speed < 1) {
+        this.speed = 1;
+      }
+      if (this.speed >= 30) {
+        this.speed = 30;
+      }
+      let obj = {
+        color: this.color,
+        fontSize: this.fontSize,
+        speed: this.speed,
         value: this.message,
         time: this.$refs.video.currentTime,
+      };
+      sendMessage({
+        message: JSON.stringify(obj),
+        bizid: this.$router.query.id,
+      }).then((result) => {
+        console.log("发布弹幕", result);
       });
       this.dialogVisible = false;
+    },
+    clearAll() {
+      (this.speed = 1), (this.color = ""), (this.message = "");
     },
     barrageInit() {
       this.barage = new Barrage({
         canvas: this.$refs.canvas,
         video: this.$refs.video,
-        data: this.getDate(1),
+        data: [],
       });
       this.$refs.video.addEventListener("play", () => {
         this.barage.isPlay = true;
@@ -95,27 +131,45 @@ export default {
         this.barage.pause();
       });
     },
-
-    getDate(len) {
-      let data = [];
-      /* 一个弹幕数据中需要有弹幕的具体值，弹幕的字体大小，弹幕的颜色，它出现在视频中的时间，以及他的速度
-       */
-      for (let i = 0; i < len; i++) {
-        data.push({
-          value: `第${i}条弹幕`,
-          fontSize: 26,
-          color: "red",
-          time: i * 2,
-          speed: 1,
-        });
-      }
-      return data;
+    showOperator() {
+      this.$refs.video.onmouseleave = () => {
+        this.$refs.operator.style.display = "block";
+        if (this.timer) {
+          clearTimeout(this.timer);
+        }
+        this.timer = setTimeout(() => {
+          this.$refs.operator.style.display = "none";
+        }, 4000);
+      };
+      // this.$refs.canvas.onmouseleave = this.move();
+    },
+    onmessage(msg) {
+      console.log(msg.data);
+      this.barage.setBarrage(JSON.parse(msg.data));
+    },
+    onerror(err) {
+      console.log("错误", err);
+      console.log("打开ws：" + this.ws.readyState);
+      this.$message.error("连接失败");
+    },
+    onopen() {
+      console.log("打开ws：" + this.ws.readyState);
+    },
+    wsInit() {
+      this.ws = new WebSocket(
+        `ws://110.40.205.103:8577/webSocket/${window.localStorage.a}`
+      );
+      this.ws.onmessage = this.onmessage;
+      this.ws.onerror = this.onerror;
+      this.ws.onopen = this.onopen;
     },
   },
   mounted() {
     this.$nextTick().then(() => {
       this.watchLiveInit();
       this.barrageInit();
+      this.showOperator();
+      this.wsInit();
     });
   },
 };
@@ -131,8 +185,8 @@ export default {
 
 #operator {
   position: absolute;
-  right: 10px;
-  bottom: 20px;
+  left: 200px;
+  bottom: -5px;
   z-index: 100;
 }
 
@@ -146,14 +200,14 @@ export default {
   width: 90%;
   height: 88%;
   position: fixed;
-  z-index: 10;
+  /* z-index: 10; */
   margin: 0 auto;
   top: 0;
 }
 
 #player-container-id {
   display: block;
-  width: 90%;
+  width: 100%;
   height: 99vh;
   margin: 0 auto;
   position: absolute;

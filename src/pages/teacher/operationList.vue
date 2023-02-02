@@ -215,6 +215,7 @@ import {
   deleteHomework,
   publishTask,
   myCourse,
+  sendMessage
 } from "@/api/teacher";
 export default {
   name: "operationList",
@@ -263,10 +264,6 @@ export default {
           {
             dateType: "createTime",
             showName: "创建时间",
-          },
-          {
-            dateType: "endTime",
-            showName: "结束时间",
           },
         ],
         //   函数
@@ -366,6 +363,7 @@ export default {
         return;
       }
       let arr = [];
+      let messageArr=[]
       for (let i = 0; i < this.choiceCourse.length; i++) {
         arr.push(
           publishTask({
@@ -378,6 +376,15 @@ export default {
             endTime: this.endTime,
           })
         );
+        messageArr.push(addMessage({
+          content:JSON.stringify({belongCourseId: this.choiceCourse[i],
+            homeworkId: this.homeworkId,
+            taskName: this.taskName,
+            beginTime: this.startTime,
+            endTime: this.endTime,}),
+            courseId:this.choiceCourse[i],
+            type:3
+        }))
       }
       Promise.all(arr)
         .then((result) => {
@@ -385,6 +392,10 @@ export default {
           this.choiceCourse = [];
           this.taskName = "";
           this.taskYn = false;
+          return Promise.all(messageArr)
+        })
+        .then(result=>{
+          console.log('发布信息',result);
         })
         .catch((err) => {
           console.log(err);
@@ -474,6 +485,7 @@ export default {
           this.clearAll();
           this.dialogVisible = false;
           this.showQuestion = false;
+          this.getInfo();
         })
         .catch((err) => {
           console.log(err);

@@ -67,7 +67,7 @@ export default {
       this.editor.config.menus = this.editor.config.menus.concat("alertMenu");
       // 配置上传图片
       this.editor.config.uploadImgShowBase64 = true; // base 64 存储图片
-      this.editor.config.uploadImgServer = "/api/admin/addPicture";
+      this.editor.config.uploadImgServer = "/api/homework/addPicture";
       // 配置服务器端地址(这里的this.$api.getJavaEndPoint()是自己定义的一个地址前缀)
       this.editor.config.uploadFileName = "file"; // 后端接受上传文件的参数名
       this.editor.config.uploadImgHeaders = {

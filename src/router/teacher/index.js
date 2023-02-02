@@ -24,6 +24,8 @@ import discussionDetails from '@/pages/teacher/discussionDetails'
 import watchLive from '@/pages/teacher/watchLive'
 // 任务管理
 import taskManagement from '@/pages/teacher/taskManagement'
+// 回答问题正确率
+import ansQuestion from '@/pages/teacher/ansQuestion'
 export default [
     {
         path: "/teacher",
@@ -104,6 +106,13 @@ export default [
                 component: taskManagement,
                 meta: {
                     title: "任务管理"
+                }
+            },
+            {
+                path: "ansQuestion",
+                component: ansQuestion,
+                meta: {
+                    title: "回答问题详情"
                 }
             }
         ]
