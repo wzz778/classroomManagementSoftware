@@ -2,28 +2,29 @@
   <div class="topicList" @click="lookDetails">
     <div class="topicListleft">
       <div class="imgbox">
-        <img :src="headImg" alt="" />
+        <img :src="this.form.user.photo" alt="" />
       </div>
       <div class="textbox">
         <div class="textboxTop">
-          <span class="userName">{{ title }}</span>
-          <span class="comTime">{{ number }}</span>
+          <span class="userName">{{ this.form.user.name }}</span>
+          <span class="userIdentity">{{ this.form.user.identity|toidentity()}}</span>
+          <span class="comTime">{{ this.form.topic.createTime}}</span>
         </div>
         <div class="textboxCon">
           <div class="textboxConTopic">
-            {{ content }}
+            {{  this.form.topic.topicName }}
           </div>
           <div class="textboxConComment">
-            {{ content }}
+            {{  this.form.topic.topicContent }}
           </div>
         </div>
       </div>
     </div>
-    <div class="topicListright" v-if="this.showmore">
-      <a href="javascript:;" @click="deleteTopic"
+    <div class="topicListright">
+      <a href="javascript:;"  v-if="this.teacherpath" @click.stop="deleteTopic"
         ><i class="el-icon-delete"></i
       ></a>
-      <a href="javascript:;"><i class="el-icon-chat-line-round"></i></a>
+      <a href="javascript:;" @click="addDiscuss"> <i class="el-icon-chat-line-round"></i></a>
     </div>
   </div>
 </template>
@@ -34,6 +35,8 @@ export default {
   data() {
     return {
       form: {},
+      teacherpath:false,
+      topicpath:false,
     };
   },
   methods: {
@@ -70,43 +73,48 @@ export default {
     lookDetails() {
       if(this.showmore){
         this.$router.push({
-                path:"discussionDetails",
+            path:"discussionDetails",
         })
         localStorage.setItem("topicForm",this.jsonText);
       }
-        // this.$store.commit("admin/topicForm", this.jsonText);
     },
+    addDiscuss(){
+      this.$emit('addDiscuss')
+    }
   },
   props: {
     jsonText: {
       type: String,
       default: "4543634", //默认值,
     },
-    headImg: {
-      type: String, //name的类型是字符串
-      default:
-        "https://online-examination-1311156839.cos.ap-nanjing.myqcloud.com/photo/20230114130755_-589934592.webp", //默认值,
-    },
-    number: {
-      type: String,
-      required: "4543634",
-    },
-    title: {
-      type: String,
-      required: "4543634",
-    },
-    content: {
-      type: String,
-      default: "4543634", //默认值,
-    },
     showmore: {
       type: Boolean,
-      default: true, //默认值,
+      default:true, //默认值,
     },
   },
-  mounted() {
+  filters:{
+    toidentity(value){
+        if(value==0){
+          return"学生"
+        }else if(value==1){
+          return"老师"
+        }else{
+          return"管理员"
+        }
+    }
+  },
+  created() {
     // console.log(jsonText);
     this.form = JSON.parse(this.jsonText);
+    let patharr=this.$route.path.toString().split("/")
+    if(patharr[1]=="user"){
+      this.teacherpath=false
+    }else{
+
+    }
+    if(patharr[2]=="discussionDetails"){
+      this.topicpath=false
+    }
   },
 };
 </script>
@@ -152,6 +160,17 @@ export default {
           padding: 0 5px;
         }
         .comTime {
+          font-size: 12px;
+          padding: 0 5px;
+        }
+        .userIdentity{
+          border: #85bddd 1.5px solid;
+          background-color: #dff2ff;
+          display: inline-block;
+          color: #54a8da;
+          height: 19px;
+          line-height: 16px;
+          border-radius: 6px;
           font-size: 12px;
           padding: 0 5px;
         }

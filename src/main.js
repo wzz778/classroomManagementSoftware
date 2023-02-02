@@ -46,6 +46,7 @@ Vue.use(Col)
 Vue.prototype.$confirm = MessageBox.confirm
 Vue.prototype.$message = Message
 Vue.prototype.$prompt = MessageBox.prompt
+Vue.prototype.$alert = MessageBox.alert
 
 new Vue({
   render: h => h(App),

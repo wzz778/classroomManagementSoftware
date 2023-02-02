@@ -16,13 +16,9 @@
     <el-button type="success" @click="addTopic"
       ><i class="el-icon-plus"></i> 添加话题</el-button
     >
-    课堂话题：{{deleteid}}
-    <TopicList v-for="(p) of tableDate"  :key="p.topic.id" style="width:100%" :jsonText="JSON.stringify(p)" :headImg="p.user.photo" :title="p.user.name" :number="p.topic.createTime" :content="p.topic.topicName"/>
-    <template>
-      <div v-if="false">
-      {{tableDate}}
-      </div>
-    </template>
+    <TitleBlock text="课堂话题"/>
+    <el-empty v-if="tableDate.length==0" description="暂无回复内容"></el-empty>
+    <TopicList v-for="(p) of tableDate"  :key="p.topic.id" style="width:100%" :jsonText="JSON.stringify(p)"/>
     <el-dialog
       style="z-index: 2001"
       title="发布话题"
@@ -64,18 +60,27 @@
       :total="alltotal"
     >
     </el-pagination>
+    <!-- 卧龙凤雏 -->
+    <template>
+      <div v-if="false">
+      {{tableDate}}{{deleteid}}
+      </div>
+    </template>
+    <!-- 卧龙凤雏 -->
   </div>
 </template>
 
 <script>
-import {} from "element-ui";
+import {Empty } from "element-ui";
 import { myCourse, publishTopic, getTopic } from "@/api/admin/index";
 import TopicList from "@/components/admin/TopicList";
+import TitleBlock from "@/components/admin/TitleBlock";
 export default {
   name: "classroomDiscussion",
   components: {
-    [Option.name]: Option,
+    [Empty.name]: Empty,
     TopicList,
+    TitleBlock
   },
   data() {
     return {
@@ -86,13 +91,13 @@ export default {
       form: {
         topicName: "",
         topicContent: "",
-        courseId: 11,
+        courseId: '',
       },
       tableDate: [],
       searchform: {
         beginIndex: 1,
         size: 5,
-        courseId: 11,
+        courseId: '',
       },
       rules: {
         topicName: [
@@ -214,9 +219,13 @@ export default {
       },
     },
   },
+  
   computed:{
     deleteid(){
-      this.chagepage()
+      // console.log(this.$store.state.admin.deleteTopicid);
+      if(this.$store.state.admin.deleteTopicid){
+        this.chagepage()
+      }
       return this.$store.state.admin.deleteTopicid;
     }
   },
