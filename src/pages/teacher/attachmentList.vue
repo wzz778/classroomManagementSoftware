@@ -103,7 +103,7 @@
 import myPaging from "@/components/teacher/utilComponents/myPaging.vue";
 import myList from "@/components/teacher/utilComponents/myList.vue";
 import { Upload } from "element-ui";
-import { myCourse, uploadFile, getFiles } from "@/api/teacher";
+import { myCourse, uploadFile, getFiles, deleteFile } from "@/api/teacher";
 export default {
   name: "attachmentList",
   components: {
@@ -250,12 +250,23 @@ export default {
       this.getInfo();
     },
     deleteFn(obj) {
-      this.$confirm("确定要删除班级吗?", "提示", {
+      console.log(obj);
+      this.$confirm("确定要删除附件吗?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       })
-        .then(() => {})
+        .then(() => {
+          deleteFile({
+            id: obj.id,
+          }).then(() => {
+            this.$message({
+              type: "success",
+              message: "已删除",
+            });
+            this.getInfo();
+          });
+        })
         .catch(() => {
           this.$message({
             type: "info",
@@ -298,7 +309,6 @@ export default {
         });
     },
     dowmLoadFn(obj) {
-      console.log(obj);
       this.downfile2(obj.fileAddress, obj.fileName);
     },
     //运行时调用downfile2函数就行第一个参数是下载的地址，第二个是文件名

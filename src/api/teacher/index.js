@@ -181,3 +181,15 @@ export const getTerm = async () => requests({
     url: "/user/getTerm",
     method: "GET"
 })
+
+export const deleteFile = async (data) => requests({
+    url: "/teacher/deleteFile",
+    method: "DELETE",
+    params: data
+})
+
+export const deleteTask = async (data) => requests({
+    url: "/homework/deleteTask",
+    method: "DELETE",
+    params: data
+})

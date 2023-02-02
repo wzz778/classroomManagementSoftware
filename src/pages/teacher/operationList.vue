@@ -444,9 +444,9 @@ export default {
     },
     detailsFn(obj) {
       this.$router.push({
-        path: "/teacher/jobDetails",
+        path: "/doPaper",
         query: {
-          id: obj.id,
+          hId: obj.id,
         },
       });
     },

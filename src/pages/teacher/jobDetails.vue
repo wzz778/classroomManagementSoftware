@@ -139,6 +139,13 @@ export default {
           },
         ],
         //   函数
+        objFn: [
+          {
+            type: "",
+            callFn: this.detailsFn,
+            showInfo: "详情",
+          },
+        ],
         // 数据
         tableData: [],
       },
@@ -204,8 +211,14 @@ export default {
           });
         });
     },
-    editorFn(obj) {
-      console.log(obj);
+    detailsFn(obj) {
+      this.$router.push({
+        path: "/CorrectHomework",
+        query: {
+          hId: this.$route.query.homeworkId,
+          stuId: obj.studentId,
+        },
+      });
     },
     getAllGradeFn() {
       getGrade({
@@ -241,6 +254,7 @@ export default {
         taskId: this.$route.query.id,
       })
         .then((result) => {
+          console.log(result);
           this.allUserNumbers = result.data.allCount;
           return this.getDetalisInfo();
         })
