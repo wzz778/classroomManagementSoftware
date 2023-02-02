@@ -26,6 +26,8 @@ import watchLive from '@/pages/teacher/watchLive'
 import taskManagement from '@/pages/teacher/taskManagement'
 // 回答问题正确率
 import ansQuestion from '@/pages/teacher/ansQuestion'
+// 课程详情
+import IndexCourse from '@/pages/student/IndexCourse'
 export default [
     {
         path: "/teacher",
@@ -113,6 +115,13 @@ export default [
                 component: ansQuestion,
                 meta: {
                     title: "回答问题详情"
+                }
+            },
+            {
+                path: "IndexCourse",
+                component: IndexCourse,
+                meta: {
+                    title: "课程详情"
                 }
             }
         ]

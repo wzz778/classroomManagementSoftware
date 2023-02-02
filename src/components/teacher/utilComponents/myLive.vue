@@ -1,19 +1,31 @@
 <template>
   <div class="liveBtnSty">
-    <el-button
-      v-if="!livePusher || !livePusher.isPushing()"
-      type="primary"
-      @click="liveInit"
-      >开启直播</el-button
-    >
-    <template v-if="livePusher && livePusher.isPushing()">
-      <el-button type="primary" @click="stopLive">关闭直播</el-button>
-    </template>
-    <el-button type="success">随机点名</el-button>
-    <el-button @click="dialogVisible = true" type="info">发布问题</el-button>
-    <el-button type="warning" @click="ansQusetionDetails"
-      >回答问题详情</el-button
-    >
+    <div class="myOperator">
+      <el-button
+        style="padding: 11px"
+        v-if="!livePusher || !livePusher.isPushing()"
+        type="primary"
+        @click="liveInit"
+        >开启直播</el-button
+      >
+      <template v-if="livePusher && livePusher.isPushing()">
+        <el-button type="primary" @click="stopLive" style="padding: 11px"
+          >关闭直播</el-button
+        >
+      </template>
+      <el-button type="success" style="padding: 11px" @click="getRandomName"
+        >随机点名</el-button
+      >
+      <el-button @click="dialogVisible = true" type="info" style="padding: 11px"
+        >发布问题</el-button
+      >
+      <el-button
+        type="warning"
+        @click="ansQusetionDetails"
+        style="padding: 11px"
+        >回答问题详情</el-button
+      >
+    </div>
     <el-dialog title="提示" :visible.sync="dialogVisible" width="60%">
       <el-form label-width="80px">
         <el-form-item label="题干">
@@ -99,13 +111,14 @@ export default {
       createPushUrl()
         .then((result) => {
           console.log(result);
+          window.localStorage.setItem("a", result.data.bizid);
           this.bizid = result.data.bizid;
           this.pushUrl = result.data.address.replace("rtmp", "webrtc");
           this.livePusher = new TXLivePusher();
           this.startLive();
           return addMessage({
             content: this.bizid,
-            courseId: this.$router.query.id,
+            courseId: this.$route.query.id,
             type: 5,
           });
         })
@@ -160,14 +173,27 @@ export default {
         .catch(() => {});
     },
     getRandomName() {
-      randomName();
+      randomName({ id: this.$route.query.id }).then((result) => {
+        console.log(result);
+        this.$confirm(
+          `账号：${result.data.userName}，姓名：${result.data.name}`,
+          "提示",
+          {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning",
+          }
+        )
+          .then(() => {})
+          .catch(() => {});
+      });
     },
     ansQusetionDetails() {
       this.$router.push({
         path: "/teacher/ansQuestion",
       });
     },
-    submitFn(){
+    submitFn() {
       if (this.question.replace(/(^\s*)|(\s*$)/g, "") == "") {
         this.$message({
           message: "请输入题干",
@@ -201,8 +227,8 @@ export default {
         answer: this.trueOptions,
         correct: this.parsing,
       };
-      publishQuestion(obj)
-    }
+      publishQuestion(obj);
+    },
   },
   mounted() {},
 };

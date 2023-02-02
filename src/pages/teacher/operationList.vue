@@ -215,7 +215,7 @@ import {
   deleteHomework,
   publishTask,
   myCourse,
-  sendMessage
+  addMessage,
 } from "@/api/teacher";
 export default {
   name: "operationList",
@@ -363,8 +363,9 @@ export default {
         return;
       }
       let arr = [];
-      let messageArr=[]
+      let messageArr = [];
       for (let i = 0; i < this.choiceCourse.length; i++) {
+        console.log(this.choiceCourse[i]);
         arr.push(
           publishTask({
             belongCourseId: this.choiceCourse[i],
@@ -376,15 +377,19 @@ export default {
             endTime: this.endTime,
           })
         );
-        messageArr.push(addMessage({
-          content:JSON.stringify({belongCourseId: this.choiceCourse[i],
-            homeworkId: this.homeworkId,
-            taskName: this.taskName,
-            beginTime: this.startTime,
-            endTime: this.endTime,}),
-            courseId:this.choiceCourse[i],
-            type:3
-        }))
+        messageArr.push(
+          addMessage({
+            content: JSON.stringify({
+              belongCourseId: this.choiceCourse[i],
+              homeworkId: this.homeworkId,
+              taskName: this.taskName,
+              beginTime: this.startTime,
+              endTime: this.endTime,
+            }),
+            courseId: this.choiceCourse[i],
+            type: 3,
+          })
+        );
       }
       Promise.all(arr)
         .then((result) => {
@@ -392,10 +397,10 @@ export default {
           this.choiceCourse = [];
           this.taskName = "";
           this.taskYn = false;
-          return Promise.all(messageArr)
+          return Promise.all(messageArr);
         })
-        .then(result=>{
-          console.log('发布信息',result);
+        .then((result) => {
+          console.log("发布信息", result);
         })
         .catch((err) => {
           console.log(err);
