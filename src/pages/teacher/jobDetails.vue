@@ -27,7 +27,7 @@
         </el-col>
         <el-col :span="5">
           <el-form-item label="性别:">
-            <el-select v-model="sex" placeholder="请选择性别">
+            <el-select v-model="sex" placeholder="请选择性别" clearable>
               <el-option label="男" value="男"></el-option>
               <el-option label="女" value="女"></el-option>
             </el-select>
@@ -37,13 +37,13 @@
           <el-form-item label="完成情况:">
             <el-select v-model="finishType" placeholder="请选择完成情况">
               <el-option label="已交" value="1"></el-option>
-              <el-option label="未交" value="-1"></el-option>
+              <el-option label="未交" value="2"></el-option>
             </el-select>
           </el-form-item>
         </el-col>
         <el-col :span="3">
           <span style="margin-left: 30px"></span>
-          <el-button type="success">确定</el-button>
+          <el-button type="success" @click="searchFn">确定</el-button>
         </el-col>
       </el-row>
     </el-form>
@@ -87,7 +87,7 @@ import { CanvasRenderer } from "echarts/renderers";
 import { Row, Col } from "element-ui";
 import myPaging from "@/components/teacher/utilComponents/myPaging.vue";
 import myList from "@/components/teacher/utilComponents/myList.vue";
-import { getGrade } from "@/api/teacher";
+import { getGrade, getTaskInfo } from "@/api/teacher";
 
 // 注册必须的组件
 echarts.use([
@@ -116,43 +116,34 @@ export default {
       className: "",
       sex: "",
       studentName: "",
-      finishType: "",
+      finishType: "1",
       myListConfiguration: {
         allType: [
           {
             // dateType表示的是数据
-            dateType: "id",
+            dateType: "userName",
             // 数据显示的名字
-            showName: "ID",
+            showName: "学号",
           },
           {
-            dateType: "grade",
-            showName: "班级名称",
+            dateType: "sex",
+            showName: "性别",
           },
           {
-            dateType: "code",
-            showName: "班级口令",
+            dateType: "nativePlace",
+            showName: "籍贯",
           },
           {
-            dateType: "name",
-            showName: "班级人数",
-          },
-          {
-            dateType: "createTime",
-            showName: "创建时间",
+            dateType: "email",
+            showName: "邮箱",
           },
         ],
         //   函数
         objFn: [
           {
             type: "",
-            callFn: this.editorFn,
-            showInfo: "编辑",
-          },
-          {
-            type: "danger",
-            callFn: this.deleteFn,
-            showInfo: "删除",
+            callFn: this.detailsFn,
+            showInfo: "详情",
           },
         ],
         // 数据
@@ -164,16 +155,7 @@ export default {
       allNums: 0,
       gradeArr: [],
       myChart: null,
-      dataInfo: [
-        {
-          value: 35,
-          name: "未交(35)",
-        },
-        {
-          value: 65,
-          name: "已交(65)",
-        },
-      ],
+      allUserNumbers: 0,
     };
   },
   methods: {
@@ -181,7 +163,7 @@ export default {
       // 基于准备好的dom，初始化echarts实例
       this.myChart = echarts.init(document.getElementById("classPeople"));
     },
-    draw() {
+    draw(allNumber, finishNumber) {
       // 绘制图表
       this.myChart.setOption(
         {
@@ -192,7 +174,16 @@ export default {
           series: [
             {
               type: "pie",
-              data: this.dataInfo,
+              data: [
+                {
+                  value: allNumber - finishNumber,
+                  name: `未交${allNumber - finishNumber}`,
+                },
+                {
+                  value: finishNumber,
+                  name: `已交${finishNumber}`,
+                },
+              ],
             },
           ],
         },
@@ -220,8 +211,14 @@ export default {
           });
         });
     },
-    editorFn(obj) {
-      console.log(obj);
+    detailsFn(obj) {
+      this.$router.push({
+        path: "/CorrectHomework",
+        query: {
+          hId: this.$route.query.homeworkId,
+          stuId: obj.studentId,
+        },
+      });
     },
     getAllGradeFn() {
       getGrade({
@@ -242,10 +239,53 @@ export default {
           console.log(err);
         });
     },
+    getDetalisInfo() {
+      return getTaskInfo({
+        beginIndex: this.nowPage,
+        size: this.pageSize,
+        taskId: this.$route.query.id,
+        status: 1,
+      });
+    },
+    getInfo() {
+      getTaskInfo({
+        beginIndex: this.nowPage,
+        size: this.pageSize,
+        taskId: this.$route.query.id,
+      })
+        .then((result) => {
+          console.log(result);
+          this.allUserNumbers = result.data.allCount;
+          return this.getDetalisInfo();
+        })
+        .then((result) => {
+          this.draw(this.allUserNumbers, result.data.allCount);
+        });
+    },
+    searchFn() {
+      let obj = {
+        beginIndex: this.nowPage,
+        size: this.pageSize,
+        taskId: this.$route.query.id,
+        status: this.finishType,
+      };
+      if (this.className != "") {
+        obj.gradeId = this.className;
+      }
+      if (this.sex != "") {
+        obj.sex = this.sex;
+      }
+      getTaskInfo(obj).then((result) => {
+        this.allNums = result.data.allCount;
+        this.myListConfiguration.tableData = result.data.list;
+      });
+    },
   },
   mounted() {
     this.getAllGradeFn();
     this.drawJobPeople();
+    this.getInfo();
+    this.searchFn();
   },
 };
 </script>

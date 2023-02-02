@@ -33,6 +33,8 @@ import {
   courseStudents,
   deleteStudentFromCourse,
   resetPassword,
+  getMyPerformanceByUserId,
+  getTerm,
 } from "@/api/teacher";
 export default {
   name: "StudentList",
@@ -68,7 +70,7 @@ export default {
             showName: "籍贯",
           },
           {
-            dateType: "createTime",
+            dateType: "identity",
             showName: "上学期成绩",
           },
         ],
@@ -94,6 +96,8 @@ export default {
       allNums: 0,
       searchObj: null,
       classId: "",
+      beginTime: "",
+      endTime: "",
     };
   },
   methods: {
@@ -116,7 +120,6 @@ export default {
             courseId: this.classId,
             studentId: obj.studentId,
           }).then((result) => {
-            console.log("移除课程", result);
             this.$message({
               message: "已移除",
               type: "success",
@@ -155,6 +158,26 @@ export default {
       this.nowPage = 1;
       this.getStudentInfo();
     },
+    getScope(obj) {
+      return new Promise((resolve, resject) => {
+        getMyPerformanceByUserId({
+          afterTime: this.beginTime,
+          beforeTime: this.endTime,
+          userId: obj.studentId,
+        })
+          .then((result) => {
+            if (result.msg == "OK") {
+              obj.identity = result.data[0].performance;
+            } else {
+              obj.identity = 0;
+            }
+            resolve(obj);
+          })
+          .catch((err) => {
+            resject(err);
+          });
+      });
+    },
     getStudentInfo() {
       courseStudents({
         classId: this.classId,
@@ -164,6 +187,18 @@ export default {
         .then((result) => {
           this.myListConfiguration.tableData = result.data.records;
           this.allNums = result.data.total;
+          return getTerm();
+        })
+        .then((result) => {
+          this.beginTime = result.data[0].beginTime;
+          this.endTime = result.data[0].endTime;
+          let arr = [];
+          for (let i = 0; i < this.myListConfiguration.tableData.length; i++) {
+            arr.push(this.getScope(this.myListConfiguration.tableData[i]));
+          }
+          return Promise.all(arr);
+        })
+        .then(() => {
         })
         .catch((err) => {
           console.log(err);

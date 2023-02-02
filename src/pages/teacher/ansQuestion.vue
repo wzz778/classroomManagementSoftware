@@ -1,5 +1,6 @@
 <template>
   <div>
+    <el-button>刷新</el-button>
     <el-row>
       <!-- <el-col :span="12">
         <div
@@ -182,6 +183,7 @@ export default {
   },
   mounted() {
     this.drawJobPeople();
+    console.log(this.$route.id);
   },
 };
 </script>
