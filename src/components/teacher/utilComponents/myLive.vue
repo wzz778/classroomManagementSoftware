@@ -29,7 +29,11 @@
     <el-dialog title="提示" :visible.sync="dialogVisible" width="60%">
       <el-form label-width="80px">
         <el-form-item label="题干">
-          <el-input v-model="question" placeholder="请输入"></el-input>
+          <el-input
+            v-model="question"
+            @click.native="questionThem"
+            placeholder="请输入"
+          ></el-input>
         </el-form-item>
         <el-form-item label="选项">
           <template v-for="(item, index) in showOptions">
@@ -58,7 +62,7 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="getRandomName">确 定</el-button>
+        <el-button type="primary" @click="submitFn">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -103,6 +107,7 @@ export default {
       ],
       trueOptions: "",
       bizid: "",
+      union: "",
     };
   },
   methods: {
@@ -189,9 +194,31 @@ export default {
       });
     },
     ansQusetionDetails() {
+      if (this.union == "") {
+        this.$message.error("请先发布课堂问题");
+        return;
+      }
       this.$router.push({
         path: "/teacher/ansQuestion",
+        query: {
+          id: this.union,
+        },
       });
+    },
+    questionThem() {
+      this.$myRichText({ oriHtml: this.question })
+        .then((result) => {
+          this.question = result;
+        })
+        .catch(() => {});
+    },
+    getTime() {
+      let date = new Date();
+      return date.getSeconds();
+    },
+    getUnion() {
+      this.union = Date.now();
+      return this.union;
     },
     submitFn() {
       if (this.question.replace(/(^\s*)|(\s*$)/g, "") == "") {
@@ -219,15 +246,56 @@ export default {
       }
       let obj = {
         question: JSON.stringify({
-          topicInfo: this.questionStem,
+          topicInfo: this.question,
           optionsInfo: {
             ...this.showOptions,
           },
         }),
-        answer: this.trueOptions,
-        correct: this.parsing,
+        params: {
+          answer: this.trueOptions,
+          time: this.getTime(),
+          union: this.getUnion(),
+        },
       };
-      publishQuestion(obj);
+      publishQuestion(obj)
+        .then(() => {
+          this.dialogVisible = false;
+          this.clearAll();
+          return addMessage({
+            content: this.union,
+            courseId: this.$route.query.id,
+            type: 2,
+          });
+        })
+        .then((result) => {
+          console.log("发布消息", result);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    clearAll() {
+      this.union = "";
+      this.trueOptions = "";
+      this.question = "";
+      this.showOptions = [
+        {
+          options: "A",
+          value: "",
+        },
+        {
+          options: "B",
+          value: "",
+        },
+        {
+          options: "C",
+          value: "",
+        },
+        {
+          options: "D",
+          value: "",
+        },
+      ];
     },
   },
   mounted() {},

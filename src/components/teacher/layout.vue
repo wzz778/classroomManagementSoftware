@@ -40,7 +40,7 @@
         </el-menu-item>
         <el-menu-item index="/teacher/performanceManagement">
           <i class="el-icon-s-marketing"></i>
-          <span slot="title">成绩管理</span>
+          <span slot="title">成绩分析</span>
         </el-menu-item>
         <el-menu-item index="/teacher/attachmentList">
           <i class="el-icon-paperclip"></i>

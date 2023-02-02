@@ -337,7 +337,7 @@ export default {
   },
   methods: {
     publishTaskFn(obj) {
-      this.homeworkId = obj.homeworkId;
+      this.homeworkId = obj.id;
       this.taskYn = true;
     },
     publishTaskSubmit() {
@@ -365,7 +365,6 @@ export default {
       let arr = [];
       let messageArr = [];
       for (let i = 0; i < this.choiceCourse.length; i++) {
-        console.log(this.choiceCourse[i]);
         arr.push(
           publishTask({
             belongCourseId: this.choiceCourse[i],

@@ -162,5 +162,22 @@ export const getTaskInfo = async (data) => requests({
 export const publishQuestion = async (data) => requests({
     url: "/homework/publishQuestion",
     method: "POST",
-    data: data
+    data: data.question,
+    params: data.params
+})
+
+export const getOutcome = async () => requests({
+    url: "/homework/getOutcome",
+    method: "GET"
+})
+
+export const getMyPerformanceByUserId = async (data) => requests({
+    url: "/user/getMyPerformanceByUserId",
+    method: "GET",
+    params: data
+})
+
+export const getTerm = async () => requests({
+    url: "/user/getTerm",
+    method: "GET"
 })
