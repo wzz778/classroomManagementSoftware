@@ -4,11 +4,11 @@
       <div slot="header" class="clearfix">
         <i class="el-icon-s-custom"></i><span>教师（1人）</span>
       </div>
-      <div v-for="o in 1" :key="o" class="text item">
+      <div v-for="o in crr" :key="o" class="text item">
         <div class="name">
-          <img :src="aimg ? aimg : require('@/assets/bac01.jpeg')" />
+          <img :src="o.photo ? o.photo : require('@/assets/bac01.jpeg')" />
         </div>
-        <div class="name">{{ "教师 " + o }}</div>
+        <div class="name">{{o.name }}</div>
       </div>
     </el-card>
     <el-card class="box-card">
@@ -19,27 +19,28 @@
         <div class="name">
           <img :src="o.photo ? o.photo : require('@/assets/01.jpg')" />
         </div>
-        <div class="name">{{ o.userName }}</div>
-        <div class="creatTime">进班时间：{{o.createTime}}</div>
+        <div class="name">{{ o.userName }}{{ o.name }}</div>
+        <div class="creatTime">进班时间：{{ o.createTime }}</div>
       </div>
     </el-card>
   </div>
 </template>
 
 <script>
-import { ZourseStudents } from "@/api/user/index";
+import { ZourseStudents, ZgetTeacherInfo, ZgetOneCourse} from "@/api/user/index";
 import { Card } from "element-ui";
 export default {
   name: "ClassMebers",
   data() {
     return {
-      aimg: "",
       adatar: "",
-      lesid:this.$route.query.id,
+      lesid: this.$route.query.id,
       tableData: [],
+      crr: [],
     };
   },
   mounted: function () {
+    this.GetTeacher();
     this.Getstudent();
   },
   methods: {
@@ -50,12 +51,33 @@ export default {
         pageSize: "1000",
       };
       ZourseStudents(data).then((result) => {
-        console.log("取出学生", result);
         if (result.msg == "OK") {
           this.tableData = result.data.records;
           this.adatar = result.data.total;
         } else {
           this.$message.error("获取课程成员失败");
+        }
+      });
+    },
+    GetTeacher() {
+    this.crr=[];
+      let cid = {
+        id: this.lesid,
+      };
+      ZgetOneCourse(cid).then((result) => {
+        if (result.msg == "OK") {
+          let tid = {
+            id: result.data.creatorId,
+          };
+          ZgetTeacherInfo(tid).then((response) => {
+            if (response.msg == "OK") {
+              this.crr.push(response.data);
+            } else {
+              this.$message.error("获取教师信息失败");
+            }
+          });
+        } else {
+          this.$message.error("获取课程信息失败");
         }
       });
     },
