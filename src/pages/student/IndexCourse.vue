@@ -14,7 +14,8 @@
             <div class="teacher">
               <div class="course_name">{{ lesson.name }}</div>
               <p style="text-align: left">
-                主讲人:<span>叶子</span>教室团队：<span>1人</span>
+                主讲人:<span>{{ teacher.tname }}</span
+                >教室团队：<span>1人</span>
               </p>
             </div>
             <div class="infor">
@@ -22,7 +23,7 @@
                 <li>课程码：{{ lesson.cord }}</li>
                 <li>创建时间：{{ lesson.beginTime }}</li>
               </ul>
-              <myLive />
+              <myLive v-show="user.identity=='1'" />
             </div>
           </div>
         </div>
@@ -46,18 +47,25 @@
                     "
                   />
                 </div>
-                <div>编号：{{teacher.tcode}}</div>
-                <div>姓名：{{teacher.tname}}</div>
-                <div>邮箱：{{teacher.email}}</div>
+                <div>编号：{{ teacher.tcode }}</div>
+                <div>姓名：{{ teacher.tname }}</div>
+                <div>邮箱：{{ teacher.email }}</div>
               </div>
               <div class="tesmain">
                 <div>
-                  性别： <el-radio disabled v-model="teacher.sex" label="男">男</el-radio>
-                  <el-radio disabled v-model="teacher.sex" label="女" style="margin-left: 20px"
+                  性别：
+                  <el-radio disabled v-model="teacher.sex" label="男"
+                    >男</el-radio
+                  >
+                  <el-radio
+                    disabled
+                    v-model="teacher.sex"
+                    label="女"
+                    style="margin-left: 20px"
                     >女</el-radio
                   >
                 </div>
-                <div>地址：{{teacher.place}}</div>
+                <div>地址：{{ teacher.place }}</div>
               </div>
             </div>
           </el-tab-pane>
@@ -69,7 +77,7 @@
 
 <script>
 import myLive from "@/components/teacher/utilComponents/myLive.vue";
-import { ZgetOneCourse, ZgetTeacherInfo } from "@/api/user/index";
+import { ZgetOneCourse, ZgetTeacherInfo, ZgetUserInfo } from "@/api/user/index";
 import {
   Tabs,
   TabPane,
@@ -95,14 +103,18 @@ export default {
         tname: "",
         sex: "男",
         cover: "",
-        place:'',
-        email:"",
-        tcode:'',
+        place: "",
+        email: "",
+        tcode: "",
+      },
+      user: {
+        identity: "",
       },
     };
   },
   mounted: function () {
     this.Getnews();
+    this.Getuser();
   },
   methods: {
     handleClick(tab, event) {
@@ -126,12 +138,12 @@ export default {
           };
           ZgetTeacherInfo(tid).then((response) => {
             if (response.msg == "OK") {
-              this.teacher.tname=response.data.name;
-              this.teacher.sex=response.data.sex;
-              this.teacher.cover=response.data.photo;
-              this.teacher.place=response.data.nativePlace;
-              this.teacher.email=response.data.email;
-              this.teacher.tcode=response.data.userName;
+              this.teacher.tname = response.data.name;
+              this.teacher.sex = response.data.sex;
+              this.teacher.cover = response.data.photo;
+              this.teacher.place = response.data.nativePlace;
+              this.teacher.email = response.data.email;
+              this.teacher.tcode = response.data.userName;
             } else {
               this.$message.error("获取教师信息失败");
             }
@@ -139,6 +151,12 @@ export default {
         } else {
           this.$message.error("获取课程信息失败");
         }
+      });
+    },
+    Getuser() {
+      ZgetUserInfo().then((result) => {
+        console.log("用户信息", result);
+        this.user.identity = result.data.identity;
       });
     },
   },

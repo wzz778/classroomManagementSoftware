@@ -76,7 +76,7 @@ export default {
                 type: "success",
                 message: "加入课程成功",
               });
-              if (this.$route.path == "/user/IndexBase") {
+              if (this.$route.path == "/user/IndexBase"||this.$route.path=="/user/InboxPage") {
                 this.msg++;
               }
             } else {
