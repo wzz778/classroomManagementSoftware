@@ -62,36 +62,21 @@
     >
       <div class="dialogSty">
         <el-form label-width="80px">
-          <el-form-item label="选取课程" v-if="!isChange">
-            <el-select
-              v-model="value"
-              placeholder="请选择"
-              style="margin-right: 20px"
-            >
-              <el-option
-                v-for="item in clas"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              >
-              </el-option>
-            </el-select>
-          </el-form-item>
           <el-form-item label="房间号">
-            <el-input v-model="name" clearable></el-input>
+            <el-input v-model="bvalue" clearable></el-input>
           </el-form-item>
         </el-form>
       </div>
       <div class="dialogOperator">
         <el-button @click="dialogVisible = false" type="">取消</el-button>
-        <el-button @click="dialogVisible = false" type="">确认</el-button>
+        <el-button v-model="bvalue" @click="jin" type="">确认</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { ZaddGrade, ZgetEntered, ZgetOneCourse } from "@/api/user/index";
+import { ZaddGrade } from "@/api/user/index";
 export default {
   name: "UserTop",
   data() {
@@ -101,14 +86,10 @@ export default {
       msg: 1,
       //弹框
       dialogVisible: false,
-      srr: [],
-      clas: [],
-      value:''
+      bvalue: "",
     };
   },
-  mounted: function () {
-    this.Getclass();
-  },
+  mounted: function () {},
   methods: {
     open() {
       console.log("页面链接：" + this.$route.path);
@@ -151,37 +132,21 @@ export default {
     handleSelect(key, keyPath) {
       console.log(key, keyPath);
     },
-    Getclass() {
-      let data = {
-        nodePage: "",
-        pageSize: "",
-      };
-      ZgetEntered(data).then((response) => {
-        if (response.msg == "OK") {
-          this.srr = response.data.records;
-          for (let q = 0; q < response.data.records.length; q++) {
-            this.getAllclass(this.srr[q]);
-          }
-          this.value = this.srr[0].courseId;
-        } else {
-          this.$message.error("暂无数据");
-        }
-      });
-    },
-    getAllclass(se) {
-      let cid = {
-        id: se.courseId,
-      };
-      ZgetOneCourse(cid).then((result) => {
-        if (result.msg == "OK") {
-          let obj = {};
-          obj["value"] = result.data.id;
-          obj["label"] = result.data.courseName;
-          this.clas.push(obj);
-        } else {
-          this.$message.error("暂无数据");
-        }
-      });
+    jin() {
+      this.dialogVisible = false;
+      if (this.bvalue) {
+        this.$router.push({
+          path: "/watchLive",
+          params: {
+            id: this.bvalue,
+          },
+        });
+      } else {
+        this.$message({
+          type: "info",
+          message: "房间号不能为空",
+        });
+      }
     },
     //弹框
     handleClose(done) {
