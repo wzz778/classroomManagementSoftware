@@ -28,6 +28,8 @@ import taskManagement from '@/pages/teacher/taskManagement'
 import ansQuestion from '@/pages/teacher/ansQuestion'
 // 课程详情
 import IndexCourse from '@/pages/student/IndexCourse'
+// 修改信息
+import UserInfo from '@/pages/student/UserInfo'
 export default [
     {
         path: "/teacher",
@@ -122,6 +124,13 @@ export default [
                 component: IndexCourse,
                 meta: {
                     title: "课程详情"
+                }
+            },
+            {
+                path: "UserInfo",
+                component: UserInfo,
+                meta: {
+                    title: "修改信息"
                 }
             }
         ]

@@ -193,3 +193,8 @@ export const deleteTask = async (data) => requests({
     method: "DELETE",
     params: data
 })
+
+export const getUserInfo = async () => requests({
+    url: "/user/getUserInfo",
+    method: "GET"
+})

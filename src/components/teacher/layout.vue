@@ -62,18 +62,21 @@
             <span class="el-dropdown-link">
               <div class="dropDown">
                 <div class="userImg">
-                  <img src="@/assets/logo.png" alt="" />
+                  <img :src="imgUrl" alt="" />
                 </div>
                 <div class="userName">
-                  <span>教师</span>
+                  <span>{{ userName }}</span>
                   <i class="el-icon-arrow-down el-icon--right"></i>
                 </div>
               </div>
             </span>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item>黄金糕</el-dropdown-item>
-              <el-dropdown-item>狮子头</el-dropdown-item>
-              <el-dropdown-item>螺蛳粉</el-dropdown-item>
+              <el-dropdown-item @click.native="changeUser"
+                >修改信息</el-dropdown-item
+              >
+              <el-dropdown-item @click.native="quitLogin"
+                >退出登录</el-dropdown-item
+              >
             </el-dropdown-menu>
           </el-dropdown>
         </div>
@@ -87,11 +90,14 @@
 
 <script>
 import { Dropdown, DropdownItem, DropdownMenu } from "element-ui";
+import { getUserInfo } from "@/api/teacher";
 export default {
   name: "myLayout",
   data() {
     return {
       isCollapse: false,
+      userName: "",
+      imgUrl: "",
     };
   },
   components: {
@@ -106,6 +112,33 @@ export default {
     handleClose(key, keyPath) {
       console.log(key, keyPath);
     },
+    changeUser() {
+      this.$router.push({
+        path: "/teacher/UserInfo",
+      });
+    },
+    getInfo() {
+      getUserInfo().then((result) => {
+        this.userName = result.data.userName;
+        this.imgUrl = result.data.photo;
+      });
+    },
+    quitLogin() {
+      this.$confirm("确定要退出登录吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(() => {
+        window.localStorage.setItem("token", "");
+        this.$store.commit("DELTOKEN", "");
+        this.$router.push({
+          path: "/login",
+        });
+      });
+    },
+  },
+  mounted() {
+    this.getInfo();
   },
 };
 </script>
