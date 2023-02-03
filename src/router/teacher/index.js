@@ -20,6 +20,8 @@ import performanceManagement from '@/pages/teacher/performanceManagement'
 import classroomDiscussion from '@/pages/teacher/classroomDiscussion'
 // 讨论详情
 import discussionDetails from '@/pages/teacher/discussionDetails'
+// 分组管理
+import classroomGroup from '@/pages/teacher/classroomGroup'
 // 观看直播
 import watchLive from '@/pages/teacher/watchLive'
 // 任务管理
@@ -122,6 +124,13 @@ export default [
                 component: IndexCourse,
                 meta: {
                     title: "课程详情"
+                }
+            },
+            {
+                path:'classroomGroup',
+                component:classroomGroup,
+                meta:{
+                    title:'分组管理'
                 }
             }
         ]

@@ -17,8 +17,8 @@
     <el-button type="success" @click="addTopic"
       ><i class="el-icon-plus"></i> 添加话题</el-button
     >
-    <el-empty v-if="tableDate.length==0" description="暂无回复内容"></el-empty>
-    <TopicList v-for="(p) of tableDate"  :key="p.topic.id" style="width:100%" :jsonText="JSON.stringify(p)"/>
+    <!-- <el-empty v-if="tableDate.length==0" description="暂无回复内容"></el-empty> -->
+
     <el-dialog
       style="z-index: 2001"
       title="发布话题"
@@ -72,7 +72,7 @@
 
 <script>
 import {Empty } from "element-ui";
-import { myCourse, publishTopic, getTopic } from "@/api/admin/index";
+import { myCourse, groupingAnd, groupInfo } from "@/api/admin/index";
 import TopicList from "@/components/admin/TopicList";
 import TitleBlock from "@/components/admin/TitleBlock";
 export default {
@@ -145,7 +145,7 @@ export default {
         });
     },
     chagepage() {
-      getTopic(this.searchform)
+      groupInfo(this.searchform)
         .then((data) => {
           console.log(data);
           if (data.status == 200) {
@@ -179,7 +179,7 @@ export default {
       // console.log(this.tableDate);
       this.$refs[formName].validate((valid) =>{
         if (valid) {
-          publishTopic(this.form)
+          groupingAnd(this.form)
             .then((result) => {
               if (result.status == 200) {
                 this.$message({
