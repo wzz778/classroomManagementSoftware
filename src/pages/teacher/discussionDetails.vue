@@ -1,20 +1,13 @@
 <template>
   <div>
-    <el-select v-model="course" placeholder="请选择">
-      <el-option
-        v-for="item in courseArr"
-        :key="item.id"
-        :label="item.courseName"
-        :value="item.id"
-      ></el-option>
-    </el-select>
-    <span style="margin-left: 20px"></span>
-    <el-button type="primary" @click="chagepage"><i class="el-icon-search"></i>  查询</el-button>
-    <el-button type="success" @click="addTopic"><i class="el-icon-plus"></i>  添加话题</el-button>
-    <!-- <TopicList v-for="p of tableData"  :key="p.discuss.id" style="width:100%" headImg="https://online-examination-1311156839.cos.ap-nanjing.myqcloud.com/photo/20230114130755_-589934592.webp" title="试卷总数" number="18"/> -->
-      <!-- {{p.id}}-{{p.name}}-{{p.age}}
-    </TopicList> -->
-    <TopicList ref="topiclist" style="width:100%" headImg="https://online-examination-1311156839.cos.ap-nanjing.myqcloud.com/photo/20230114130755_-589934592.webp" title="试卷总数" number="18"/>
+    <el-button size="medium" type="success" round @click="addDiscuss"><i class="el-icon-plus"></i>  添加评论</el-button>
+    <TitleBlock text="话题内容"/>
+    <TopicList ref="topicList"  style="width:100%" :showmore='false' :jsonText="JSON.stringify(this.topicform)"/>
+    <TitleBlock text="回复内容"/>
+    <div class="discussionBox">
+    <el-empty v-if="discussionDate.length==0" description="暂无回复内容"></el-empty>
+    <DiscussList v-for="(p) of discussionDate"  :key="p.discuss.id"  style="width:100%" :jsonText="JSON.stringify(p)"/>
+    </div>
     <el-dialog style="z-index:2001;" title="发布话题" append-to-body :visible.sync="dialogFormVisible">
       <el-form
         label-position="right"
@@ -22,15 +15,12 @@
         :rules="rules"
         :model="form"
         ref="form">
-      <el-form-item label="话题标题" prop="topicName">
-        <el-input v-model.trim="form.topicName" clearable></el-input>
-      </el-form-item>
       <el-form-item  label="话题内容" prop="topicContent">
-        <el-input type="textarea"  v-model.trim="form.topicContent" clearable></el-input>
+        <el-input type="textarea"  v-model.trim="form.content" clearable></el-input>
       </el-form-item>
        <el-form-item>
         <el-button type="primary" @click="submitForm('form')"
-          >确认更改</el-button
+          >确认评论</el-button
         >
         <el-button @click="resetForm('form')">重置</el-button>
       </el-form-item>
@@ -49,93 +39,38 @@
 </template>
 
 <script>
-import { } from "element-ui";
-import { myCourse ,publishTopic,getTopic} from "@/api/admin/index";
+import {Empty } from "element-ui";
+import {getAllDiscuss,publishDiscuss} from "@/api/admin/index";
 import TopicList from '@/components/admin/TopicList'
+import DiscussList from '@/components/admin/DiscussList'
+import TitleBlock from '@/components/admin/TitleBlock'
 export default {
   name: "discussionDetails",
   components: {
-    [Option.name]: Option,
-    TopicList
+    [Empty.name]: Empty,
+    TopicList,
+    DiscussList,
+    TitleBlock
   },
   data() {
     return {
-      courseArr: [],
-      course: "",
       dialogFormVisible:false,
-      alltotal:100,
+      alltotal:0,
+      topicform:{},
       form:{
-        topicName:"",
-        topicContent:"",
-        courseId:11
+        level:1,
+        content:"",
+        topicId:"",
+        sendId:11,
       },
-      tableData:[
-      {
-        "user": {
-          "studentId": 10,
-          "userName": "20030302123",
-          "password": "$2a$10$LwPMjd0ubsLXV0ZP5kIhpuMCJHLp8kaQMy5O0go9lXtrLmppRwRqG",
-          "email": "3190493163@qq.com",
-          "photo": "https://online-examination-1311156839.cos.ap-nanjing.myqcloud.com/photo/20230131135914_2000000000.jpg",
-          "sex": "女",
-          "name": "无",
-          "gradeId": 0,
-          "nativePlace": "无",
-          "identity": 0,
-          "createTime": "2023-01-31 13:59:49",
-          "updateTime": null,
-          "isDeleted": 0
-        },
-        "discuss": {
-          "id": 2,
-          "topicId": 2,
-          "sendId": 10,
-          "fromId": null,
-          "level": 1,
-          "superId": 0,
-          "content": "11111111111",
-          "createTime": "2023-01-31 16:16:40"
-        },
-      },
-      {
-        "user": {
-          "studentId": 10,
-          "userName": "20030302123",
-          "password": "$2a$10$LwPMjd0ubsLXV0ZP5kIhpuMCJHLp8kaQMy5O0go9lXtrLmppRwRqG",
-          "email": "3190493163@qq.com",
-          "photo": "https://online-examination-1311156839.cos.ap-nanjing.myqcloud.com/photo/20230131135914_2000000000.jpg",
-          "sex": "女",
-          "name": "无",
-          "gradeId": 0,
-          "nativePlace": "无",
-          "identity": 0,
-          "createTime": "2023-01-31 13:59:49",
-          "updateTime": null,
-          "isDeleted": 0
-        },
-        "discuss": {
-          "id": 3,
-          "topicId": 2,
-          "sendId": 10,
-          "fromId": null,
-          "level": 1,
-          "superId": 0,
-          "content": "11111111111",
-          "createTime": "2023-01-31 16:16:56"
-        },
-      },
-      ],
+      discussionDate:[],
       searchform:{
         beginIndex: 1,
         size:5,
-        courseId:11,
+        topicId:"",
       },
       rules: {
-        topicName: [
-          { required: true, message: "请输入话题标题", trigger: "blur" },
-          { min: 3, max: 15, message: "长度在 3 到 15 个字符", trigger: "blur" },
-        ],
-        topicContent: [
+        content: [
           { required: true, message: "请输入话题内容", trigger: "blur" },
           { min: 3, max: 300, message: "长度在 3 到 300 个字符", trigger: "blur" },
         ],
@@ -163,39 +98,39 @@ export default {
         });
     },
     chagepage(){
-      console.log(this.searchform);
-      getTopic(this.searchform)
-        .then(data=>{
+      // console.log("sdas");
+        getAllDiscuss(this.searchform)
+        .then((data) => {
           console.log(data);
-          if(data.status==200){
-            let req=data.data;
-            this.tableData=req.records;
-            if(req.records.length==0){
-              if(this.searchform.nodePage!=1){
-                this.searchform.nodePage--;
-                this.chagepage()
+          if (data.status == 200) {
+            let req = data.data;
+            this.discussionDate = req.list;
+            if (req.list.length == 0) {
+              if (this.searchform.beginIndex != 1) {
+                this.searchform.beginIndex--;
+                this.chagepage();
               }
             }
-            this.alltotal=req.total;
-          }else if(data.status==555){
-            this.tableData=[]
+            this.alltotal = req.allCount;
+          } else if (data.status == 555) {
+            this.discussionDate = [];
           }
         })
-        .catch(error=>{
-            console.log(error);
-        })
-        console.log(this.tableData);
+        .catch((error) => {
+          console.log(error);
+        });
+
     },
-    addTopic(){
+    addDiscuss(){
       this.dialogFormVisible=true;
     },
-    deleteTopic(id){
-      console.log(id);
-    },
+    // deleteTopic(id){
+    //   console.log(id);
+    // },
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          publishTopic(this.form)
+          publishDiscuss(this.form)
           .then((result) => {
             if(result.status==200){
               this.$message({
@@ -204,6 +139,7 @@ export default {
               });
               this.dialogFormVisible=false;
               this.$refs['form'].resetFields();
+              this.chagepage()
             }else{
               this.$message({
                 type: "warning",
@@ -224,12 +160,30 @@ export default {
       this.$refs[formName].resetFields();
     },
   },
+  created(){
+    if(localStorage.getItem("topicForm")){
+      this.topicform=JSON.parse(localStorage.getItem("topicForm"));
+      this.searchform.topicId=this.topicform.topic.id;
+      this.form.topicId=this.topicform.topic.id;
+    }else{
+      this.$router.push({
+        path:"classroomDiscussion",
+        })
+    }
+    
+  },
   mounted() {
-      this.getAllCourse();
-      // this.$refs.topiclist.$on('deleteTopic',this.deleteTopic) //绑定自定义事件
+    this.chagepage();
+    this.$refs.topicList.$on('addDiscuss',this.addDiscuss) //绑定自定义事件
   },
 };
 </script>
 
-<style>
+<style lang="less" scoped>
+  .discussionBox{
+    width: 100%;
+    padding: 5px;
+    background-color: #f6f6f6;
+    border-radius: 5px;
+  }
 </style>

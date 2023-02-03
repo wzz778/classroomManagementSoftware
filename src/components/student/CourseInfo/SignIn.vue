@@ -47,7 +47,7 @@
       </div>
       <div class="detailed" v-show="meet == '签到中'">
         <div class="she" v-show="adatar == '未签到'">
-          <div @click="adatar = '已签到'">
+          <div @click="postChange">
             <i
               class="el-icon-timer"
               style="
@@ -99,6 +99,7 @@
 </template>
 
 <script>
+import { Zsign, ZwhetherSign } from "@/api/user/index";
 import { Breadcrumb, BreadcrumbItem } from "element-ui";
 export default {
   name: "SignIn",
@@ -112,11 +113,40 @@ export default {
       meet: this.check,
       text: "我是子组件传递的数据，我要发送给父组件",
       jiao: "任务",
+      sid: this.$route.query.id,
     };
   },
+  mounted: function () {
+    // this.just();
+  },
   methods: {
+    postChange() {
+      let data = {
+        courseId: this.sid,
+      };
+      Zsign(data).then((result) => {
+        console.log("签到状态", result);
+        if (result.data == "已签到") {
+          this.adatar = "已签到";
+        }
+      });
+    },
     changeFatherData() {
       this.$emit("changeMsg", this.text, this.jiao);
+    },
+    just() {
+      let data = {
+        courseId: this.sid,
+      };
+      ZwhetherSign(data).then((result) => {
+        console.log("信息", result);
+        if (result.data == "已签到") {
+          this.adatar = "已签到";
+        } else {
+          
+          this.adatar = "未签到";
+        }
+      });
     },
   },
   components: {
@@ -250,7 +280,7 @@ img {
 i:hover {
   cursor: pointer;
 }
-span:hover{
-cursor: pointer;
+span:hover {
+  cursor: pointer;
 }
 </style>

@@ -3,7 +3,7 @@
     <!-- 显示班级 -->
     <el-form label-width="80px">
       <el-row>
-        <el-col :span="8">
+        <el-col :span="6">
           <el-form-item label="课程">
             <el-select v-model="course" placeholder="请选择">
               <el-option
@@ -13,13 +13,11 @@
                 :value="item.id"
               ></el-option>
             </el-select>
-            <span style="margin-left: 20px"></span>
-            <el-button type="primary" @click="searchByCourse">查询</el-button>
           </el-form-item>
         </el-col>
         <el-col :span="8">
           <el-form-item label="班级:">
-            <el-select v-model="className" placeholder="请选择班级">
+            <el-select v-model="className" clearable placeholder="请选择班级">
               <el-option
                 v-for="item in gradeArr"
                 :key="item.id"
@@ -28,7 +26,7 @@
               ></el-option>
             </el-select>
             <span style="margin-left: 20px"></span>
-            <el-button type="primary" @click="searchByClass">查询</el-button>
+            <el-button type="primary" @click="searchFn">查询</el-button>
           </el-form-item>
         </el-col>
         <el-col :span="3">
@@ -41,25 +39,29 @@
     <div class="sign">
       <div class="signItem">
         <span>已签</span>
+        <div class="noInfo" v-show="signedUser.length == 0">
+          <span>还没有已签到的人</span>
+        </div>
         <div class="signStudent">
           <div class="studentItem" v-for="item in signedUser" :key="item.id">
             <span class="studentInfo">
               <img :src="item.photo" alt="" />
               <span>{{ item.userName }}</span>
             </span>
-            <button class="operatorBtn">删除</button>
           </div>
         </div>
       </div>
       <div class="signItem">
         <span>未签</span>
+        <div class="noInfo" v-show="unSignUser.length == 0">
+          <span>还没有未签到的人</span>
+        </div>
         <div class="signStudent">
           <div class="studentItem" v-for="item in unSignUser" :key="item.id">
             <span class="studentInfo">
               <img :src="item.photo" alt="" />
               <span>{{ item.userName }}</span>
             </span>
-            <button class="operatorBtn">补签</button>
           </div>
         </div>
       </div>
@@ -119,6 +121,7 @@ import {
   myCourse,
   signCourse,
   getCourseSignInfo,
+  addMessage,
 } from "@/api/teacher";
 
 export default {
@@ -169,9 +172,15 @@ export default {
               type: "success",
               message: "已发布",
             });
-            this.clearAll();
             this.dialogVisible = false;
-            return;
+            return addMessage({
+              content: JSON.stringify({
+                createTime: this.startTime,
+                endTime: this.endTime,
+              }),
+              courseId: this.classAll,
+              type: 1,
+            });
           }
           this.$message({
             type: "warning",
@@ -179,6 +188,10 @@ export default {
           });
           this.dialogVisible = false;
           this.clearAll();
+        })
+        .then((result) => {
+          this.clearAll();
+          console.log("发送信息", result);
         })
         .catch((err) => {
           console.log(err);
@@ -193,33 +206,6 @@ export default {
     },
     addFn() {
       this.dialogVisible = true;
-    },
-    searchByCourse() {
-      if (this.course == "") {
-        this.$message({
-          message: "请选择课程",
-          type: "warning",
-        });
-        return;
-      }
-      this.className = "";
-      getCourseSignInfo({
-        courseId: this.course,
-      }).then((result) => {
-        this.signedUser = result.data.signedUser;
-        this.unSignUser = result.data.unSignUser;
-      });
-    },
-    searchByClass() {
-      // 判断是否为空
-      if (this.className.replace(/(^\s*)|(\s*$)/g, "") == "") {
-        this.$message({
-          message: "请选择班级",
-          type: "warning",
-        });
-        return;
-      }
-      this.course = "";
     },
     getAllGradeFn() {
       getGrade({
@@ -244,17 +230,38 @@ export default {
         .then((result) => {
           this.courseArr = result.data.records;
           this.course = this.courseArr[0].id;
-          this.searchByCourse();
+          this.searchFn();
         })
         .catch((err) => {
           console.log(err);
         });
     },
-  },
-  clearAll() {
-    this.startTime = "";
-    this.endTime = "";
-    this.classAll = "";
+    clearAll() {
+      this.startTime = "";
+      this.endTime = "";
+      this.classAll = "";
+    },
+    searchFn() {
+      let obj = {
+        courseId: this.course,
+      };
+      if (this.className) {
+        obj.gradeId = this.className;
+      }
+      getCourseSignInfo(obj).then((result) => {
+        if (result.msg != "OK") {
+          this.$message({
+            message: "该班级没有学生",
+            type: "warning",
+          });
+          this.signedUser = [];
+          this.unSignUser = [];
+          return;
+        }
+        this.signedUser = result.data.signedUser ? result.data.signedUser : [];
+        this.unSignUser = result.data.unSignUser ? result.data.unSignUser : [];
+      });
+    },
   },
   mounted() {
     this.getAllGradeFn();
@@ -327,5 +334,11 @@ export default {
 
 .studentInfo > span {
   margin-left: 20px;
+}
+
+.noInfo > span {
+  display: inline-block;
+  width: 100%;
+  text-align: center;
 }
 </style>

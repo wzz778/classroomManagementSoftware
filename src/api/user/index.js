@@ -23,3 +23,44 @@ export const ZgetOneCourse= async (data) =>requests({
     method:'get',
     params:data,
 });
+//点击签到改变状态（已使用）
+export const Zsign= async (data) =>requests({
+    url:'user/sign',
+    method:'post',
+    params:data,
+});
+//获取签到状态（已使用）
+export const ZwhetherSign= async (data) =>requests({
+    url:'user/whetherSign',
+    method:'get',
+    params:data,
+});
+//获取单个课程任务（已使用）
+export const ZgetTask= async (data) =>requests({
+    url:'homework/getTask',
+    method:'get',
+    params:data,
+});
+//获取单个课程作业（已使用）
+export const ZgetHomework= async (data) =>requests({
+    url:'homework/getHomework',
+    method:'get',
+    params:data,
+});
+//获取教师信息（已使用）
+export const ZgetTeacherInfo= async (data) =>requests({
+    url:'user/getTeacherInfo',
+    method:'get',
+    params:data,
+});
+//获取课程消息信息（已使用）
+export const ZgetMessage= async (data) =>requests({
+    url:'message/getMessage',
+    method:'get',
+    params:data,
+});
+//获取用户信息（已使用）
+export const ZgetUserInfo= async () =>requests({
+    url:'user/getUserInfo',
+    method:'get',
+});

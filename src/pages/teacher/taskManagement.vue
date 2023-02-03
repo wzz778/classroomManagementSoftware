@@ -38,7 +38,7 @@ import gapFilling from "@/components/teacher/allQuestion/gapFilling";
 // 简答
 import shortAnswer from "@/components/teacher/allQuestion/shortAnswer";
 import { Row, Col, Card, DatePicker } from "element-ui";
-import { getTask } from "@/api/teacher";
+import { getTask, deleteTask } from "@/api/teacher";
 export default {
   name: "operationList",
   components: {
@@ -85,6 +85,11 @@ export default {
         //   函数
         objFn: [
           {
+            type: "",
+            callFn: this.detailsFn,
+            showInfo: "详情",
+          },
+          {
             type: "danger",
             callFn: this.deleteFn,
             showInfo: "删除",
@@ -111,13 +116,23 @@ export default {
       this.getTaskInfo();
     },
     deleteFn(obj) {
-      console.log(obj);
-      this.$confirm("确定要删除班级吗?", "提示", {
+      this.$confirm("确定要删除任务吗?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       })
-        .then(() => {})
+        .then(() => {
+          deleteTask({
+            taskId: obj.task.id,
+          }).then((result) => {
+            console.log("删除", result);
+            this.$message({
+              type: "success",
+              message: "已删除",
+            });
+            this.getTaskInfo();
+          });
+        })
         .catch(() => {
           this.$message({
             type: "info",
@@ -129,11 +144,11 @@ export default {
       this.$router.push({
         path: "/teacher/jobDetails",
         query: {
-          id: obj.id,
+          id: obj.task.id,
+          homeworkId: obj.task.homeworkId,
         },
       });
     },
-    getAllGradeFn() {},
     handleClose(done) {
       this.$confirm("确认关闭？")
         .then(() => {

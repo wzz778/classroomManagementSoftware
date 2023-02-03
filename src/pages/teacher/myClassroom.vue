@@ -1,10 +1,7 @@
 <template>
   <div class="">
     <div class="addSty">
-      <el-button @click="dialogVisible = true" type="success"
-        >添加课程</el-button
-      >
-      <myLive></myLive>
+      <el-button @click="addShow" type="success">添加课程</el-button>
     </div>
     <div class="card">
       <template v-for="(item, index) in myCourse">
@@ -17,14 +14,14 @@
               </button>
               <button
                 class="delBtn copyBtn changeBtn"
-                @click="changeShow(item.id)"
+                @click="changeShow(item)"
               >
                 修改
               </button>
             </div>
-            <img :src="item.cover" alt="" />
+            <img :src="item.cover" alt="" @click="jumpDetails(item.id)" />
           </div>
-          <div class="cardInfo">
+          <div class="cardInfo" @click="jumpDetails(item.id)">
             <div class="infoText">
               <span>{{ item.courseName }}</span>
             </div>
@@ -49,7 +46,7 @@
           <el-form-item label="课程名称" v-if="!isChange">
             <el-input v-model="name" clearable></el-input>
           </el-form-item>
-          <el-form-item label="课程简介" v-if="!isChange">
+          <el-form-item label="课程简介">
             <el-input type="textarea" v-model="desc" clearable></el-input>
           </el-form-item>
           <el-form-item label="上传图片">
@@ -76,10 +73,18 @@
         </el-form>
       </div>
       <div class="dialogOperator">
-        <el-button @click="handelSend" type="success" v-if="!isChange"
+        <el-button
+          @click="handelSend"
+          type="success"
+          v-if="!isChange"
+          :disabled="isUpload"
           >提交</el-button
         >
-        <el-button @click="changeClass" type="warning" v-if="isChange"
+        <el-button
+          @click="changeClass"
+          type="warning"
+          v-if="isChange"
+          :disabled="isUpload"
           >修改</el-button
         >
         <el-button @click="dialogVisible = false" type="">取消</el-button>
@@ -91,7 +96,6 @@
 <script>
 import { Upload } from "element-ui";
 import { addCourse, myCourse, updateCover, deleteCourse } from "@/api/teacher";
-import myLive from "@/components/teacher/utilComponents/myLive";
 export default {
   name: "myClassroom",
   data() {
@@ -104,13 +108,17 @@ export default {
       isChange: false,
       myCourse: [],
       changeId: "",
+      isUpload: false,
     };
   },
   components: {
     [Upload.name]: Upload,
-    myLive: myLive,
   },
   methods: {
+    addShow() {
+      this.clearAll();
+      this.dialogVisible = true;
+    },
     handleClose(done) {
       this.$confirm("确认关闭？")
         .then(() => {
@@ -139,19 +147,22 @@ export default {
       );
     },
     handelSend() {
+      this.isUpload = true;
       // 判断是否为空值
       if (this.name.replace(/(^\s*)|(\s*$)/g, "") == "") {
         this.$message({
           message: "请输入课程名字",
           type: "warning",
         });
+        this.isUpload = false;
         return;
       }
       if (this.desc.replace(/(^\s*)|(\s*$)/g, "") == "") {
         this.$message({
-          message: "请输入课程名字",
+          message: "请输入课程简介",
           type: "warning",
         });
+        this.isUpload = false;
         return;
       }
       if (this.fileList.length == 0) {
@@ -159,6 +170,7 @@ export default {
           message: "请上传封面",
           type: "warning",
         });
+        this.isUpload = false;
         return;
       }
       //   这里需要判断一下文件大小或者类型
@@ -180,16 +192,19 @@ export default {
             type: "success",
           });
           this.clearAll();
+          this.isUpload = false;
           this.getInfo();
         })
         .catch((err) => {
           console.log(err);
         });
     },
-    changeShow(id) {
+    changeShow(obj) {
       this.dialogVisible = true;
       this.isChange = true;
-      this.changeId = id;
+      this.changeId = obj.id;
+      this.desc = obj.details;
+      this.fileList = [];
     },
     clearAll() {
       this.dialogVisible = false;
@@ -208,16 +223,41 @@ export default {
       });
     },
     changeClass() {
+      this.isUpload = true;
+      if (this.fileList.length == 0) {
+        this.$message({
+          message: "请上传封面",
+          type: "warning",
+        });
+        this.isUpload = false;
+        return;
+      }
+      if (this.desc.replace(/(^\s*)|(\s*$)/g, "") == "") {
+        this.$message({
+          message: "请输入课程简介",
+          type: "warning",
+        });
+        this.isUpload = false;
+        return;
+      }
       let formdata = new FormData();
       for (let i = 0; i < this.fileList.length; i++) {
+        if (this.fileList[i].raw.type.split("/")[0] != "image") {
+          this.$message({
+            message: "请上传图片",
+            type: "warning",
+          });
+          this.isUpload = false;
+          return;
+        }
         // 我们上传的文件保存在每个文件对象的raw里边
         formdata.append("newCover", this.fileList[i].raw);
       }
-      // formdata.append("id", id);
       // 修改图片
       let obj = {
         formdata: formdata,
         id: this.changeId,
+        detail: this.desc,
       };
       updateCover(obj)
         .then(() => {
@@ -226,6 +266,7 @@ export default {
             type: "success",
           });
           this.getInfo();
+          this.isUpload = false;
         })
         .catch((err) => {
           console.log(err);
@@ -273,6 +314,15 @@ export default {
           });
         });
     },
+    jumpDetails(id) {
+      console.log(id);
+      this.$router.push({
+        path: "/teacher/IndexCourse",
+        query: {
+          id: id,
+        },
+      });
+    },
   },
   mounted() {
     this.getInfo();
@@ -318,6 +368,10 @@ export default {
   border: none;
   cursor: pointer;
   color: red;
+}
+
+.cardItem {
+  cursor: pointer;
 }
 
 .cardItem:hover .operator {

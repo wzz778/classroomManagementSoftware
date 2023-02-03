@@ -76,8 +76,7 @@ export default {
                 type: "success",
                 message: "加入课程成功",
               });
-              if (this.$route.path == "/user/IndexBase") {
-                //4
+              if (this.$route.path == "/user/IndexBase"||this.$route.path=="/user/InboxPage") {
                 this.msg++;
               }
             } else {
@@ -112,9 +111,6 @@ export default {
 <style lang="less" scoped>
 .nav {
   ul {
-    // position: fixed;
-    // top: 0px;
-    // z-index: 5;
     height: 60px;
     width: 100%;
     li {

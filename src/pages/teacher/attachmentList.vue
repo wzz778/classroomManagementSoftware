@@ -75,7 +75,9 @@
         </el-form>
       </div>
       <div class="dialogOperator">
-        <el-button @click="handelSend" type="success">提交</el-button>
+        <el-button @click="handelSend" :disabled="isUpload" type="success"
+          >提交</el-button
+        >
         <el-button @click="dialogVisible = false" type="">取消</el-button>
       </div>
     </el-dialog>
@@ -101,7 +103,7 @@
 import myPaging from "@/components/teacher/utilComponents/myPaging.vue";
 import myList from "@/components/teacher/utilComponents/myList.vue";
 import { Upload } from "element-ui";
-import { myCourse, uploadFile, getFiles } from "@/api/teacher";
+import { myCourse, uploadFile, getFiles, deleteFile } from "@/api/teacher";
 export default {
   name: "attachmentList",
   components: {
@@ -155,6 +157,7 @@ export default {
       gradeArr: [],
       fileCourseId: "",
       searchCourseId: "",
+      isUpload: false,
     };
   },
   methods: {
@@ -181,12 +184,14 @@ export default {
       return this.$confirm(`确定移除 ${file.name}？`);
     },
     handelSend() {
+      this.isUpload = true;
       // 判断是否为空值
       if (this.fileName.replace(/(^\s*)|(\s*$)/g, "") == "") {
         this.$message({
           message: "请输入文件名字",
           type: "warning",
         });
+        this.isUpload = false;
         return;
       }
       if (this.fileCourseId == "") {
@@ -194,6 +199,7 @@ export default {
           message: "请选择课程",
           type: "warning",
         });
+        this.isUpload = false;
         return;
       }
       if (this.fileList.length == 0) {
@@ -201,6 +207,7 @@ export default {
           message: "请上传文件",
           type: "warning",
         });
+        this.isUpload = false;
         return;
       }
       //   这里需要判断一下文件大小或者类型
@@ -215,14 +222,14 @@ export default {
       //   添加其他属性
       // 发送请求
       uploadFile(formdata)
-        .then((result) => {
-          console.log(result);
+        .then(() => {
           this.$message({
             message: "上传成功",
             type: "success",
           });
           this.clearAll();
           this.dialogVisible = false;
+          this.isUpload = false;
           this.getInfo();
         })
         .catch((err) => {
@@ -243,12 +250,23 @@ export default {
       this.getInfo();
     },
     deleteFn(obj) {
-      this.$confirm("确定要删除班级吗?", "提示", {
+      console.log(obj);
+      this.$confirm("确定要删除附件吗?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       })
-        .then(() => {})
+        .then(() => {
+          deleteFile({
+            id: obj.id,
+          }).then(() => {
+            this.$message({
+              type: "success",
+              message: "已删除",
+            });
+            this.getInfo();
+          });
+        })
         .catch(() => {
           this.$message({
             type: "info",
@@ -283,7 +301,6 @@ export default {
         pageSize: this.pageSize,
       })
         .then((result) => {
-          console.log(result);
           this.allNums = result.data.total;
           this.myListConfiguration.tableData = result.data.records;
         })
@@ -292,7 +309,6 @@ export default {
         });
     },
     dowmLoadFn(obj) {
-      console.log(obj);
       this.downfile2(obj.fileAddress, obj.fileName);
     },
     //运行时调用downfile2函数就行第一个参数是下载的地址，第二个是文件名

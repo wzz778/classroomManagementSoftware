@@ -12,10 +12,11 @@ export const myCourse = async (data) => requests({
 })
 
 export const updateCover = async (data) => requests({
-    url: "/course/updateCover",
+    url: "/course/updateCoverOrDetail",
     method: "PUT",
     params: {
-        id: data.id
+        id: data.id,
+        detail: data.detail
     },
     data: data.formdata
 })
@@ -87,13 +88,14 @@ export const getHomework = async (data) => requests({
 })
 // 获取直播推流地址
 export const createPushUrl = async () => requests({
-    url: "/createPushUrl",
+    url: "/live/createPushUrl",
     method: 'POST'
 })
 // 获取直播拉流地址
-export const createPlayUrl = async () => requests({
-    url: "/createPlayUrl",
-    method: 'POST'
+export const createPlayUrl = async (data) => requests({
+    url: "/live/createPlayUrl",
+    method: 'POST',
+    params: data
 })
 
 export const resetPassword = async (data) => requests({
@@ -136,4 +138,63 @@ export const randomName = async (data) => requests({
     url: "/teacher/randomName",
     method: "GET",
     params: data
+})
+
+export const addMessage = async (data) => requests({
+    url: "/message/addMessage",
+    method: "POST",
+    params: data
+})
+
+// 发送弹幕
+export const sendMessage = async (data) => requests({
+    url: "/live/sendMessage",
+    method: "POST",
+    params: data
+})
+
+export const getTaskInfo = async (data) => requests({
+    url: "/homework/getTaskInfo",
+    method: "GET",
+    params: data
+})
+
+export const publishQuestion = async (data) => requests({
+    url: "/homework/publishQuestion",
+    method: "POST",
+    data: data.question,
+    params: data.params
+})
+
+export const getOutcome = async () => requests({
+    url: "/homework/getOutcome",
+    method: "GET"
+})
+
+export const getMyPerformanceByUserId = async (data) => requests({
+    url: "/user/getMyPerformanceByUserId",
+    method: "GET",
+    params: data
+})
+
+export const getTerm = async () => requests({
+    url: "/user/getTerm",
+    method: "GET"
+})
+
+export const deleteFile = async (data) => requests({
+    url: "/teacher/deleteFile",
+    method: "DELETE",
+    params: data
+})
+
+export const deleteTask = async (data) => requests({
+    url: "/homework/deleteTask",
+    method: "DELETE",
+    params: data
+})
+
+export const getUserInfo = async () => requests({
+    url: "/user/getUserInfo",
+    method: "GET"
 })
