@@ -7,6 +7,7 @@
         v-model="value1"
         active-color="#13ce66"
         inactive-color="#ff4949"
+        @change="changeFn"
       >
       </el-switch>
     </div>
@@ -31,7 +32,7 @@
         <el-form-item label="字体颜色">
           <el-color-picker v-model="color"> </el-color-picker>
         </el-form-item>
-        <el-form-item>
+        <el-form-item label="字体大小">
           <div class="block">
             <el-slider v-model="fontSize" show-input> </el-slider>
           </div>
@@ -80,7 +81,7 @@ export default {
     },
     watchLive() {
       createPlayUrl({
-        bizid: this.$router.query.id,
+        bizid: this.$route.query.id || window.localStorage.a,
       }).then((result) => {
         console.log(result);
         this.watchUrl = result;
@@ -108,7 +109,7 @@ export default {
       };
       sendMessage({
         message: JSON.stringify(obj),
-        bizid: this.$router.query.id,
+        bizid: this.$route.query.id || window.localStorage.a,
       }).then((result) => {
         console.log("发布弹幕", result);
       });
@@ -163,6 +164,17 @@ export default {
       this.ws.onerror = this.onerror;
       this.ws.onopen = this.onopen;
     },
+    changeFn(value) {
+      if (value) {
+        this.barage.isPlay = true;
+        this.$refs.canvas.style.display = "";
+        this.barage.render();
+        return;
+      }
+      this.barage.isPlay = false;
+      // 隐藏canvas
+      this.$refs.canvas.style.display = "none";
+    },
   },
   mounted() {
     this.$nextTick().then(() => {
@@ -193,7 +205,10 @@ export default {
 #release {
   cursor: pointer;
   margin-bottom: 10px;
-  padding: 6px;
+  padding: 10px;
+  padding-top: 5px;
+  background-color: black;
+  color: white;
 }
 
 #canvas {

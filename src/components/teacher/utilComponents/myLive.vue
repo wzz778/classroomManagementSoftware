@@ -1,23 +1,39 @@
 <template>
   <div class="liveBtnSty">
-    <el-button
-      v-if="!livePusher || !livePusher.isPushing()"
-      type="primary"
-      @click="liveInit"
-      >开启直播</el-button
-    >
-    <template v-if="livePusher && livePusher.isPushing()">
-      <el-button type="primary" @click="stopLive">关闭直播</el-button>
-    </template>
-    <el-button type="success">随机点名</el-button>
-    <el-button @click="dialogVisible = true" type="info">发布问题</el-button>
-    <el-button type="warning" @click="ansQusetionDetails"
-      >回答问题详情</el-button
-    >
+    <div class="myOperator">
+      <el-button
+        style="padding: 11px"
+        v-if="!livePusher || !livePusher.isPushing()"
+        type="primary"
+        @click="liveInit"
+        >开启直播</el-button
+      >
+      <template v-if="livePusher && livePusher.isPushing()">
+        <el-button type="primary" @click="stopLive" style="padding: 11px"
+          >关闭直播</el-button
+        >
+      </template>
+      <el-button type="success" style="padding: 11px" @click="getRandomName"
+        >随机点名</el-button
+      >
+      <el-button @click="dialogVisible = true" type="info" style="padding: 11px"
+        >发布问题</el-button
+      >
+      <el-button
+        type="warning"
+        @click="ansQusetionDetails"
+        style="padding: 11px"
+        >回答问题详情</el-button
+      >
+    </div>
     <el-dialog title="提示" :visible.sync="dialogVisible" width="60%">
       <el-form label-width="80px">
         <el-form-item label="题干">
-          <el-input v-model="question" placeholder="请输入"></el-input>
+          <el-input
+            v-model="question"
+            @click.native="questionThem"
+            placeholder="请输入"
+          ></el-input>
         </el-form-item>
         <el-form-item label="选项">
           <template v-for="(item, index) in showOptions">
@@ -46,14 +62,19 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="getRandomName">确 定</el-button>
+        <el-button type="primary" @click="submitFn">确 定</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { createPushUrl, randomName, addMessage } from "@/api/teacher/";
+import {
+  createPushUrl,
+  randomName,
+  addMessage,
+  publishQuestion,
+} from "@/api/teacher/";
 import { Radio } from "element-ui";
 export default {
   name: "liveUtil",
@@ -86,6 +107,7 @@ export default {
       ],
       trueOptions: "",
       bizid: "",
+      union: "",
     };
   },
   methods: {
@@ -94,13 +116,14 @@ export default {
       createPushUrl()
         .then((result) => {
           console.log(result);
+          window.localStorage.setItem("a", result.data.bizid);
           this.bizid = result.data.bizid;
           this.pushUrl = result.data.address.replace("rtmp", "webrtc");
           this.livePusher = new TXLivePusher();
           this.startLive();
           return addMessage({
             content: this.bizid,
-            courseId: this.$router.query.id,
+            courseId: this.$route.query.id,
             type: 5,
           });
         })
@@ -155,20 +178,125 @@ export default {
         .catch(() => {});
     },
     getRandomName() {
-      randomName();
+      randomName({ id: this.$route.query.id }).then((result) => {
+        console.log(result);
+        this.$confirm(
+          `账号：${result.data.userName}，姓名：${result.data.name}`,
+          "提示",
+          {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning",
+          }
+        )
+          .then(() => {})
+          .catch(() => {});
+      });
     },
     ansQusetionDetails() {
+      if (this.union == "" && window.localStorage.union == "") {
+        this.$message.error("请先发布课堂问题");
+        return;
+      }
       this.$router.push({
         path: "/teacher/ansQuestion",
-      });
-    },
-    jump() {
-      this.$router.push({
-        path: "/watchLive",
         query: {
-          id: this.bizid,
+          id: this.union == "" ? window.localStorage.union : this.union,
         },
       });
+    },
+    questionThem() {
+      this.$myRichText({ oriHtml: this.question })
+        .then((result) => {
+          this.question = result;
+        })
+        .catch(() => {});
+    },
+    getTime() {
+      let date = new Date();
+      return date.getSeconds();
+    },
+    getUnion() {
+      this.union = Date.now();
+      window.localStorage.setItem("union", this.union);
+      return this.union;
+    },
+    submitFn() {
+      if (this.question.replace(/(^\s*)|(\s*$)/g, "") == "") {
+        this.$message({
+          message: "请输入题干",
+          type: "warning",
+        });
+        return;
+      }
+      if (this.trueOptions == "") {
+        this.$message({
+          message: "请输入正确答案",
+          type: "warning",
+        });
+        return;
+      }
+      for (let i = 0; i < this.showOptions.length; i++) {
+        if (this.showOptions[i].value.replace(/(^\s*)|(\s*$)/g, "") == "") {
+          this.$message({
+            message: `请输入第${i + 1}选项的值`,
+            type: "warning",
+          });
+          return;
+        }
+      }
+      let obj = {
+        question: JSON.stringify({
+          topicInfo: this.question,
+          optionsInfo: {
+            ...this.showOptions,
+          },
+        }),
+        params: {
+          answer: this.trueOptions,
+          time: this.getTime(),
+          union: this.getUnion(),
+        },
+      };
+      publishQuestion(obj)
+        .then(() => {
+          this.dialogVisible = false;
+          this.clearAll();
+          return addMessage({
+            content: this.union,
+            courseId: this.$route.query.id,
+            type: 2,
+          });
+        })
+        .then((result) => {
+          console.log("发布消息", result);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    clearAll() {
+      this.union = "";
+      this.trueOptions = "";
+      this.question = "";
+      this.showOptions = [
+        {
+          options: "A",
+          value: "",
+        },
+        {
+          options: "B",
+          value: "",
+        },
+        {
+          options: "C",
+          value: "",
+        },
+        {
+          options: "D",
+          value: "",
+        },
+      ];
     },
   },
   mounted() {},

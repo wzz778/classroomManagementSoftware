@@ -2,7 +2,6 @@
   <div class="">
     <div class="addSty">
       <el-button @click="addShow" type="success">添加课程</el-button>
-      <myLive></myLive>
     </div>
     <div class="card">
       <template v-for="(item, index) in myCourse">
@@ -20,9 +19,9 @@
                 修改
               </button>
             </div>
-            <img :src="item.cover" alt="" />
+            <img :src="item.cover" alt="" @click="jumpDetails(item.id)" />
           </div>
-          <div class="cardInfo">
+          <div class="cardInfo" @click="jumpDetails(item.id)">
             <div class="infoText">
               <span>{{ item.courseName }}</span>
             </div>
@@ -97,7 +96,6 @@
 <script>
 import { Upload } from "element-ui";
 import { addCourse, myCourse, updateCover, deleteCourse } from "@/api/teacher";
-import myLive from "@/components/teacher/utilComponents/myLive";
 export default {
   name: "myClassroom",
   data() {
@@ -115,7 +113,6 @@ export default {
   },
   components: {
     [Upload.name]: Upload,
-    myLive: myLive,
   },
   methods: {
     addShow() {
@@ -317,6 +314,15 @@ export default {
           });
         });
     },
+    jumpDetails(id) {
+      console.log(id);
+      this.$router.push({
+        path: "/teacher/IndexCourse",
+        query: {
+          id: id,
+        },
+      });
+    },
   },
   mounted() {
     this.getInfo();
@@ -362,6 +368,10 @@ export default {
   border: none;
   cursor: pointer;
   color: red;
+}
+
+.cardItem {
+  cursor: pointer;
 }
 
 .cardItem:hover .operator {

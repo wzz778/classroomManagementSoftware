@@ -152,3 +152,49 @@ export const sendMessage = async (data) => requests({
     method: "POST",
     params: data
 })
+
+export const getTaskInfo = async (data) => requests({
+    url: "/homework/getTaskInfo",
+    method: "GET",
+    params: data
+})
+
+export const publishQuestion = async (data) => requests({
+    url: "/homework/publishQuestion",
+    method: "POST",
+    data: data.question,
+    params: data.params
+})
+
+export const getOutcome = async () => requests({
+    url: "/homework/getOutcome",
+    method: "GET"
+})
+
+export const getMyPerformanceByUserId = async (data) => requests({
+    url: "/user/getMyPerformanceByUserId",
+    method: "GET",
+    params: data
+})
+
+export const getTerm = async () => requests({
+    url: "/user/getTerm",
+    method: "GET"
+})
+
+export const deleteFile = async (data) => requests({
+    url: "/teacher/deleteFile",
+    method: "DELETE",
+    params: data
+})
+
+export const deleteTask = async (data) => requests({
+    url: "/homework/deleteTask",
+    method: "DELETE",
+    params: data
+})
+
+export const getUserInfo = async () => requests({
+    url: "/user/getUserInfo",
+    method: "GET"
+})

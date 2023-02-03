@@ -122,7 +122,7 @@ export default {
         tableData:Array(0).fill(item),
         level:"",
         pagesize:5,
-        alltotal:100,
+        alltotal:0,
         dialogFormVisible:false,
         form:{
           courseName:"",
@@ -246,17 +246,28 @@ export default {
       //     }
       // },//1368
       toidentity(value){
-        if(value==0){
-          return"学生"
-        }else if(value==1){
-          return"老师"
-        }else{
-          return"管理"
-        }
-        }
+          if(value==0){
+            return"学生"
+          }else if(value==1){
+            return"老师"
+          }else{
+            return"管理"
+          }
+      }
+  },
+  created(){
+    if(sessionStorage.getItem("usersListSearch")){
+      this.searchform=JSON.parse(sessionStorage.getItem("usersListSearch"))
+    }
   },
    mounted(){
     this.chagepage()
+  },
+  beforeRouteLeave (to, from, next) {
+    if(sessionStorage.getItem("usersListSearch")){
+      sessionStorage.removeItem("usersListSearch")
+    }
+    next()
   }
 }
 </script>

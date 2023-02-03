@@ -21,16 +21,19 @@
         <el-table-column
         prop="className"
         label="班级名称"
+         width="100"
         > 
         </el-table-column>
         <el-table-column
         prop="code"
         label="班级码"
+        width="110"
         >
         </el-table-column>
         <el-table-column
         prop="createName"
         label="创建人ID"
+        width="60"
         >
         </el-table-column>
         <el-table-column
@@ -41,6 +44,7 @@
         <el-table-column
           prop="deleted"
           label="状态"
+          width="70"
         >
           <template slot-scope="scope">
             <el-tag :type="scope.row.deleted? 'warning' : 'success'">{{scope.row.deleted|toch()}}</el-tag>
@@ -50,6 +54,7 @@
         label="操作"
         >
         <template slot-scope="scope">
+            <el-button @click="watchClick(scope.row)" type="success" size="small">人员</el-button>
             <el-button @click="editclick(scope.row)" type="primary" size="small">修改</el-button>
             <el-button @click="deleteClick(scope.row.id)" type="danger" size="small">删除</el-button>
         </template>
@@ -99,7 +104,7 @@ export default {
         tableData:[],
         level:"",
         pagesize:5,
-        alltotal:100,
+        alltotal:0,
         dialogFormVisible: false,
         redeleted: false,
         searchform:{
@@ -127,6 +132,17 @@ export default {
       },
       watchClick(row) {
         console.log(row);
+        this.$router.replace({
+            name:"UsersList",
+        })
+        let searchform={
+          nodePage: 1,
+          pageSize:5,
+          gradeId:row.id,
+          sex:''
+        }
+        sessionStorage.setItem("usersListSearch",JSON.stringify(searchform))
+        // sessionStorage.setItem("AdminClassMessage",JSON.stringify(row))
       },
       deleteClick(row) {
         this.$confirm("确定要删除课程吗?", "提示", {
