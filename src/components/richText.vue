@@ -88,9 +88,6 @@ export default {
           console.log("成功", result);
         },
         customInsert: (insertImg, result, editor) => {
-          // 图片上传成功，插入图片的回调
-          console.log(result);
-          console.log(editor);
           insertImg(result.data);
         },
       };
@@ -117,7 +114,6 @@ export default {
     },
     // 销毁
     destruction() {
-      //   console.log("是否销毁呢");
       this.editor.destroy(true);
       this.editor = null;
       //   销毁实例

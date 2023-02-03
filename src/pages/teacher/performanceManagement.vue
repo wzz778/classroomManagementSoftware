@@ -87,7 +87,6 @@ export default {
     getInfo() {
       getOutcome()
         .then((result) => {
-          console.log(result);
           let obj = [];
           for (
             let i = 0;

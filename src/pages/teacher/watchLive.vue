@@ -83,7 +83,6 @@ export default {
       createPlayUrl({
         bizid: this.$route.query.id || window.localStorage.a,
       }).then((result) => {
-        console.log(result);
         this.watchUrl = result;
         this.player.src(this.watchUrl); // url 播放地址
         setTimeout(() => {
@@ -110,8 +109,7 @@ export default {
       sendMessage({
         message: JSON.stringify(obj),
         bizid: this.$route.query.id || window.localStorage.a,
-      }).then((result) => {
-        console.log("发布弹幕", result);
+      }).then(() => {
       });
       this.dialogVisible = false;
     },
@@ -145,12 +143,10 @@ export default {
       // this.$refs.canvas.onmouseleave = this.move();
     },
     onmessage(msg) {
-      console.log(msg.data);
       this.barage.setBarrage(JSON.parse(msg.data));
     },
     onerror(err) {
-      console.log("错误", err);
-      console.log("打开ws：" + this.ws.readyState);
+      console.log(err);
       this.$message.error("连接失败");
     },
     onopen() {

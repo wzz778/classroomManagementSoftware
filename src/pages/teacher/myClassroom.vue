@@ -186,7 +186,6 @@ export default {
       // 发送请求
       addCourse(formdata)
         .then((result) => {
-          console.log(result);
           this.$message({
             message: "上传成功",
             type: "success",
@@ -299,7 +298,6 @@ export default {
       })
         .then(() => {
           deleteCourse({ id: id }).then((result) => {
-            console.log(result);
             this.$message({
               type: "success",
               message: "删除成功!",
@@ -315,7 +313,6 @@ export default {
         });
     },
     jumpDetails(id) {
-      console.log(id);
       this.$router.push({
         path: "/teacher/IndexCourse",
         query: {

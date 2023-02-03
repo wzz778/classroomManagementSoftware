@@ -105,7 +105,6 @@ export default {
         score: this.score,
         type: 5,
       };
-      console.log(obj);
       this.$store.commit("teacher/ADDQUESTION", {
         data: obj,
         answer: {

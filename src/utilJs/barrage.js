@@ -17,7 +17,6 @@ class Barrage {
         // 获取宽度
         this.width = this.getWidth()
         // 获取宽度
-        console.log('canvasWidth',this.ctx.canvas.width);
         this.x = this.ctx.canvas.width
         // 获取高度
         this.y = Math.random() * this.ctx.canvas.height

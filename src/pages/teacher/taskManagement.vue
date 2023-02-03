@@ -124,8 +124,7 @@ export default {
         .then(() => {
           deleteTask({
             taskId: obj.task.id,
-          }).then((result) => {
-            console.log("删除", result);
+          }).then(() => {
             this.$message({
               type: "success",
               message: "已删除",
@@ -167,7 +166,6 @@ export default {
         courseId: this.courseId,
       })
         .then((result) => {
-          console.log(result);
           this.allNums = result.data.allCount;
           this.myListConfiguration.tableData = result.data.list;
         })
