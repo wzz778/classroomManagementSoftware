@@ -19,7 +19,7 @@
       </div>
       <div class="unchangeableInfo">
         <div class="studentAccount">账号：{{ userInfo.userName }}</div>
-        <div class="studentClass">班级：{{ userInfo.gradeId }}</div>
+        <div class="studentClass" v-if="userInfo.identity==0">班级：{{ userInfo.gradeId }}</div>
         <div class="studentEmail">邮箱：{{ userInfo.email }}</div>
       </div>
     </div>
@@ -132,6 +132,7 @@ export default {
           this.userInfo = res.data;
           this.changeInfo.sex = res.data.sex;
           this.changeInfo.nativePlace = res.data.nativePlace.split("/");
+          this.changeInfo.name=res.data.name;
           if (res.data.nativePlace != "无") {
             this.changeInfo.nativePlace = res.data.nativePlace.split("/");
           }
@@ -302,7 +303,6 @@ export default {
 }
 .rightBox {
   margin-left: 100px;
-  .studentName,
   .studentSex {
     margin-top: 40px;
   }

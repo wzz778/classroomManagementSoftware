@@ -3,11 +3,11 @@
     <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
       <div class="doResult">
         <span style="color: #666; font-weight: 700">作业提交时间：</span>
-        <span>{{homeworkInfo.createTime}}</span>
+        <span>{{ homeworkInfo.createTime }}</span>
         <span style="color: #666; font-weight: 700">作业规定时间：</span>
-        <span>{{homeworkInfo.beginTime}}</span>
+        <span>{{ homeworkInfo.beginTime }}</span>
         至<br />
-        <span>{{homeworkInfo.endTime}}</span>
+        <span>{{ homeworkInfo.endTime }}</span>
       </div>
       <div class="topicTab">
         <h4 style="text-align: center">题号</h4>
@@ -38,6 +38,7 @@
     <el-container class="content">
       <el-header style="text-align: right; font-size: 12px" class="title">
         <h3 class="paperName">{{ homeworkInfo.homeworkName }}</h3>
+        <span>总分：{{ allScore }}</span>
       </el-header>
       <el-main>
         <div v-for="(topic, index) in topics" :key="index">
@@ -114,35 +115,56 @@
             </template>
           </div>
           <div class="result">
-            <span class="resultItem">答案：{{ answer[index].answer }}</span>
+            <span class="resultItem"
+              >答案：<span
+                style="word-break: break-all"
+                v-html="answer[index].answer"
+              ></span
+            ></span>
             <span class="resultItem">
               分值：{{ haveScore[index].questionScore }}分
             </span>
             <span class="resultItem"
-              >结果：<el-tag
-                type="danger"
-                v-show="
-                  haveScore[index].questionScore != haveScore[index].score
-                "
-                >错误</el-tag
-              ><el-tag
+              >结果：
+              <el-tag
                 type="success"
                 v-show="
                   haveScore[index].questionScore == haveScore[index].score
                 "
                 >正确</el-tag
-              ><el-tag type="warning" v-show="haveScore[index].score == 0"
-                >待批改</el-tag
-              ></span
-            >
+              >
+              <span
+                v-show="
+                  haveScore[index].questionScore != haveScore[index].score &&
+                  haveScore[index].score == 0
+                "
+              >
+                <el-tag type="danger">错误</el-tag>/
+                <el-tag type="warning">待批改</el-tag>
+              </span>
+              <el-tag
+                type="danger"
+                v-show="
+                  haveScore[index].questionScore != haveScore[index].score &&
+                  haveScore[index].score != 0
+                "
+                >错误</el-tag
+              >
+            </span>
             <span class="resultItem">得分：{{ haveScore[index].score }}分</span>
-            <span class="resultItem">解析：{{}}</span>
+            <span class="resultItem"
+              >解析：<span
+                style="word-break: break-all"
+                v-html="topics[index].questionContent.correct"
+              ></span
+            ></span>
             <span class="correctNumber"
               >批改：<el-input-number
                 v-model="num[index].score"
                 :precision="2"
                 :step="0.1"
                 :max="haveScore[index].questionScore"
+                :min="0"
               ></el-input-number
             ></span>
           </div>
@@ -191,8 +213,8 @@ export default {
       haveScore: "",
       answer: "",
       num: "",
-      correct:"",
-      
+      correct: "",
+      allScore:0
     };
   },
   components: {
@@ -239,8 +261,9 @@ export default {
         this.haveScore = res.data.correct.deScore;
         this.answer = res.data.homework.answer;
         this.num = res.data.correct.deScore;
-        this.correct=res.data.correct;
+        this.correct = res.data.correct;
         for (let i = 0; i < this.homeworkInfo.questionCount; i++) {
+          this.allScore+=this.topics[i].score;
           this.topics[i].questionContent = JSON.parse(
             this.topics[i].questionContent
           );
@@ -252,7 +275,7 @@ export default {
     },
     submitCorrect() {
       let correct = this.correct;
-      correct.deScore=this.num;
+      correct.deScore = this.num;
       for (let i = 0; i < this.num.length; i++) {
         correct.allScore += this.num[i].score;
       }
@@ -267,9 +290,9 @@ export default {
       )
         .then(() => {
           submitCorrect(correct).then((res) => {
-            if(res.status==200){
+            if (res.status == 200) {
               Message.success("提交成功");
-            }else{
+            } else {
               Message.error("网络异常，提交失败");
             }
           });
@@ -434,6 +457,7 @@ html {
   font-size: 16px;
   color: rgb(131, 131, 131);
   .resultItem {
+    display: flex;
     margin: 5px 0;
   }
   .el-rate {
@@ -461,5 +485,12 @@ html {
   margin: 35px 0;
   line-height: 30px;
   padding: 0 5px;
+}
+.topicTitle {
+  display: flex;
+  word-break: break-all;
+  p {
+    display: inline-block;
+  }
 }
 </style>

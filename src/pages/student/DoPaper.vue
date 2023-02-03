@@ -42,7 +42,7 @@
           <!-- <span style="border-right: 1px solid rgb(202, 199, 199)"
             >时长：{{ paperData.suggestTime }}分钟</span
           > -->
-          <span>总分：{{ paperData.paperScore }}</span>
+          <span>总分：{{ allScore }}</span>
         </div>
       </el-header>
       <el-main>
@@ -162,7 +162,8 @@ export default {
       paperData: "",
       topics: "",
       userAnswer: [],
-      userInfo:""
+      userInfo:"",
+      allScore:0,
     };
   },
   components: {
@@ -256,6 +257,7 @@ export default {
       this.paperData.remark = this.paperData.remark || "无";
       this.topics = res.data.homework.question;
       for (let i = 0; i < this.paperData.questionCount; i++) {
+        this.allScore+=this.topics[i].score;
         this.topics[i].questionContent = JSON.parse(
           this.topics[i].questionContent
         );
@@ -418,8 +420,9 @@ html {
   margin-left: 20px;
 }
 .topicTitle {
-  display: inline-block;
+  display: flex;
   line-height: 30px;
+  word-break: break-all;
 }
 .radioItem {
   display: flex;
@@ -467,6 +470,7 @@ html {
   font-size: 15px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  word-break: break-all;
   &:hover {
     border: 1px solid rgb(139, 180, 233);
   }
