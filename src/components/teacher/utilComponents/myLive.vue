@@ -193,7 +193,7 @@ export default {
       });
     },
     ansQusetionDetails() {
-      if (this.union == "" && window.localStorage.union == "") {
+      if (this.union == "" && !window.localStorage.union) {
         this.$message.error("请先发布课堂问题");
         return;
       }
@@ -261,6 +261,7 @@ export default {
         .then((result) => {
           console.log("发布问题", result);
           console.log(this.union);
+          window.localStorage.union = this.union;
           this.dialogVisible = false;
           return addMessage({
             content: this.union,
@@ -268,7 +269,7 @@ export default {
             type: 2,
           });
         })
-        .then((result) => {
+        .then(() => {
           this.clearAll();
           this.$message({
             message: "发布完成",
@@ -280,7 +281,6 @@ export default {
         });
     },
     clearAll() {
-      this.union = "";
       this.trueOptions = "";
       this.question = "";
       this.showOptions = [
