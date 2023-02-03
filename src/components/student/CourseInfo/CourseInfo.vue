@@ -1,17 +1,14 @@
 <template>
   <el-container class="content">
     <el-header class="header">
-      <div class="logoPic">LOGO</div>
-      <el-dropdown class="myBox">
-        <span class="el-dropdown-link">
-          <div class="headPortrait"></div>
-        </span>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item>首页</el-dropdown-item>
-          <el-dropdown-item>我的</el-dropdown-item>
-          <el-dropdown-item @click.native="logout">退出登录</el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
+      <router-link to="/user/IndexBase" class="logoPic"
+        >课堂管理系统</router-link
+      >
+      <div class="myBox">
+        <router-link to="/user/userInfo"
+          ><div class="headPortrait"></div
+        ></router-link>
+      </div>
     </el-header>
     <el-container class="mainContent">
       <el-aside width="200px">
@@ -267,13 +264,16 @@ body > .el-container {
 
 .logoPic {
   display: inline-block;
-  width: 50px;
+  width: auto;
   height: 50px;
   margin-top: 5px;
   float: left;
-  margin-left: 60px;
+  margin-left: 20px;
+  font-size: 22px;
+  font-weight: 700;
+  cursor: pointer;
 }
-.mainContent{
+.mainContent {
   overflow: auto;
 }
 </style>

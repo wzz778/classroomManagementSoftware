@@ -69,3 +69,9 @@ export const submitAnswer=async(data)=>requests({
     method:'POST',
     data:data
 })
+
+export const submitCorrect=async(data)=>requests({
+    url:"homework/correctHomework",
+    method:'POST',
+    data:data
+})
