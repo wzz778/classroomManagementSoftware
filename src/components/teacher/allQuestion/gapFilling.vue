@@ -99,9 +99,9 @@ export default {
         questionContent: JSON.stringify({
           type: 4,
           topicInfo: this.questionStem,
+          correct: this.parsing,
         }),
         answer: this.trueOptions.toString(),
-        correct: this.parsing,
         score: this.score,
         type: 4,
       };

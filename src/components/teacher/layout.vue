@@ -120,7 +120,7 @@ export default {
     getInfo() {
       getUserInfo().then((result) => {
         this.userName = result.data.userName;
-        // this.imgUrl = result.data.photo;
+        this.imgUrl = result.data.photo;
       });
     },
     quitLogin() {
