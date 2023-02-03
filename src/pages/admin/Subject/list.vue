@@ -72,12 +72,9 @@
         label-width="100px"
         ref="form"
       >
-      <!-- <el-form-item label="课堂名称" prop="courseName">
-        <el-input v-model="form.courseName" clearable></el-input>
-      </el-form-item>
       <el-form-item  label="课堂简介" prop="details">
-        <el-input type="textarea"  v-model="form.details" clearable></el-input>
-      </el-form-item> -->
+        <el-input type="textarea"  v-model="detail" clearable></el-input>
+      </el-form-item>
       <el-form-item label="上传图片">
         <el-upload
           class="upload-demo"
@@ -131,6 +128,7 @@ export default {
         filetype:true,
         alltotal:0,
         picSrc:'',
+        detail:'',
         searchform:{
           nodePage: 1,
           pageSize:5,
@@ -159,19 +157,14 @@ export default {
         this.$router.replace({
             path:"userlist",
         })
-        sessionStorage.setItem("AdminClassMessage",JSON.stringify(row))
+        sessionStorage.setItem("subjectListSearch",JSON.stringify(this.searchform))
+        // sessionStorage.setItem("AdminClassMessage",JSON.stringify(row))
       },
       editClick(row) {
         console.log(row);
         this.dialogFormVisible=true;
         this.editid=row.id;
-        // sessionStorage.setItem("classformmessage",JSON.stringify(row))
-        // this.$router.replace({
-        //     path:"edit",
-        //         query:{
-        //             id:row.id,
-        //         }
-        // })
+        this.detail=row.details
       },      
       deleteClick(row) {
         this.$confirm("确定要删除课程吗?", "提示", {
@@ -263,6 +256,21 @@ export default {
       },
       handelEditSend() {
             //判断是否为空值
+            let redetail=this.detail.replace(/(^\s*)|(\s*$)/g, "");
+            if (redetail== "") {
+              this.$message({
+                message: "请输入课程描述",
+                type: "warning",
+              });
+              return;
+            }
+            if(redetail.length>200){
+              this.$message({
+                message: "请输入不大于200个字符的课程描述",
+                type: "warning",
+              });
+              return;
+            }
             if (this.fileList.length == 0) {   
               this.$message({
                 message: "请上传封面",
@@ -280,6 +288,7 @@ export default {
             }
             //   添加其他属性
             formdata.append("id", this.editid);
+            formdata.append("detail", this.redetail);
             // 发送请求
              updateCover(formdata)
               .then((result) => {
@@ -315,8 +324,19 @@ export default {
           }
       }//
   },
+  created(){
+    if(sessionStorage.getItem("subjectListSearch")){
+      this.searchform=JSON.parse(sessionStorage.getItem("subjectListSearch"))
+    }
+  },
    mounted(){
     this.chagepage()
+  },
+  beforeRouteLeave (to, from, next) {
+    if(sessionStorage.getItem("subjectListSearch")){
+      sessionStorage.removeItem("subjectListSearch")
+    }
+    next()
   }
 }
 </script>

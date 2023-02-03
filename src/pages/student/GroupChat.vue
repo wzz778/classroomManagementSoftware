@@ -23,7 +23,8 @@
         </div>
       </div>
       <div class="sendWords">
-        <el-input
+        <div id="editor"></div>
+        <!-- <el-input
           type="textarea"
           :autosize="{ minRows: 2, maxRows: 4 }"
           placeholder="请输入内容"
@@ -31,7 +32,7 @@
           maxlength="10"
           show-word-limit
         >
-        </el-input>
+        </el-input> -->
         <button plain class="sendBtn">发送</button>
       </div>
     </div>
@@ -78,6 +79,8 @@
 
 
 <script >
+import E from "wangeditor";
+import AlertMenu from "@/myText/myRichText"; // 根据AlertMenu.js文件实际路径进行引入即可
 // import { Input,Button } from "element-ui";
 import { Input, Button } from "element-ui";
 export default {
@@ -91,6 +94,76 @@ export default {
     [Input.name]: Input,
     [Button.name]: Button,
   },
+  methods:{
+    createEditor() {
+      this.editor = new E("#editor");
+      this.editor.config.onchange = (html) => {
+        this.value = html;
+      };
+      this.editor.config.menus = [
+        "head", // 标题
+        "bold", // 粗体
+        "fontSize", // 字号
+        "fontName", // 字体
+        "italic", // 斜体
+        "underline", // 下划线
+        "strikeThrough", // 删除线
+        "foreColor", // 文字颜色
+        "backColor", // 背景颜色
+        "link", // 插入链接
+        "list", // 列表
+        "justify", // 对齐方式
+        "quote", // 引用
+        "emoticon", // 表情
+        "image", // 插入图片
+        "table", // 表格
+        "code", // 插入代码
+        "undo", // 撤销
+        "redo", // 重复
+      ];
+      // 配置自定义按钮
+      this.editor.menus.extend("alertMenu", AlertMenu); // 配置扩展的菜单
+      this.editor.config.menus = this.editor.config.menus.concat("alertMenu");
+      // 配置上传图片
+      this.editor.config.uploadImgShowBase64 = true; // base 64 存储图片
+      this.editor.config.uploadImgServer = "/api/admin/addPicture";
+      // 配置服务器端地址(这里的this.$api.getJavaEndPoint()是自己定义的一个地址前缀)
+      this.editor.config.uploadFileName = "file"; // 后端接受上传文件的参数名
+      this.editor.config.uploadImgHeaders = {
+        token: myStore.state.token, // 设置请求头
+      };
+      this.editor.config.uploadImgHooks = {
+        fail: function () {
+          this.$message({
+            message: "图片上传失败",
+            type: "warning",
+          });
+        },
+        error: function () {
+          this.$message.error("图片上传出错");
+        },
+        success: (xhr, editor, result) => {
+          // 图片上传成功回调
+          console.log("成功", result);
+        },
+        customInsert: (insertImg, result, editor) => {
+          // 图片上传成功，插入图片的回调
+          console.log(result);
+          console.log(editor);
+          insertImg(result.data);
+        },
+      };
+      this.editor.create();
+      this.editor.cmd.do("insertHTML", this.oriHtml);
+    },
+    // 初始化
+    init() {
+      this.dialogVisible = true;
+      return new Promise((resolve, resject) => {
+        this.promiseResult = { resolve, resject };
+      });
+    },
+  }
 };
 </script>
 

@@ -2,15 +2,16 @@
 	<div class="topicList">
         <div class="topicListleft">
             <div class="imgbox" >
-                <img :src="headImg" alt="">
+                <img :src="this.form.user.photo" alt="">
             </div>
             <div class="textbox" >
                 <div class="textboxTop">
-                    <span class="userName">{{title}}</span>
-                    <span class="comTime">{{number}}</span>
+                    <span class="userName">{{ this.form.user.name }}</span>
+                    <span class="userIdentity">{{ this.form.user.identity|toidentity()}}</span>
+                    <span class="comTime">{{ this.form.discuss.createTime}}</span>
                 </div>
                 <div class="textboxCon">
-                    {{content}}
+                    {{ this.form.discuss.content}}
                 </div>
             </div>
         </div>
@@ -26,7 +27,7 @@
 		name:'DiscussList',
 		data() {
 			return {
-
+                form: {},
 			}
 		},
         methods:{
@@ -64,23 +65,30 @@
             }
         },
 		props:{
-			headImg:{
-				type:String, //name的类型是字符串
-                default:"https://online-examination-1311156839.cos.ap-nanjing.myqcloud.com/photo/20230114130755_-589934592.webp", //默认值,
-			},
-			number:{
-				type:String,
-                required:"4543634"
-			},
-			title:{
-				type:String,
-				required:"4543634"
-			},
-            content:{
-				type:String,
-				default:"4543634", //默认值,
-			}
-		}
+            jsonText: {
+                type: String,
+                default: "4543634", //默认值,
+            },
+            showmore: {
+                type: Boolean,
+                default:true, //默认值,
+            },
+		},
+        filters:{
+            toidentity(value){
+                if(value==0){
+                return"学生"
+                }else if(value==1){
+                return"老师"
+                }else{
+                return"管理员"
+                }
+            }
+        },
+        created() {
+            // console.log(jsonText);
+            this.form = JSON.parse(this.jsonText);
+        },        
 	}
 </script>
 <style lang="less" scoped>
@@ -135,6 +143,17 @@
                     padding: 0 10px;
                     line-height: 22px;
                     font-size: 15px;
+                }
+                .userIdentity{
+                    border: #85bddd 1.5px solid;
+                    background-color: #dff2ff;
+                    display: inline-block;
+                    color: #54a8da;
+                    height: 19px;
+                    line-height: 16px;
+                    border-radius: 6px;
+                    font-size: 12px;
+                    padding: 0 5px;
                 }
             }
         }

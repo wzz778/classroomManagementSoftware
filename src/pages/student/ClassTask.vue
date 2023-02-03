@@ -4,82 +4,172 @@
       <div class="taskTop">
         <span>高等数学</span>
       </div>
-      <div class="taskState">
-        <span>未开始({{notStart.length}})</span>
+      <div class="state">
+        <span>筛选</span>
+        <el-radio v-model="radio" label="1"
+          ><span @click="getTask">作业</span></el-radio
+        >
+        <el-radio v-model="radio" label="2"
+          ><span @click="GetInfo">签到</span></el-radio
+        >
       </div>
-      <div class="zuo">
-        <el-card class="box-card">
-          <div
-            v-for="o in notStart" :key="o.task.id"
-            class="text item"
-            @click="check = '签到未开始'"
-          >
-            <div class="name">
-              <img
-                :src="adatar ? adatar : require('@/assets/yxy/classPic.jpg')"
-              />
+      <div class="zuo01" v-show="radio == 1">
+        <div class="taskState">
+          <span>未开始({{ notStart.length }})</span>
+        </div>
+        <div class="zuo">
+          <el-card class="box-card">
+            <div
+              v-for="o in notStart"
+              :key="o.task.id"
+              class="text item"
+              @click="check = '任务'"
+            >
+              <div class="name">
+                <img
+                  :src="adatar ? adatar : require('@/assets/yxy/classPic.jpg')"
+                />
+              </div>
+              <div class="name">
+                <span> {{ o.task.taskName }}</span>
+                <span class="tasktime">开始时间：{{ o.task.beginTime }}</span>
+              </div>
             </div>
-            <div class="name">
-              <span> {{o.task.taskName}}</span>
-              <span class="tasktime">开始时间：{{o.task.beginTime}}</span>
+          </el-card>
+        </div>
+        <div class="taskState">
+          <span>进行中({{ progress.length }})</span>
+        </div>
+        <div class="zuo">
+          <el-card class="box-card">
+            <div
+              v-for="o in progress"
+              :key="o.task.id"
+              class="text item"
+              @click="check = '任务'"
+            >
+              <div class="name">
+                <img
+                  :src="adatar ? adatar : require('@/assets/yxy/classPic.jpg')"
+                />
+              </div>
+              <div class="name">
+                <span> {{ o.task.taskName }}</span>
+                <span class="tasktime">截至时间：{{ o.task.endTime }}</span>
+              </div>
             </div>
-          </div>
-        </el-card>
+          </el-card>
+        </div>
+        <div class="taskState">
+          <span>已结束({{ end.length }})</span>
+        </div>
+        <div class="zuo">
+          <el-card class="box-card">
+            <div
+              v-for="o in end"
+              :key="o.task.id"
+              class="text item"
+              @click="check = '任务'"
+            >
+              <div class="name">
+                <img
+                  :src="adatar ? adatar : require('@/assets/yxy/classPic.jpg')"
+                />
+              </div>
+              <div class="name">
+                <span> {{ o.task.taskName }}</span>
+                <span class="tasktime">截止时间：{{ o.task.endTime }}</span>
+              </div>
+            </div>
+          </el-card>
+        </div>
       </div>
-      <div class="taskState">
-        <span>进行中({{progress.length}})</span>
-      </div>
-      <div class="zuo">
-        <el-card class="box-card">
-          <div
-            v-for="o in progress" :key="o.task.id"
-            class="text item"
-            @click="check = '签到中'"
-          >
-            <div class="name">
-              <img
-                :src="adatar ? adatar : require('@/assets/yxy/classPic.jpg')"
-              />
+      <div class="zuo02" v-show="radio == 2">
+        <div class="taskState">
+          <span>未开始({{ saginnotStart.length }})</span>
+        </div>
+        <div class="zuo">
+          <el-card class="box-card">
+            <div
+              v-for="o in saginnotStart"
+              :key="o.id"
+              class="text item"
+              @click="check = '签到未开始'"
+            >
+              <div class="name">
+                <img
+                  :src="adatar ? adatar : require('@/assets/yxy/classPic.jpg')"
+                />
+              </div>
+              <div class="name">
+                <span> 签到</span>
+                <span class="tasktime">开始时间：{{ o.time.createTime }}</span>
+              </div>
             </div>
-            <div class="name">
-              <span> {{ o.task.taskName}}</span>
-              <span class="tasktime">截至时间：{{o.task.endTime}}</span>
+          </el-card>
+        </div>
+        <div class="taskState">
+          <span>进行中({{ saginprogress.length }})</span>
+        </div>
+        <div class="zuo">
+          <el-card class="box-card">
+            <div
+              v-for="o in saginprogress"
+              :key="o.id"
+              class="text item"
+              @click="notify"
+            >
+              <div class="name">
+                <img
+                  :src="adatar ? adatar : require('@/assets/yxy/classPic.jpg')"
+                />
+              </div>
+              <div class="name">
+                <span> 签到</span>
+                <span class="tasktime">截至时间：{{ o.time.endTime }}</span>
+              </div>
             </div>
-          </div>
-        </el-card>
-      </div>
-      <div class="taskState">
-        <span>已结束({{end.length}})</span>
-      </div>
-      <div class="zuo">
-        <el-card class="box-card">
-          <div
-            v-for="o in end" :key="o.task.id"
-            class="text item"
-            @click="check = '签到结束'"
-          >
-            <div class="name">
-              <img
-                :src="adatar ? adatar : require('@/assets/yxy/classPic.jpg')"
-              />
+          </el-card>
+        </div>
+        <div class="taskState">
+          <span>已结束({{ saginend.length }})</span>
+        </div>
+        <div class="zuo">
+          <el-card class="box-card">
+            <div
+              v-for="o in saginend"
+              :key="o.id"
+              class="text item"
+              @click="check = '签到结束'"
+            >
+              <div class="name">
+                <img
+                  :src="adatar ? adatar : require('@/assets/yxy/classPic.jpg')"
+                />
+              </div>
+              <div class="name">
+                <span> 签到</span>
+                <span class="tasktime">截止时间：{{ o.time.endTime }}</span>
+              </div>
             </div>
-            <div class="name">
-              <span> {{o.task.taskName }}</span>
-              <span class="tasktime">截止时间：{{o.task.endTime}}</span>
-            </div>
-          </div>
-        </el-card>
+          </el-card>
+        </div>
       </div>
     </div>
     <div class="qian">
-      <SignIn v-show="check != '任务'" :check="check" @changeMsg="changeMsg" />
+      <SignIn
+        ref="child"
+        v-show="check != '任务'"
+        :check="check"
+        @changeMsg="changeMsg"
+      />
     </div>
   </div>
 </template>
 
 <script>
-import { Card } from "element-ui";
-import { ZgetTask } from "@/api/user/index";
+import { Card, Radio } from "element-ui";
+import { ZgetTask, ZgetMessage } from "@/api/user/index";
 import SignIn from "@/components/student/CourseInfo/SignIn";
 export default {
   name: "ClassTask",
@@ -93,9 +183,13 @@ export default {
       notStart: [],
       progress: [],
       end: [],
+      saginnotStart: [],
+      saginprogress: [],
+      saginend: [],
     };
   },
   components: {
+    [Radio.name]: Radio,
     [Card.name]: Card,
     SignIn,
   },
@@ -106,6 +200,10 @@ export default {
     changeMsg(text, value) {
       console.log(text, value);
       this.check = value;
+    },
+    notify: function () {
+      this.check = "签到中";
+      this.$refs.child.just();
     },
     getTask() {
       this.end = [];
@@ -128,7 +226,9 @@ export default {
             for (let i = 0; i < result.data.list.length; i++) {
               if (new Date(result.data.list[i].task.beginTime) > new Date()) {
                 this.notStart.push(result.data.list[i]);
-              } else if (new Date(result.data.list[i].task.endTime) < new Date()) {
+              } else if (
+                new Date(result.data.list[i].task.endTime) < new Date()
+              ) {
                 this.end.push(result.data.list[i]);
               } else {
                 this.progress.push(result.data.list[i]);
@@ -137,6 +237,36 @@ export default {
           }
         } else {
           this.$message.error("获取课程任务失败");
+        }
+      });
+    },
+    GetInfo() {
+      this.saginend = [];
+      this.saginnotStart = [];
+      this.saginprogress = [];
+      let da = {
+        courseId: this.cid,
+        nodePage: "",
+        pageSize: "",
+        type: 1,
+      };
+      ZgetMessage(da).then((result) => {
+        console.log("取出签到信息", result);
+        if (result.msg == "OK") {
+          for (let i = 0; i < result.data.length; i++) {
+            let obje = result.data[i];
+            let time = JSON.parse(result.data[i].content);
+            obje["time"] = time;
+            if (new Date(time.createTime) > new Date()) {
+              this.saginnotStart.push(obje);
+            } else if (new Date(time.endTime) < new Date()) {
+              this.saginend.push(obje);
+            } else {
+              this.saginprogress.push(obje);
+            }
+          }
+        } else {
+          this.$message.error("暂无数据");
         }
       });
     },
@@ -211,5 +341,12 @@ img {
 }
 .el-card ::v-deep .el-card__body {
   padding-top: 0px;
+}
+.state {
+  line-height: 45px;
+  padding-left: 2em;
+  span {
+    margin-right: 30px;
+  }
 }
 </style>

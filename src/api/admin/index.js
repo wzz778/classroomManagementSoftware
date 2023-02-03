@@ -27,7 +27,7 @@ export const createGrade = async (params) => requests({url: "/grade/createGrade"
 //修改班级信息
 export const updateGrade = async (params) => requests({url: "/grade/updateGrade",method: "PUT",params})
 //更改封面
-export const updateCover = async (data) => requests({url: "/course/updateCover",method: "PUT",data})
+export const updateCover = async (data) => requests({url: "/course/updateCoverOrDetail",method: "PUT",data})
 //添加话题
 export const publishTopic = async (params) => requests({url: "/discuss/publishTopic",method: "POST",params})
 //获取话题

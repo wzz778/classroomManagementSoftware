@@ -49,10 +49,17 @@ export default {
           .then((result) => {
             console.log(result);
             if(result.status==200){
-              this.$message({
-                type: "success",
-                message: "创建成功!",
-              });
+            this.$alert(`课程码：${result.data}`, '创建成功', {
+              confirmButtonText: '复制课程码',
+              callback: action => {
+                navigator.clipboard.writeText(result.data).then(() => {
+                  this.$message({
+                    message: "已复制",
+                    type: "success",
+                  });
+                });
+              }
+            });
               this.form.title=""
             }else{
               this.$message({
@@ -61,7 +68,8 @@ export default {
               });
             }
           })
-          .catch(() => {
+          .catch((err) => {
+            console.log(err);
               this.$message({
                 type: "warning",
                 message: "操作失败",
