@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TitleBlock text="课堂话题"/>
+    <TitleBlock text="课堂分组"/>
     课堂：
     <el-select v-model="course" placeholder="请选择">
       <el-option
@@ -50,23 +50,6 @@
         </el-form-item>
       </el-form>
     </el-dialog>
-    <el-pagination
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-      :current-page="searchform.beginIndex"
-      :page-sizes="[5, 10, 15, 20]"
-      :page-size="searchform.size"
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="alltotal"
-    >
-    </el-pagination>
-    <!-- 卧龙凤雏 -->
-    <template>
-      <div v-if="false">
-      {{tableDate}}{{deleteid}}
-      </div>
-    </template>
-    <!-- 卧龙凤雏 -->
   </div>
 </template>
 
@@ -122,22 +105,12 @@ export default {
     };
   },
   methods: {
-    handleSizeChange(val) {
-      this.searchform.beginIndex = val;
-      this.chagepage();
-    },
-    handleCurrentChange(val) {
-      this.searchform.beginIndex = val;
-      this.chagepage();
-    },
     getAllCourse() {
       myCourse({})
         .then((result) => {
           this.courseArr = result.data.records;
           this.course = this.courseArr[0].id;
-          this.searchform.courseId = this.courseArr[0].id;
           this.form.courseId = this.courseArr[0].id;
-          this.searchform.beginIndex = 1;
           this.chagepage();
         })
         .catch((err) => {
@@ -147,16 +120,10 @@ export default {
     chagepage() {
       groupInfo(this.searchform)
         .then((data) => {
-          console.log(data);
-          if (data.status == 200) {
+            if (data.status == 200) {
             let req = data.data;
+            console.log(req);
             this.tableDate = req.list;
-            if (req.list.length == 0) {
-              if (this.searchform.nodePage != 1) {
-                this.searchform.nodePage--;
-                this.chagepage();
-              }
-            }
             this.alltotal = req.allCount;
           } else if (data.status == 555) {
             this.tableDate = [];
@@ -210,33 +177,11 @@ export default {
     },
   },
   watch: {
-    "searchform.beginIndex": {
-      immediate: true, //
-      deep: true, //配置该属性才可监视numbers中数据确切的改变  默认的false就会不显示changing
-      handler() {
-        sessionStorage.setItem("Topicpage", this.searchform.beginIndex);
-        // this.tableDate=this.numberArr.splice(index, 1, sum);
-      },
-    },
   },
   
   computed:{
-    deleteid(){
-      // console.log(this.$store.state.admin.deleteTopicid);
-      if(this.$store.state.admin.deleteTopicid){
-        this.chagepage()
-      }
-      return this.$store.state.admin.deleteTopicid;
-    }
   },
   mounted() {
-    if (sessionStorage.getItem("Topicpage")) {
-      this.searchform.beginIndex = parseInt(
-        sessionStorage.getItem("Topicpage")
-      );
-    } else {
-      sessionStorage.setItem("Topicpage", 1);
-    }
     this.getAllCourse();
     // this.$refs.topiclist.$on('deleteTopic',this.deleteTopic) //绑定自定义事件
     //  sessionStorage.setItem("AdminClassMessage",JSON.stringify(row))
