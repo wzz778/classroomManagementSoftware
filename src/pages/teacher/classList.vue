@@ -153,6 +153,10 @@ export default {
             gradeId: obj.id,
           })
             .then(() => {
+              this.$message({
+                type: "success",
+                message: "删除成功!",
+              });
               this.judgePrevious();
             })
             .catch((err) => {

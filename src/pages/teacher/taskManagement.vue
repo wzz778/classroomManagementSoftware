@@ -129,6 +129,12 @@ export default {
               type: "success",
               message: "已删除",
             });
+            if (
+              this.myListConfiguration.tableData.length == 1 &&
+              this.nowPage != 1
+            ) {
+              this.nowPage--;
+            }
             this.getTaskInfo();
           });
         })

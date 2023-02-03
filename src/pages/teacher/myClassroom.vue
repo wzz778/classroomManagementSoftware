@@ -297,7 +297,7 @@ export default {
         type: "warning",
       })
         .then(() => {
-          deleteCourse({ id: id }).then((result) => {
+          deleteCourse({ id: id }).then(() => {
             this.$message({
               type: "success",
               message: "删除成功!",
