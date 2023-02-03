@@ -30,6 +30,10 @@ import ansQuestion from '@/pages/teacher/ansQuestion'
 import IndexCourse from '@/pages/student/IndexCourse'
 // 修改信息
 import UserInfo from '@/pages/student/UserInfo'
+// 没有权限页面
+import noPower from '@/pages/403'
+// 404
+import noPage from '@/pages/404'
 export default [
     {
         path: "/teacher",
@@ -140,6 +144,20 @@ export default [
         component: watchLive,
         meta: {
             title: "观看直播"
+        }
+    },
+    {
+        path: "/noPower",
+        component: noPower,
+        meta: {
+            title: "403"
+        }
+    },
+    {
+        path: "*",
+        component: noPage,
+        meta: {
+            title: "404"
         }
     }
 ]
