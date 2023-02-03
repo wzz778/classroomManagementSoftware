@@ -33,6 +33,7 @@ requests.interceptors.response.use(
     return res.data;
   },
   (err) => {
+    console.log(err);
     alert("服务器响应数据失败");
     return err
   }

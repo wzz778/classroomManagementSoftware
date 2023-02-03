@@ -5,7 +5,7 @@
     </div>
     <div class="card">
       <template v-for="(item, index) in myCourse">
-        <div class="cardItem" :key="index" @click="jumpDetails(item.id)">
+        <div class="cardItem" :key="index">
           <div class="cardImg">
             <div class="operator">
               <button class="delBtn" @click="delFn(item.id)">删除</button>
@@ -19,9 +19,9 @@
                 修改
               </button>
             </div>
-            <img :src="item.cover" alt="" />
+            <img :src="item.cover" alt="" @click="jumpDetails(item.id)" />
           </div>
-          <div class="cardInfo">
+          <div class="cardInfo" @click="jumpDetails(item.id)">
             <div class="infoText">
               <span>{{ item.courseName }}</span>
             </div>

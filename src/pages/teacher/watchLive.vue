@@ -206,6 +206,7 @@ export default {
   cursor: pointer;
   margin-bottom: 10px;
   padding: 10px;
+  padding-top: 5px;
   background-color: black;
   color: white;
 }

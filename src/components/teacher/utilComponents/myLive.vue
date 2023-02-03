@@ -194,14 +194,14 @@ export default {
       });
     },
     ansQusetionDetails() {
-      if (this.union == "") {
+      if (this.union == "" && window.localStorage.union == "") {
         this.$message.error("请先发布课堂问题");
         return;
       }
       this.$router.push({
         path: "/teacher/ansQuestion",
         query: {
-          id: this.union,
+          id: this.union == "" ? window.localStorage.union : this.union,
         },
       });
     },
@@ -218,6 +218,7 @@ export default {
     },
     getUnion() {
       this.union = Date.now();
+      window.localStorage.setItem("union", this.union);
       return this.union;
     },
     submitFn() {

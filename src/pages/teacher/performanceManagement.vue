@@ -30,6 +30,7 @@ import { LabelLayout, UniversalTransition } from "echarts/features";
 // 引入 Canvas 渲染器，注意引入 CanvasRenderer 或者 SVGRenderer 是必须的一步
 import { CanvasRenderer } from "echarts/renderers";
 import { Row, Col } from "element-ui";
+import { getOutcome } from "@/api/teacher";
 
 // 注册必须的组件
 echarts.use([
@@ -83,9 +84,34 @@ export default {
         ],
       });
     },
+    getInfo() {
+      getOutcome()
+        .then((result) => {
+          console.log(result);
+          let obj = [];
+          for (
+            let i = 0;
+            i < result.data[result.data.length - 1].avgData.length;
+            i++
+          ) {
+            console.log(result.data[result.data.length - 1].avgData[i]);
+            obj.push({
+              value: result.data[result.data.length - 1].avgData[i].avg,
+              name: `${
+                result.data[result.data.length - 1].avgData[i].grade.className
+              }(${result.data[result.data.length - 1].avgData[i].avg})`,
+            });
+          }
+          this.scope = obj;
+          this.drawJobPeople();
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
   },
   mounted() {
-    this.drawJobPeople();
+    this.getInfo();
   },
 };
 </script>
