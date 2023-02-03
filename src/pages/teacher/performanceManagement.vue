@@ -74,7 +74,7 @@ export default {
       myChart.setOption({
         tooltip: {},
         title: {
-          text: "平均分",
+          text: "最近一次作业平均分",
         },
         series: [
           {

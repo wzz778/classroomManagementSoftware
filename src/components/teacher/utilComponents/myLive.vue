@@ -258,9 +258,10 @@ export default {
         },
       };
       publishQuestion(obj)
-        .then(() => {
+        .then((result) => {
+          console.log("发布问题", result);
+          console.log(this.union);
           this.dialogVisible = false;
-          this.clearAll();
           return addMessage({
             content: this.union,
             courseId: this.$route.query.id,
@@ -268,7 +269,11 @@ export default {
           });
         })
         .then((result) => {
-          console.log("发布消息", result);
+          this.clearAll();
+          this.$message({
+            message: "发布完成",
+            type: "success",
+          });
         })
         .catch((err) => {
           console.log(err);

@@ -198,3 +198,9 @@ export const getUserInfo = async () => requests({
     url: "/user/getUserInfo",
     method: "GET"
 })
+
+export const getCourseOutCome = async (data) => requests({
+    url: "/homework/getCourseOutCome",
+    method: "GET",
+    params: data
+})
