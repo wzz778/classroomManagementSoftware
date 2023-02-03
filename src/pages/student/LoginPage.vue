@@ -218,7 +218,7 @@ export default {
           this.$store.commit("GETTOKEN", res.data);
           let personInfo = jwt_decode(res.data);
           if (personInfo.power == 0) {
-            this.$router.push("/student/learnDaily");
+            this.$router.push("/user/IndexBase");
           }
           if (personInfo.power == 1) {
             this.$router.push("/teacher");
