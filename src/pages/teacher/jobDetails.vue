@@ -213,7 +213,7 @@ export default {
     },
     detailsFn(obj) {
       this.$router.push({
-        path: "/CorrectHomework",
+        path: "/correctHomework",
         query: {
           hId: this.$route.query.homeworkId,
           stuId: obj.studentId,
