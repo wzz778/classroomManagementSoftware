@@ -21,7 +21,6 @@
         <el-col>
           <el-button type="primary" @click="submitFn">确定</el-button>
           <el-button @click="cancelFn">取消</el-button>
-          <el-button type="success" @click="addOptionsFn">添加选项</el-button>
         </el-col>
       </el-form-item>
     </el-form>
