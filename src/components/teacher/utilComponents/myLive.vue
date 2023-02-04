@@ -253,7 +253,7 @@ export default {
         }),
         params: {
           answer: this.trueOptions,
-          time: this.getTime(),
+          time: this.getTime()+600,
           union: this.getUnion(),
         },
       };
