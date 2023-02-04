@@ -200,8 +200,8 @@ export default {
       this.$router.push({
         path: "/correctHomework",
         query: {
-          hId: this.$route.query.homeworkId,
-          stuId: obj.studentId,
+          hid: this.$route.query.homeworkId,
+          stuid: obj.studentId,
         },
       });
     },
