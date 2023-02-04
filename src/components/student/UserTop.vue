@@ -11,16 +11,29 @@
     >
       <el-submenu index="1">
         <template slot="title">用户名</template>
-        <el-menu-item index="2-1"><router-link  to="/user/UserInfo" style="color:white;">账号管理</router-link></el-menu-item>
+        <el-menu-item index="2-1"
+          ><router-link to="/user/UserInfo" style="color: white"
+            >账号管理</router-link
+          ></el-menu-item
+        >
         <el-menu-item index="2-2">退出登录</el-menu-item>
       </el-submenu>
-      <el-menu-item index="2"><router-link  to="/user/InboxPage">消息中心</router-link></el-menu-item>
+      <el-menu-item index="2"
+        ><router-link to="/user/InboxPage">消息中心</router-link></el-menu-item
+      >
       <el-menu-item index="3">
+        <el-button type="text" @click="dialogVisible = true"
+          >进入直播</el-button
+        ></el-menu-item
+      >
+      <el-menu-item index="4">
         <el-button type="text" @click="open"
           >输入邀请码</el-button
         ></el-menu-item
       >
-      <el-menu-item index="4"><router-link  to="/user/IndexBase">课程空间</router-link></el-menu-item>
+      <el-menu-item index="5"
+        ><router-link to="/user/IndexBase">课程空间</router-link></el-menu-item
+      >
     </el-menu>
     <router-view :change="msg"></router-view>
     <div class="footer">
@@ -41,6 +54,24 @@
         </div>
       </div>
     </div>
+    <el-dialog
+      title="提示"
+      :visible.sync="dialogVisible"
+      width="60%"
+      :before-close="handleClose"
+    >
+      <div class="dialogSty">
+        <el-form label-width="80px">
+          <el-form-item label="房间号">
+            <el-input v-model="bvalue" clearable></el-input>
+          </el-form-item>
+        </el-form>
+      </div>
+      <div class="dialogOperator">
+        <el-button @click="dialogVisible = false" type="">取消</el-button>
+        <el-button v-model="bvalue" @click="jin" type="">确认</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -50,11 +81,15 @@ export default {
   name: "UserTop",
   data() {
     return {
-      activeIndex: "1",
+      activeIndex: "5",
       urlp: "/user/IndexBase",
-      msg:1,
+      msg: 1,
+      //弹框
+      dialogVisible: false,
+      bvalue: "",
     };
   },
+  mounted: function () {},
   methods: {
     open() {
       console.log("页面链接：" + this.$route.path);
@@ -76,7 +111,10 @@ export default {
                 type: "success",
                 message: "加入课程成功",
               });
-              if (this.$route.path == "/user/IndexBase"||this.$route.path=="/user/InboxPage") {
+              if (
+                this.$route.path == "/user/IndexBase" ||
+                this.$route.path == "/user/InboxPage"
+              ) {
                 this.msg++;
               }
             } else {
@@ -94,8 +132,32 @@ export default {
     handleSelect(key, keyPath) {
       console.log(key, keyPath);
     },
+    jin() {
+      this.dialogVisible = false;
+      if (this.bvalue) {
+        this.$router.push({
+          path: "/watchLive",
+          params: {
+            id: this.bvalue,
+          },
+        });
+      } else {
+        this.$message({
+          type: "info",
+          message: "房间号不能为空",
+        });
+      }
+    },
+    //弹框
+    handleClose(done) {
+      this.$confirm("确认关闭？")
+        .then((_) => {
+          done();
+        })
+        .catch((_) => {});
+    },
   },
-    // 组件内路由进入组件时
+  // 组件内路由进入组件时
   beforeCreate() {
     document
       .querySelector("body")

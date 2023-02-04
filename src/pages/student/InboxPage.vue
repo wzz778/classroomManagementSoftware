@@ -5,7 +5,7 @@
         ref="multipleTable"
         :data="tableData"
         tooltip-effect="dark"
-        style="width: 100%;min-height:300px;"
+        style="width: 100%; min-height: 300px"
         :cell-style="{ 'text-align': 'center' }"
         :header-cell-style="{
           'text-align': 'center',
@@ -18,7 +18,7 @@
         <el-table-column
           label=""
           :cell-style="{ 'text-align': 'left' }"
-          prop="fen"
+          prop="cont"
           tableData
         >
           <template slot="header" slot-scope>
@@ -59,12 +59,10 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column
-          label="课程名称"
-          width="200"
-          show-overflow-tooltip
-        >
-        {{className}}
+        <el-table-column prop="fen" label="消息类型" width="200" show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column label="课程名称" width="200" show-overflow-tooltip>
+          {{ className }}
         </el-table-column>
         <el-table-column
           prop="createTime"
@@ -73,10 +71,39 @@
           show-overflow-tooltip
         >
         </el-table-column>
-        <el-table-column width="200" label="信息内容">
-          <el-button size="mini" type="success">查看</el-button>
-        </el-table-column>
+        <!-- <el-table-column width="200" label="操作" prop="cont">
+          <el-button size="mini" type="success" @click="dialogVisible = true;content=cont"
+            >查看</el-button
+          >
+        </el-table-column> -->
       </el-table>
+      <el-dialog
+        title="提示"
+        :visible.sync="dialogVisible"
+        width="60%"
+        :before-close="handleClose"
+      >
+        <div class="dialogSty">
+          {{ content }}
+        </div>
+        <div class="dialogOperator">
+          <!-- <el-button
+            @click="handelSend"
+            type="success"
+            v-if="!isChange"
+            :disabled="isUpload"
+            >提交</el-button
+          >
+          <el-button
+            @click="changeClass"
+            type="warning"
+            v-if="isChange"
+            :disabled="isUpload"
+            >修改</el-button
+          > -->
+          <el-button @click="dialogVisible = false" type="">确认</el-button>
+        </div>
+      </el-dialog>
     </el-main>
   </el-container>
 </template>
@@ -94,6 +121,9 @@ import { ZgetEntered, ZgetOneCourse, ZgetMessage } from "@/api/user/index";
 export default {
   data() {
     return {
+      //弹框
+      dialogVisible: false,
+      //多选框内容
       types: [
         {
           value: "1",
@@ -125,6 +155,7 @@ export default {
       sarr: [],
       multipleSelection: [],
       searchText: "",
+      content: "",
     };
   },
   props: ["change"],
@@ -197,7 +228,7 @@ export default {
             if (result.data[h].type == 1) {
               atype = "课程签到";
               cont =
-                "请注意签到的开始时间为：" +
+                "签到开始时间为：" +
                 JSON.parse(result.data[h].content).createTime +
                 "；结束时间为：" +
                 JSON.parse(result.data[h].content).createTime +
@@ -214,9 +245,9 @@ export default {
             } else if (result.data[h].type == 5) {
               atype = "直播通知";
               cont =
-                "各位同学好：请及时进入房间" +
+                "请进入房间" +
                 result.data[h].content +
-                "进行学习。";
+                "进行学习。"
             }
             obje["fen"] = atype;
             obje["cont"] = cont;
@@ -226,6 +257,14 @@ export default {
           this.$message.error("暂无数据");
         }
       });
+    },
+    //弹框
+    handleClose(done) {
+      this.$confirm("确认关闭？")
+        .then((_) => {
+          done();
+        })
+        .catch((_) => {});
     },
 
     toggleSelection(rows) {
@@ -263,8 +302,7 @@ export default {
 .el-main {
   background-color: #e9eef3;
   color: #333;
-  text-align: center;
-  line-height: 160px;
+  // text-align: center;
 }
 
 body > .el-container {
@@ -308,5 +346,12 @@ body > .el-container {
 }
 .nselect {
   display: flex;
+}
+.el-dialog__header {
+  line-height: 30px;
+  text-align: left;
+}
+.el-dialog::v-deep .el-dialog__body {
+  line-height: 70px;
 }
 </style>

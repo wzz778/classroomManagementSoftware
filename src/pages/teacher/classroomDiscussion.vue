@@ -1,5 +1,6 @@
 <template>
   <div>
+    <TitleBlock text="课堂话题"/>
     课堂：
     <el-select v-model="course" placeholder="请选择">
       <el-option
@@ -16,7 +17,6 @@
     <el-button type="success" @click="addTopic"
       ><i class="el-icon-plus"></i> 添加话题</el-button
     >
-    <TitleBlock text="课堂话题"/>
     <el-empty v-if="tableDate.length==0" description="暂无回复内容"></el-empty>
     <TopicList v-for="(p) of tableDate"  :key="p.topic.id" style="width:100%" :jsonText="JSON.stringify(p)"/>
     <el-dialog
@@ -63,7 +63,7 @@
     <!-- 卧龙凤雏 -->
     <template>
       <div v-if="false">
-      {{tableDate}}{{deleteid}}
+      {{tableDate}}
       </div>
     </template>
     <!-- 卧龙凤雏 -->
@@ -220,14 +220,18 @@ export default {
     },
   },
   
-  computed:{
-    deleteid(){
-      // console.log(this.$store.state.admin.deleteTopicid);
+  created(){
+    let patharr=this.$route.path.toString().split("/")
+    if(patharr[1]=="student"){
+      this.isUserRouter=true;
+    }
+     this.$store.watch((state, getters) => {
+        return state.admin.deleteTopicid
+      }, () => {
       if(this.$store.state.admin.deleteTopicid){
         this.chagepage()
       }
-      return this.$store.state.admin.deleteTopicid;
-    }
+      })
   },
   mounted() {
     if (sessionStorage.getItem("Topicpage")) {
@@ -237,9 +241,13 @@ export default {
     } else {
       sessionStorage.setItem("Topicpage", 1);
     }
-    this.getAllCourse();
-    // this.$refs.topiclist.$on('deleteTopic',this.deleteTopic) //绑定自定义事件
-    //  sessionStorage.setItem("AdminClassMessage",JSON.stringify(row))
+    if(this.isUserRouter){
+      this.course = this.$route.query.id;
+      this.searchform.courseId = this.$route.query.id;
+      this.form.courseId = this.$route.query.id;
+      }else{
+        this.getAllCourse();
+    }
   },
 };
 </script>

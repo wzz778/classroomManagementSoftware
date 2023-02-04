@@ -47,8 +47,12 @@
           <span slot="title">附件管理</span>
         </el-menu-item>
         <el-menu-item index="/teacher/classroomDiscussion">
-          <i class="el-icon-paperclip"></i>
+          <i class="el-icon-chat-dot-square"></i>
           <span slot="title">讨论管理</span>
+        </el-menu-item>
+        <el-menu-item index="/teacher/classroomGroup">
+          <i class="el-icon-connection"></i>
+          <span slot="title">分组管理</span>
         </el-menu-item>
       </el-menu>
     </div>

@@ -16,52 +16,55 @@
             </div>
         </div>
         <div class="topicListright">
-            <a href="javascript:;" @click="deleteTopic"><i class="el-icon-delete"></i></a>
-            <a href="javascript:;"><i class="el-icon-chat-line-round"></i></a>
+            <a href="javascript:;" v-if="deletePower" @click="deleteDiscuss"><i class="el-icon-delete"></i></a>
+            <a href="javascript:;" @click="addDiscuss"><i class="el-icon-chat-line-round"></i></a>
         </div>
 	</div>
 </template>
 <script>
-
+import jwtDecode from "jwt-decode";
+import { deleteDiscuss } from "@/api/admin/index";
 	export default {
 		name:'DiscussList',
 		data() {
 			return {
                 form: {},
+                deletePower:false
 			}
 		},
         methods:{
-            deleteTopic(){
-                // this.$confirm("确定要删除课程吗?", "提示", {
-                // confirmButtonText: "确定",
-                // cancelButtonText: "取消",
-                // type: "warning",
-                // })
-                // .then(() => {
-                // deleteGrade({ gradeId:row })
-                // .then((result) => {
-                //     console.log(result);
-                //     if(result.status==200){
-                //     this.$message({
-                //         type: "success",
-                //         message: "删除成功!",
-                //     });
-                //     this.chagepage();
-                //     }else{
-                //     this.$message({
-                //         type: "warning",
-                //         message: "操作失败",
-                //     });
-                //     }
-                // });
-                // })
-                // .catch(() => {
-                // this.$message({
-                //     type: "info",
-                //     message: "已取消删除",
-                // });
-                // });
-                // // this.$store.commit('JIA',this.n)
+            deleteDiscuss(){
+                this.$confirm("确定要删除课程吗?", "提示", {
+                    confirmButtonText: "确定",
+                    cancelButtonText: "取消",
+                    type: "warning",
+                })
+                    .then(() => {
+                    deleteDiscuss({ discussId: this.form.discuss.id }).then((result) => {
+                        console.log(result);
+                        if (result.status == 200) {
+                        this.$message({
+                            type: "success",
+                            message: "删除成功!",
+                        });
+                        this.$store.commit("admin/deleteDiscuss", this.form.discuss.id);
+                        } else {
+                        this.$message({
+                            type: "warning",
+                            message: "操作失败",
+                        });
+                        }
+                    });
+                    })
+                    .catch(() => {
+                    this.$message({
+                        type: "info",
+                        message: "已取消删除",
+                    });
+                    });
+            },
+            addDiscuss(){
+                this.$store.commit("admin/setDiscussForm", this.jsonText);
             }
         },
 		props:{
@@ -88,6 +91,10 @@
         created() {
             // console.log(jsonText);
             this.form = JSON.parse(this.jsonText);
+            let obj = jwtDecode(window.localStorage.token)
+            if(this.form.user.studentId==obj.id){
+                this.deletePower=true
+            }
         },        
 	}
 </script>

@@ -21,7 +21,7 @@
       </div>
     </div>
     <div class="topicListright">
-      <a href="javascript:;"  v-if="this.teacherpath" @click.stop="deleteTopic"
+      <a href="javascript:;"  v-if="this.teacherpath&&this.topicpath" @click.stop="deleteTopic"
         ><i class="el-icon-delete"></i
       ></a>
       <a href="javascript:;" @click="addDiscuss"> <i class="el-icon-chat-line-round"></i></a>
@@ -85,7 +85,7 @@ export default {
   props: {
     jsonText: {
       type: String,
-      default: "4543634", //默认值,
+      default: "", //默认值,
     },
     showmore: {
       type: Boolean,
@@ -107,13 +107,13 @@ export default {
     // console.log(jsonText);
     this.form = JSON.parse(this.jsonText);
     let patharr=this.$route.path.toString().split("/")
-    if(patharr[1]=="user"){
+    if(patharr[1]=="student"){
       this.teacherpath=false
     }else{
-
+      this.teacherpath=true
     }
-    if(patharr[2]=="discussionDetails"){
-      this.topicpath=false
+    if(patharr[2]=="classroomDiscussion"){
+      this.topicpath=true
     }
   },
 };

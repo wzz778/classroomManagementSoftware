@@ -19,16 +19,23 @@
       </div>
       <div class="unchangeableInfo">
         <div class="studentAccount">账号：{{ userInfo.userName }}</div>
-        <div class="studentName">姓名：{{userInfo.name}}</div>
-        <div class="studentClass">班级：{{ userInfo.gradeId }}</div>
+        <div class="studentClass" v-if="userInfo.identity==0">班级：{{ userInfo.gradeId }}</div>
         <div class="studentEmail">邮箱：{{ userInfo.email }}</div>
       </div>
     </div>
     <div class="rightBox">
+      <div class="studentName">
+        姓名：
+        <el-input
+          v-model="changeInfo.name"
+          placeholder="请输入姓名(至多八个字)"
+          style="width: 200px"
+        ></el-input>
+      </div>
       <div class="studentSex">
         性别：
-        <el-radio v-model="sex" label="男">男</el-radio>
-        <el-radio v-model="sex" label="女" style="margin-left: 20px"
+        <el-radio v-model="changeInfo.sex" label="男">男</el-radio>
+        <el-radio v-model="changeInfo.sex" label="女" style="margin-left: 20px"
           >女</el-radio
         >
       </div>
@@ -47,9 +54,9 @@
       <div class="nativePlace">
         籍贯：
         <el-cascader
-          v-model="userAddress"
-          :props=addrssDate
-          :options=addressOptions
+          v-model="changeInfo.nativePlace"
+          :props="addrssDate"
+          :options="addressOptions"
           @change="handleChange"
           separator=""
           style="{height:200px.overflow:auto}"
@@ -75,26 +82,38 @@ import {
   updateInfo,
   getAllAddress,
 } from "@/api/student/yxyAxios";
-import { Radio, Select, Option, Button, Upload, Message,Cascader } from "element-ui";
+import {
+  Radio,
+  Select,
+  Option,
+  Button,
+  Upload,
+  Message,
+  Cascader,
+  Input,
+} from "element-ui";
 export default {
   name: "ChangeInfo",
   data() {
     return {
-      sex: "",
+      changeInfo: {
+        sex: "",
+        nativePlace: [],
+        name: "",
+      },
       addressOptions: [],
-      userAddress:[],
       userInfo: "",
       photo: {
         backgroundImage: "",
       },
       imageUrl: "",
       fileList: [],
-      addrssDate:{
+      addrssDate: {
         // emitPath: false, // 只返回该节点的值
         value: "addressName", // 自定义要映射的键名
         label: "addressName",
-        children: "citys"
-      }
+        children: "citys",
+      },
     };
   },
   components: {
@@ -103,17 +122,19 @@ export default {
     [Option.name]: Option,
     [Button.name]: Button,
     [Upload.name]: Upload,
-    [Cascader.name]:Cascader
+    [Cascader.name]: Cascader,
+    [Input.name]: Input,
   },
   methods: {
     getUserInfoFun() {
       getUserInfo().then((res) => {
         if (res.status == 200) {
           this.userInfo = res.data;
-          this.sex = res.data.sex;
-          this.userAddress= res.data.nativePlace.split('/');
-          if(res.data.nativePlace!='无'){
-            this.userAddress=res.data.nativePlace.split('/');
+          this.changeInfo.sex = res.data.sex;
+          this.changeInfo.nativePlace = res.data.nativePlace.split("/");
+          this.changeInfo.name=res.data.name;
+          if (res.data.nativePlace != "无") {
+            this.changeInfo.nativePlace = res.data.nativePlace.split("/");
           }
           this.photo.backgroundImage = "url(" + res.data.photo + ")";
         } else {
@@ -150,22 +171,23 @@ export default {
      * 更新信息
      */
     updateInfoFun() {
-      if(this.userAddress==undefined){
-        Message.warning('请选择籍贯');
-      }else{
-        let data = {
-        sex: this.sex,
-        nativePlace:this.userAddress.join('/')
-      };
-      updateInfo(data).then((res) => {
-        if (res.status == 200) {
-          Message.success("修改成功!");
-          this.getUserInfoFun();
-        } else {
-          Message.error("网络异常，修改失败");
-        }
-      });
-      } 
+      if (this.changeInfo.name.length == 0) {
+        Message.warning("请填写姓名");
+      } else if (this.changeInfo.name.replace(/ /g, "").length == 0) {
+        Message.warning("姓名不能全为空格");
+      } else if (this.changeInfo.nativePlace == undefined) {
+        Message.warning("请选择籍贯");
+      } else {
+        this.changeInfo.nativePlace=this.changeInfo.nativePlace.join("/"),
+        updateInfo(this.changeInfo).then((res) => {
+          if (res.status == 200) {
+            Message.success("修改成功!");
+            this.getUserInfoFun();
+          } else {
+            Message.error("网络异常，修改失败");
+          }
+        });
+      }
     },
     /**
      * 获取籍贯
@@ -175,8 +197,11 @@ export default {
         console.log("籍贯：", res);
         console.log(this.addressOptions);
         if (res.status == 200) {
-          let data=JSON.stringify(res.data.address.provinces).replace(/provinceName/g,"addressName");
-          data=data.replace(/cityName/g,"addressName")
+          let data = JSON.stringify(res.data.address.provinces).replace(
+            /provinceName/g,
+            "addressName"
+          );
+          data = data.replace(/cityName/g, "addressName");
           this.addressOptions = JSON.parse(data);
           console.log(this.addressOptions);
         } else {
@@ -184,10 +209,9 @@ export default {
         }
       });
     },
-     handleChange(value) {
-      this.userAddress=value
-        console.log(this.userAddress);
-      }
+    handleChange(value) {
+      this.changeInfo.nativePlace = value;
+    },
   },
   mounted() {
     this.getUserInfoFun();
@@ -197,9 +221,9 @@ export default {
 </script>
 
 <style lang="less">
-  .el-cascader-panel{
-    height: 300px;
-  }
+.el-cascader-panel {
+  height: 300px;
+}
 </style>
 <style lang="less" scoped>
 * {
@@ -280,10 +304,10 @@ export default {
 .rightBox {
   margin-left: 100px;
   .studentSex {
-    margin-top: 20px;
+    margin-top: 40px;
   }
   .nativePlace {
-    margin: 50px 0;
+    margin: 40px 0 10px  0;
   }
 }
 

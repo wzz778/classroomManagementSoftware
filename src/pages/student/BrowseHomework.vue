@@ -2,66 +2,135 @@
   <el-container style="height: 100%; border: 1px solid #eee">
     <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
       <div class="doResult">
-        <span>得分：0/2</span>
-        <span>耗时：5秒</span>
+        <span style="color: #666; font-weight: 700">作业提交时间：</span>
+        <span>{{ homeworkInfo.createTime }}</span>
+        <span style="color: #666; font-weight: 700">作业规定时间：</span>
+        <span>{{ homeworkInfo.beginTime }}</span>
+        至<br />
+        <span>{{ homeworkInfo.endTime }}</span>
+        <span>得分：{{correct.allScore}}/{{allScore}}</span>
       </div>
-      <div class="topicTab">
-        <el-tag
-          type="info"
-          class="tagItem"
-          v-for="(tag, index) in 30"
+     <div class="topicTab">
+        <h4 style="text-align: center">题号</h4>
+        <a
+          v-for="(topic, index) in homeworkInfo.questionCount"
           :key="index"
-          >{{ index + 1 }}</el-tag
+          @click="toTopic('#t' + index)"
         >
+          <el-tag
+            :type="
+              userAnswer[index].answer == '' || userAnswer[index].answer == []
+                ? 'info'
+                : 'success'
+            "
+            class="tagItem"
+            >{{ index + 1 }}</el-tag
+          >
+        </a>
       </div>
     </el-aside>
 
     <el-container class="content">
       <el-header style="text-align: right; font-size: 12px" class="title">
-        <h3 class="paperName">20200912卷</h3>
+        <h3 class="paperName">{{ homeworkInfo.homeworkName }}</h3>
+        <span>总分：{{ allScore }}</span>
       </el-header>
       <el-main>
-        <!-- 单选 判断-->
-        <div class="topicPart">
-          <div class="topicItem">
-            <p>1.中华四大名著都有哪些，下列正确的是：</p>
-            <div class="choiceItem">
-              <el-radio-group v-model="radio">
-                <el-radio disabled v-model="radio" label="选中且禁用">红楼梦</el-radio>
-                <el-radio disabled v-model="radio" label="禁用">白楼梦</el-radio>
-                <el-radio disabled v-model="radio" label="禁用">青楼梦</el-radio>
-                <el-radio disabled v-model="radio" label="禁用">绿楼梦</el-radio>
-              </el-radio-group>
-            </div>
-          </div>
-          <!-- 填空 -->
-          <div class="topicItem">
-            <p>2.中华四大名著都有_、_、_、_哪些</p>
-            <div class="blankItem">
-              <div class="inputBlank">
-                    <div
-                      class="answerAreaBox"
-                    ></div>
+        <div v-for="(topic, index) in topics" :key="index">
+          <div class="topicItem" :id="'t' + index">
+            <div
+              class="topicTitle"
+              v-html="
+                index +
+                1 +
+                '、' +
+                topic.questionContent.topicInfo +
+                '(' +
+                topic.score +
+                '分)'
+              "
+            ></div>
+            <!-- 单选 、判断-->
+            <template
+              v-if="
+                topic.questionContent.type == 1 ||
+                topic.questionContent.type == 3
+              "
+            >
+              <div class="choiceItem">
+                <el-radio-group v-model="userAnswer[index].answer">
+                  <div
+                    v-for="(op, index) in topic.questionContent.optionsInfo"
+                    :key="index"
+                    class="chooseItem"
+                  >
+                    <el-radio :label="op.options" disabled></el-radio>
+                    <span
+                      style="height: 30px; font-size: 15px"
+                      v-html="op.value"
+                    ></span>
                   </div>
-            </div>
+                </el-radio-group>
+              </div>
+            </template>
+            <!-- 多选 -->
+            <template v-if="topic.questionContent.type == 2">
+              <div class="choiceMoreItem">
+                <el-checkbox-group v-model="userAnswer[index].answer">
+                  <div
+                    v-for="(op, index) in topic.questionContent.optionsInfo"
+                    :key="index"
+                    class="chooseItem"
+                  >
+                    <el-checkbox :label="op.options" disabled></el-checkbox>
+                    <span
+                      style="height: 30px; font-size: 15px; margin-left: 20px"
+                      v-html="op.value"
+                      class="checkboxItem"
+                    ></span>
+                  </div>
+                </el-checkbox-group>
+              </div>
+            </template>
+            <!-- 填空简答 -->
+            <template
+              v-if="
+                topic.questionContent.type == 4 ||
+                topic.questionContent.type == 5
+              "
+            >
+              <div class="blankItem">
+                <div class="inputBlank">
+                  <div
+                    class="answerAreaBox"
+                    v-html="userAnswer[index].answer"
+                  ></div>
+                </div>
+              </div>
+            </template>
           </div>
-          <!-- 多选简答 -->
-          <div class="topicItem">
-            <p>3.中华四大名著都有哪些，下列正确的是：</p>
-            <div class="choiceMoreItem">
-              <!-- <el-checkbox-group v-model="checkList" @change="checkMore"> -->
-                <el-checkbox v-model="checked1" disabled>红楼梦</el-checkbox>
-                <el-checkbox v-model="checked2" disabled>西游记</el-checkbox>
-                <el-checkbox v-model="checked1" disabled>三国演义</el-checkbox>
-                <el-checkbox v-model="checked2" disabled>水浒传</el-checkbox>
-                <!-- <el-checkbox
-                  v-for="(f, index) in four"
-                  :key="index"
-                  :label="f"
-                  >{{ f }}</el-checkbox
-                > -->
-              <!-- </el-checkbox-group> -->
-            </div>
+          <div class="result">
+            <span class="resultItem">答案：<span style="word-break: break-all" v-html="answer[index].answer"></span></span>
+            <span class="resultItem">
+              分值：{{ haveScore[index].questionScore }}分
+            </span>
+            <span class="resultItem"
+              >结果：<el-tag
+                type="danger"
+                v-show="
+                  haveScore[index].questionScore != haveScore[index].score
+                "
+                >错误</el-tag
+              ><el-tag
+                type="success"
+                v-show="
+                  haveScore[index].questionScore == haveScore[index].score
+                "
+                >正确</el-tag
+              ></span
+            >
+            <span class="resultItem">得分：{{ haveScore[index].score }}分</span>
+            <span class="resultItem">解析：<span style="word-break: break-all" v-html="topics[index].questionContent.correct"></span></span>
           </div>
         </div>
       </el-main>
@@ -70,6 +139,7 @@
 </template>
 
 <script>
+import { getHomeworkById } from "@/api/student/yxyAxios";
 import {
   Container,
   Main,
@@ -98,24 +168,49 @@ export default {
   name: "BrowseHomework",
   data() {
     return {
-      input: "",
-      radio: '选中且禁用',
-      checkList: [],
-      four: ["红楼梦", "西游记", "水浒传", "三国演义"],
-      textarea: "",
-      judge: "",
-      difficulty: 3.5,
-       checked1: false,
-        checked2: true
+      homeworkInfo: "",
+      topics: "",
+      userAnswer: "",
+      haveScore: "",
+      answer: "",
+      num: "",
+      correct:"",
+      allScore:0
     };
   },
   methods: {
-    checkMore(val) {
-      console.log(val);
+    toTopic(idName) {
+      document.querySelector(idName).scrollIntoView(true);
     },
-    judgeFun(val) {
-      console.log(val);
+    getHomework() {
+      let data = {
+        homeworkId: this.$route.query.hid,
+        studentId: this.$route.query.stuId,
+      };
+      getHomeworkById(data).then((res) => {
+        console.log(res);
+        this.homeworkInfo = res.data.homework;
+        this.homeworkInfo.remark = this.homeworkInfo.remark || "无";
+        this.topics = res.data.homework.question;
+        this.userAnswer = res.data.userAnswer.userAnswer;
+        this.haveScore = res.data.correct.deScore;
+        this.answer = res.data.homework.answer;
+        this.num = res.data.correct.deScore;
+        this.correct=res.data.correct;
+        for (let i = 0; i < this.homeworkInfo.questionCount; i++) {
+          this.allScore+=this.topics[i].score;
+          this.topics[i].questionContent = JSON.parse(
+            this.topics[i].questionContent
+          );
+          if (this.topics[i].questionContent.type == 2) {
+            this.userAnswer[i].answer = this.userAnswer[i].answer.split(",");
+          }
+        }
+      });
     },
+  },
+  mounted() {
+    this.getHomework();
   },
   components: {
     [Container.name]: Container,
@@ -171,6 +266,7 @@ html {
   height: 99vh;
   flex-direction: column;
   overflow: hidden;
+  scroll-behavior: smooth;
 }
 
 /* 整个滚动条 */
@@ -196,6 +292,7 @@ html {
 .el-main {
   overflow-y: auto;
   flex: 1;
+  scroll-behavior: smooth;
 }
 
 .paperTitle {
@@ -280,19 +377,20 @@ html {
   }
 }
 //答题结果
-.result{
+.result {
+  display: flex;
+  flex-direction: column;
+  margin-left: 30px;
+  margin-top: 20px;
+  font-size: 16px;
+  color: rgb(131, 131, 131);
+  .resultItem {
     display: flex;
-    flex-direction: column;
-    margin-left: 30px;
-    margin-top: 20px;
-    font-size: 16px;
-    color: rgb(131, 131, 131);
-    .resultItem{
-        margin: 5px 0;
-    }
-    .el-rate{
-        display: inline;
-    }
+    margin: 5px 0;
+  }
+  .el-rate {
+    display: inline;
+  }
 }
 .answerAreaBox {
   width: 90%;
@@ -301,5 +399,26 @@ html {
   font-size: 15px;
   border: 1px solid #ccc;
   border-radius: 5px;
+}
+.chooseItem {
+  display: flex;
+  flex-direction: row;
+  padding-left: 5px;
+}
+.remarkArea {
+  display: block;
+  text-align: center;
+  font-size: 14px;
+  color: #5b81b2;
+  margin: 35px 0;
+  line-height: 30px;
+  padding: 0 5px;
+}
+.topicTitle{
+  display: flex;
+  word-break: break-all;
+  p{
+    display: inline-block;
+  }
 }
 </style>

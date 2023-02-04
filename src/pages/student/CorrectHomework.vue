@@ -3,146 +3,170 @@
     <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
       <div class="doResult">
         <span style="color: #666; font-weight: 700">作业提交时间：</span>
-        <span>2023/2/1 10:10</span>
+        <span>{{ homeworkInfo.createTime }}</span>
         <span style="color: #666; font-weight: 700">作业规定时间：</span>
-        <span>2023/2/1 10:10</span>
+        <span>{{ homeworkInfo.beginTime }}</span>
         至<br />
-        <span>2023/2/1 10:10</span>
-        <span style="color: #666; font-weight: 700">得分：0/2</span>
+        <span>{{ homeworkInfo.endTime }}</span>
       </div>
       <div class="topicTab">
-        <el-tag
-          type="info"
-          class="tagItem"
-          v-for="(tag, index) in 30"
+        <h4 style="text-align: center">题号</h4>
+        <a
+          v-for="(topic, index) in homeworkInfo.questionCount"
           :key="index"
-          >{{ index + 1 }}</el-tag
+          @click="toTopic('#t' + index)"
         >
+          <el-tag
+            :type="
+              userAnswer[index].answer == '' || userAnswer[index].answer == []
+                ? 'info'
+                : 'success'
+            "
+            class="tagItem"
+            >{{ index + 1 }}</el-tag
+          >
+        </a>
       </div>
+      <div class="remarkArea">备注：{{ homeworkInfo.remark }}</div>
       <div class="btn">
-        <el-button type="primary">提交批改</el-button>
+        <el-button type="primary" @click.native="submitCorrect"
+          >提交批改</el-button
+        >
       </div>
     </el-aside>
 
     <el-container class="content">
       <el-header style="text-align: right; font-size: 12px" class="title">
-        <h3 class="paperName">20200912卷</h3>
+        <h3 class="paperName">{{ homeworkInfo.homeworkName }}</h3>
+        <span>总分：{{ allScore }}</span>
       </el-header>
       <el-main>
-        <!-- 单选 -->
-        <div class="topicPart">
-          <h3 class="topicPartName">第一部分</h3>
-          <div class="topicItem">
-            <p>1.中华四大名著都有哪些，下列正确的是：</p>
-            <div class="choiceItem">
-              <el-radio-group v-model="radio">
-                <el-radio disabled v-model="radio" label="选中且禁用"
-                  >红楼梦</el-radio
-                >
-                <el-radio disabled v-model="radio" label="禁用"
-                  >白楼梦</el-radio
-                >
-                <el-radio disabled v-model="radio" label="禁用"
-                  >青楼梦</el-radio
-                >
-                <el-radio disabled v-model="radio" label="禁用"
-                  >绿楼梦</el-radio
-                >
-              </el-radio-group>
-            </div>
-            <div class="result">
-              <span class="resultItem">答案：A</span>
-              <span class="resultItem"
-                >结果：<el-tag type="success">正确</el-tag></span
-              >
-              <span class="resultItem">得分：2.5</span>
-              <span class="resultItem"
-                >难度：<el-rate
-                  v-model="difficulty"
-                  disabled
-                  show-score
-                  text-color="#ff9900"
-                  score-template="{value}"
-                >
-                </el-rate
-              ></span>
-              <span class="resultItem">解析：题目较为简单</span>
-            </div>
-          </div>
-          <!-- 填空 -->
-          <div class="topicItem">
-            <p>2.中华四大名著都有_、_、_、_哪些</p>
-            <div class="blankItem">
-              <div class="inputBlank">
-                <div
-                  class="answerAreaBox"
-                ></div>
+        <div v-for="(topic, index) in topics" :key="index">
+          <div class="topicItem" :id="'t' + index">
+            <div
+              class="topicTitle"
+              v-html="
+                index +
+                1 +
+                '、' +
+                topic.questionContent.topicInfo +
+                '(' +
+                topic.score +
+                '分)'
+              "
+            ></div>
+            <!-- 单选 、判断-->
+            <template
+              v-if="
+                topic.questionContent.type == 1 ||
+                topic.questionContent.type == 3
+              "
+            >
+              <div class="choiceItem">
+                <el-radio-group v-model="userAnswer[index].answer">
+                  <div
+                    v-for="(op, index) in topic.questionContent.optionsInfo"
+                    :key="index"
+                    class="chooseItem"
+                  >
+                    <el-radio :label="op.options" disabled></el-radio>
+                    <span
+                      style="height: 30px; font-size: 15px"
+                      v-html="op.value"
+                    ></span>
+                  </div>
+                </el-radio-group>
               </div>
-            </div>
-            <div class="result">
-              <span class="resultItem"
-                >答案:红楼梦、西游记、三国演义、水浒传</span
-              >
-              <span class="resultItem"
-                >结果：<el-tag type="danger">错误</el-tag></span
-              >
-              <span class="resultItem">得分：2.5</span>
-              <span class="resultItem"
-                >难度：<el-rate
-                  v-model="difficulty"
-                  disabled
-                  show-score
-                  text-color="#ff9900"
-                  score-template="{value}"
-                >
-                </el-rate
-              ></span>
-              <span class="resultItem">解析：题目较为简单</span>
-              <span class="correctNumber"
-                >批改：<el-input-number
-                  v-model="num"
-                  :precision="2"
-                  :step="0.1"
-                  :max="10"
-                ></el-input-number
-              ></span>
-            </div>
+            </template>
+            <!-- 多选 -->
+            <template v-if="topic.questionContent.type == 2">
+              <div class="choiceMoreItem">
+                <el-checkbox-group v-model="userAnswer[index].answer">
+                  <div
+                    v-for="(op, index) in topic.questionContent.optionsInfo"
+                    :key="index"
+                    class="chooseItem"
+                  >
+                    <el-checkbox :label="op.options" disabled></el-checkbox>
+                    <span
+                      style="height: 30px; font-size: 15px; margin-left: 20px"
+                      v-html="op.value"
+                      class="checkboxItem"
+                    ></span>
+                  </div>
+                </el-checkbox-group>
+              </div>
+            </template>
+            <!-- 填空简答 -->
+            <template
+              v-if="
+                topic.questionContent.type == 4 ||
+                topic.questionContent.type == 5
+              "
+            >
+              <div class="blankItem">
+                <div class="inputBlank">
+                  <div
+                    class="answerAreaBox"
+                    v-html="userAnswer[index].answer"
+                  ></div>
+                </div>
+              </div>
+            </template>
           </div>
-          <!-- 多选 -->
-          <div class="topicItem">
-            <p>3.中华四大名著都有哪些，下列正确的是：</p>
-            <div class="choiceMoreItem">
-              <!-- <el-checkbox-group v-model="checkList" @change="checkMore"> -->
-              <el-checkbox v-model="checked1" disabled>红楼梦</el-checkbox>
-              <el-checkbox v-model="checked2" disabled>西游记</el-checkbox>
-              <el-checkbox v-model="checked1" disabled>三国演义</el-checkbox>
-              <el-checkbox v-model="checked2" disabled>水浒传</el-checkbox>
-              <!-- <el-checkbox
-                  v-for="(f, index) in four"
-                  :key="index"
-                  :label="f"
-                  >{{ f }}</el-checkbox
-                > -->
-              <!-- </el-checkbox-group> -->
-            </div>
-            <div class="result">
-              <span class="resultItem">答案:错误</span>
-              <span class="resultItem"
-                >结果：<el-tag type="danger">错误</el-tag></span
+          <div class="result">
+            <span class="resultItem"
+              >答案：<span
+                style="word-break: break-all"
+                v-html="answer[index].answer"
+              ></span
+            ></span>
+            <span class="resultItem">
+              分值：{{ haveScore[index].questionScore }}分
+            </span>
+            <span class="resultItem"
+              >结果：
+              <el-tag
+                type="success"
+                v-show="
+                  haveScore[index].questionScore == haveScore[index].score
+                "
+                >正确</el-tag
               >
-              <span class="resultItem">得分：2.5</span>
-              <span class="resultItem"
-                >难度：<el-rate
-                  v-model="difficulty"
-                  disabled
-                  show-score
-                  text-color="#ff9900"
-                  score-template="{value}"
-                >
-                </el-rate
-              ></span>
-              <span class="resultItem">解析：题目较为简单</span>
-            </div>
+              <span
+                v-show="
+                  haveScore[index].questionScore != haveScore[index].score &&
+                  haveScore[index].score == 0
+                "
+              >
+                <el-tag type="danger">错误</el-tag>/
+                <el-tag type="warning">待批改</el-tag>
+              </span>
+              <el-tag
+                type="danger"
+                v-show="
+                  haveScore[index].questionScore != haveScore[index].score &&
+                  haveScore[index].score != 0
+                "
+                >错误</el-tag
+              >
+            </span>
+            <span class="resultItem">得分：{{ haveScore[index].score }}分</span>
+            <span class="resultItem"
+              >解析：<span
+                style="word-break: break-all"
+                v-html="topics[index].questionContent.correct"
+              ></span
+            ></span>
+            <span class="correctNumber"
+              >批改：<el-input-number
+                v-model="num[index].score"
+                :precision="2"
+                :step="0.1"
+                :max="haveScore[index].questionScore"
+                :min="0"
+              ></el-input-number
+            ></span>
           </div>
         </div>
       </el-main>
@@ -151,6 +175,7 @@
 </template>
 
 <script>
+import { getHomeworkById, submitCorrect } from "@/api/student/yxyAxios";
 import {
   Container,
   Main,
@@ -175,30 +200,22 @@ import {
   Backtop,
   Rate,
   InputNumber,
+  MessageBox,
+  Message,
 } from "element-ui";
 export default {
-  name: "DoPaper",
+  name: "CorrectHomework",
   data() {
     return {
-      input: "",
-      radio: "选中且禁用",
-      checkList: [],
-      four: ["红楼梦", "西游记", "水浒传", "三国演义"],
-      textarea: "",
-      judge: "",
-      difficulty: 3.5,
-      checked1: false,
-      checked2: true,
-      num: 0,
+      homeworkInfo: "",
+      topics: "",
+      userAnswer: "",
+      haveScore: "",
+      answer: "",
+      num: "",
+      correct: "",
+      allScore:0
     };
-  },
-  methods: {
-    checkMore(val) {
-      console.log(val);
-    },
-    judgeFun(val) {
-      console.log(val);
-    },
   },
   components: {
     [Container.name]: Container,
@@ -224,6 +241,72 @@ export default {
     [Backtop.name]: Backtop,
     [Rate.name]: Rate,
     [InputNumber.name]: InputNumber,
+    [MessageBox.name]: MessageBox,
+  },
+  methods: {
+    toTopic(idName) {
+      document.querySelector(idName).scrollIntoView(true);
+    },
+    getHomework() {
+      let data = {
+        homeworkId: this.$route.query.hid,
+        studentId: this.$route.query.stuId,
+      };
+      getHomeworkById(data).then((res) => {
+        console.log(res);
+        this.homeworkInfo = res.data.homework;
+        this.homeworkInfo.remark = this.homeworkInfo.remark || "无";
+        this.topics = res.data.homework.question;
+        this.userAnswer = res.data.userAnswer.userAnswer;
+        this.haveScore = res.data.correct.deScore;
+        this.answer = res.data.homework.answer;
+        this.num = res.data.correct.deScore;
+        this.correct = res.data.correct;
+        for (let i = 0; i < this.homeworkInfo.questionCount; i++) {
+          this.allScore+=this.topics[i].score;
+          this.topics[i].questionContent = JSON.parse(
+            this.topics[i].questionContent
+          );
+          if (this.topics[i].questionContent.type == 2) {
+            this.userAnswer[i].answer = this.userAnswer[i].answer.split(",");
+          }
+        }
+      });
+    },
+    submitCorrect() {
+      let correct = this.correct;
+      correct.deScore = this.num;
+      for (let i = 0; i < this.num.length; i++) {
+        correct.allScore += this.num[i].score;
+      }
+      this.$confirm(
+        "作业得分为:" + correct.allScore + "分,确认提交批改？",
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        }
+      )
+        .then(() => {
+          submitCorrect(correct).then((res) => {
+            if (res.status == 200) {
+              Message.success("提交成功");
+            } else {
+              Message.error("网络异常，提交失败");
+            }
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消提交",
+          });
+        });
+    },
+  },
+  mounted() {
+    this.getHomework();
   },
 };
 </script>
@@ -255,6 +338,7 @@ html {
   height: 99vh;
   flex-direction: column;
   overflow: hidden;
+  scroll-behavior: smooth;
 }
 
 /* 整个滚动条 */
@@ -280,6 +364,7 @@ html {
 .el-main {
   overflow-y: auto;
   flex: 1;
+  scroll-behavior: smooth;
 }
 
 .paperTitle {
@@ -372,6 +457,7 @@ html {
   font-size: 16px;
   color: rgb(131, 131, 131);
   .resultItem {
+    display: flex;
     margin: 5px 0;
   }
   .el-rate {
@@ -385,5 +471,26 @@ html {
   font-size: 15px;
   border: 1px solid #ccc;
   border-radius: 5px;
+}
+.chooseItem {
+  display: flex;
+  flex-direction: row;
+  padding-left: 5px;
+}
+.remarkArea {
+  display: block;
+  text-align: center;
+  font-size: 14px;
+  color: #5b81b2;
+  margin: 35px 0;
+  line-height: 30px;
+  padding: 0 5px;
+}
+.topicTitle {
+  display: flex;
+  word-break: break-all;
+  p {
+    display: inline-block;
+  }
 }
 </style>

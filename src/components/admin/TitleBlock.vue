@@ -26,7 +26,6 @@
         box-shadow: 4px 4px 40px rgb(0 0 0 / 10%);
         border-radius:5px 5px 0 0;
         display: flex;
-        margin:5px 0px;
         padding-left:15px ;
         color: #474C59;
         cursor: pointer;

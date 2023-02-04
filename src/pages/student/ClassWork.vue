@@ -149,7 +149,7 @@ export default {
             }
           }
         } else {
-          this.$message.error("获取课程作业失败");
+          this.$message.error("暂无作业");
         }
       });
     },

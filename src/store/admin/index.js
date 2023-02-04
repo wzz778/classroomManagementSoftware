@@ -16,9 +16,16 @@ const mutations = {
     deleteTopic(state,value){
         state.deleteTopicid=value;
     },
-    // setTopicForm(state,value){
-    //     state.topicForm=value;
-    // }
+    deleteDiscuss(state,value){
+        console.log(value);
+        state.deleteDiscussid=value;
+    },
+    setDiscussForm(state,value){
+        state.discussForm=value;
+    },
+    clearDiscussForm(state,value){
+        state.discussForm='';
+    }
 }
 // 准备state(存放数据)
 const state = {
@@ -26,7 +33,8 @@ const state = {
     editableTabsValue:Storage.getEditableTabsValue() || '/admin/index',
     // allgrade:["一年级","二年级","三年级","四年级","五年级","六年级","初一","初二","初三","高一","高二","高三"]
     deleteTopicid:'',
-    // topicForm:{}
+    deleteDiscussid:'',
+    discussForm:""
 }
 // 准备getters
 const getters = {}

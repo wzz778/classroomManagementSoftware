@@ -5,7 +5,7 @@
       label-width="80px"
       :model="changePasswordInfo"
     >
-      <el-form-item label="新密码" style="margin-bottom=0">
+      <el-form-item label="新密码:" style="margin-bottom=0;height:90px" >
         <el-input
           placeholder="8~15位且包含数字与字母"
           v-model="changePasswordInfo.newPassword"
@@ -14,7 +14,7 @@
         ></el-input>
         <span :style="passwordStyle" class="tips">新密码格式不正确</span>
       </el-form-item>
-      <el-form-item label="确认新密码" style="margin-bottom=0">
+      <el-form-item label="确认新密码:" style="margin-bottom=0;height:90px">
         <el-input
           placeholder="请确认新密码"
           v-model="surePassword"
@@ -23,22 +23,22 @@
         ></el-input>
         <span :style="surePasswordStyle" class="tips">两次密码输入不一致</span>
       </el-form-item>
-      <el-form-item label="邮箱" style="margin-bottom=0">
+      <el-form-item label="邮箱:" style="margin-bottom=0;height:90px">
         <el-input
           placeholder="请输入账号绑定的邮箱"
           v-model="changePasswordInfo.email"
           @keyup.native="judgeEmail"
         ></el-input>
-        <span :style="emailStyle" class="tips">邮箱格式不正确</span>
+        <span class="tips">邮箱格式不正确</span>
       </el-form-item>
       <div class="codeBox">
         <el-input
           v-model="changePasswordInfo.code"
           placeholder="验证码"
           id="inputCode"
-          style="width: 200px"
+          style="width: 200px;margin-top:20px"
         ></el-input>
-        <GetCode :judgeEmailRes=judgeEmailRes :email=changePasswordInfo.email></GetCode>
+        <GetCode style="margin-top:20px" :judgeEmailRes=judgeEmailRes :email=changePasswordInfo.email></GetCode>
         <!-- <el-button type="primary" size="mini" plain @click="getCode"
           >获取验证码</el-button
         > -->
@@ -70,9 +70,6 @@ export default {
         height: 0,
       },
       surePasswordStyle: {
-        height: 0,
-      },
-      emailStyle: {
         height: 0,
       },
     };
