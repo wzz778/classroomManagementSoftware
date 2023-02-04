@@ -39,7 +39,7 @@
            <el-switch v-model="form.performance"></el-switch>
         </el-form-item>
         <el-form-item label="分组数量" prop="performance">
-         <el-input-number v-model="form.studentNums" :min="2" :max="10" label="描述文字"></el-input-number>
+         <el-input-number v-model="form.studentNums" :min="1" :max="10" label="描述文字"></el-input-number>
         </el-form-item>
 
         <el-form-item>
@@ -132,6 +132,7 @@ export default {
       }
       groupingAnd(this.form)
         .then((result) => {
+          console.log(result);
           if (result.status == 200) {
             this.$message({
               message: "创建成功",
