@@ -4,7 +4,7 @@ import CourseInfo from '@/components/student/CourseInfo/CourseInfo'
 import ClassTask from '@/pages/student/ClassTask'
 import ClassWork from '@/pages/student/ClassWork'
 import StudyGroup from '@/pages/student/StudyGroup'
-import ClassDiscussion from '@/pages/student/ClassDiscussion'
+import ClassDiscussion from '@/pages/teacher/classroomDiscussion'
 import ShareData from '@/pages/student/ShareData'
 import LearnDaily from '@/pages/student/LearnDaily'
 // import ClassStudents from '@/pages/student/ClassStudents'
@@ -77,6 +77,13 @@ export default [
                 meta: {
                     title: "课程成员"
                 },
+            },
+            {
+                path: "discussionDetails",
+                component: () => import('@/pages/teacher/discussionDetails'),
+                meta: {
+                    title: "话题回复"
+                }
             },
             {
                 path:'aboutClass',
