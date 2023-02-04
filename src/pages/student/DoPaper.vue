@@ -5,7 +5,7 @@
       width="200px"
       style="background-color: rgb(238, 241, 246)"
     >
-      <div class="paperInfo">
+      <div class="paperInfo" style="width:100%">
         <div class="paperName">{{ paperData.homeworkName }}</div>
       </div>
       <div class="topicTab">

@@ -53,7 +53,7 @@
       </div>
     </div>
     <div class="viewGroupInfo">
-      <h3 class="groupName">第{{ groupName }}组</h3>
+      <h3 class="groupName">{{ groupName }}</h3>
       <div class="groupMembers">
         <div class="memberNum">小组成员（{{ members.length }}）</div>
         <ul class="memberItems">
@@ -99,6 +99,7 @@ export default {
       groupId: "",
       sever: "ws://110.40.205.103:8577/webSocket/",
       socket: null,
+      haveGroup: false,
     };
   },
   model: {
@@ -258,19 +259,23 @@ export default {
      */
     sendChat() {
       // console.log(this.chatText);
-      let content = {
-        userInfo: this.userInfo,
-        text: this.chatText,
-      };
-      let data = {
-        content: content,
-        courseId: this.$route.query.id,
-        groupId: this.groupId,
-      };
-      // console.log("发出消息：", data);
-      // this.sendMessageFun(data);
-      this.socket.send(JSON.stringify(data));
-      this.editor.txt.clear();
+      if (this.haveGroup == false) {
+        Message.warning("该课程还没有分组");
+      } else {
+        let content = {
+          userInfo: this.userInfo,
+          text: this.chatText,
+        };
+        let data = {
+          content: content,
+          courseId: this.$route.query.id,
+          groupId: this.groupId,
+        };
+        // console.log("发出消息：", data);
+        // this.sendMessageFun(data);
+        this.socket.send(JSON.stringify(data));
+        this.editor.txt.clear();
+      }
     },
 
     /**
@@ -282,6 +287,7 @@ export default {
       };
       getMembers(data).then((res) => {
         if (res.status == 200) {
+          this.haveGroup = true;
           Object.keys(res.data).forEach((key) => {
             // console.log(res.data[key]); // foo
             for (let i = 0; i < res.data[key].length; i++) {
@@ -290,7 +296,7 @@ export default {
                 jwt_decode(this.$store.state.token).username
               ) {
                 this.members = res.data[key];
-                this.groupName = key.substr(5);
+                this.groupName = '第'+key.substr(5)+'组';
                 this.groupId = key;
                 this.sever += this.$route.query.id + key;
                 // ReconnectingWebSocket是类库reconnecting-websocket , 可以进行自动的断线重连,引入连接 :
@@ -305,6 +311,7 @@ export default {
             }
           });
         } else {
+          this.groupName = "暂无分组";
           Message.warning("该课程暂无分组");
         }
       });
