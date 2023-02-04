@@ -22,12 +22,6 @@
           </div>
           <div class="name">
             <span>{{ o.homeworkName }}</span>
-            <span class="tasktime" v-show="new Date(o.beginTime) > new Date()"
-              >开始时间：{{ o.beginTime }}</span
-            >
-            <span class="tasktime" v-show="new Date(o.beginTime) <= new Date()"
-              >结束时间：{{ o.endTime }}</span
-            >
           </div>
         </div>
       </el-card>
@@ -43,12 +37,6 @@
           </div>
           <div class="name">
             <span>{{ o.homeworkName }}</span>
-            <span class="tasktime" v-show="new Date(o.beginTime) > new Date()"
-              >开始时间：{{ o.beginTime }}</span
-            >
-            <span class="tasktime" v-show="new Date(o.beginTime) <= new Date()"
-              >结束时间：{{ o.endTime }}</span
-            >
           </div>
         </div>
       </el-card>
@@ -63,12 +51,6 @@
           </div>
           <div class="name">
             <span>{{ o.homeworkName }}</span>
-            <span class="tasktime" v-show="new Date(o.beginTime) > new Date()"
-              >开始时间：{{ o.beginTime }}</span
-            >
-            <span class="tasktime" v-show="new Date(o.beginTime) <= new Date()"
-              >结束时间：{{ o.endTime }}</span
-            >
           </div>
         </div>
       </el-card>
