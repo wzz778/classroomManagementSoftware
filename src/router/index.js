@@ -14,7 +14,7 @@ const router = new VueRouter({
         ...admin,
     ]
 })
-let noTokenPages = ['/login', '/noPower', '/doPaper', '/ClassSeed', '/userInfo', '/Inbox', '/correctHomework', '/browseHomework']
+let noTokenPages = ['/login', '/noPower', '/doPaper', '/ClassSeed', '/userInfo', '/Inbox', '/correctHomework', '/browseHomework', '/watchLive']
 //全局前置路由守卫————初始化的时候、每次路由切换之前被调用
 router.beforeEach((to, from, next) => {
     // 判断是否判断token

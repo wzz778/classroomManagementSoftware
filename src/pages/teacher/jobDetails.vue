@@ -15,7 +15,7 @@
       <el-row>
         <el-col :span="5">
           <el-form-item label="班级:">
-            <el-select v-model="className" placeholder="请选择班级">
+            <el-select v-model="className" placeholder="请选择班级" clearable>
               <el-option
                 v-for="(item, index) in gradeArr"
                 :key="index"
