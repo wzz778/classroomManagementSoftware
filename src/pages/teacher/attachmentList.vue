@@ -104,6 +104,8 @@ import myPaging from "@/components/teacher/utilComponents/myPaging.vue";
 import myList from "@/components/teacher/utilComponents/myList.vue";
 import { Upload } from "element-ui";
 import { myCourse, uploadFile, getFiles, deleteFile } from "@/api/teacher";
+// 引入解析工具
+import jwtDecode from "jwt-decode";
 export default {
   name: "attachmentList",
   components: {
@@ -363,6 +365,16 @@ export default {
   },
   mounted() {
     this.getAllCourse();
+    let obj = jwtDecode(this.$store.state.token);
+    if (obj.power != 1) {
+      this.myListConfiguration.objFn = [
+        {
+          type: "",
+          callFn: this.dowmLoadFn,
+          showInfo: "下载",
+        },
+      ];
+    }
   },
 };
 </script>
