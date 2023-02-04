@@ -61,8 +61,8 @@ export default {
     Getclass() {
       return new Promise((resolve, reject) => {
         let data = {
-          nodePage: "",
-          pageSize: "",
+          nodePage: "1",
+          pageSize: "1000",
         };
         ZgetEntered(data).then((response) => {
           console.log("取出学生的课程", response);

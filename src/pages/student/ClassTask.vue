@@ -23,7 +23,7 @@
               v-for="o in notStart"
               :key="o.task.id"
               class="text item"
-              @click="check = '任务'"
+              @click="jusp(o.task.homeworkId, o.sta)"
             >
               <div class="name">
                 <img
@@ -46,7 +46,7 @@
               v-for="o in progress"
               :key="o.task.id"
               class="text item"
-              @click="check = '任务'"
+              @click="jusp(o.task.homeworkId, o.sta)"
             >
               <div class="name">
                 <img
@@ -69,7 +69,7 @@
               v-for="o in end"
               :key="o.task.id"
               class="text item"
-              @click="check = '任务'"
+              @click="jusp(o.task.homeworkId, o.sta)"
             >
               <div class="name">
                 <img
@@ -201,6 +201,24 @@ export default {
       console.log(text, value);
       this.check = value;
     },
+    jusp(value,state) {
+      this.check = "任务";
+      if ((state == "已结束")) {
+        this.$router.push({
+          path: "/browseHomework",
+          query: {
+            hid: value,
+          },
+        });
+      }else{
+      this.$router.push({
+          path: "/doPaper",
+          query: {
+            hid: value,
+          },
+        });
+      }
+    },
     notify: function () {
       this.check = "签到中";
       this.$refs.child.just();
@@ -225,13 +243,19 @@ export default {
           } else {
             for (let i = 0; i < result.data.list.length; i++) {
               if (new Date(result.data.list[i].task.beginTime) > new Date()) {
-                this.notStart.push(result.data.list[i]);
+                let obj = result.data.list[i];
+                obj["sta"] = "未开始";
+                this.notStart.push(obj);
               } else if (
                 new Date(result.data.list[i].task.endTime) < new Date()
               ) {
-                this.end.push(result.data.list[i]);
+                let ob = result.data.list[i];
+                ob["sta"] = "已结束";
+                this.end.push(ob);
               } else {
-                this.progress.push(result.data.list[i]);
+                let obje = result.data.list[i];
+                obje["sta"] = "进行中";
+                this.progress.push(obje);
               }
             }
           }
@@ -246,8 +270,8 @@ export default {
       this.saginprogress = [];
       let da = {
         courseId: this.cid,
-        nodePage: "",
-        pageSize: "",
+        nodePage: "1",
+        pageSize: "1000",
         type: 1,
       };
       ZgetMessage(da).then((result) => {
