@@ -81,7 +81,7 @@ export default {
     },
     watchLive() {
       createPlayUrl({
-        bizid: this.$route.query.id || window.localStorage.a,
+        bizid: this.$route.query.id,
       }).then((result) => {
         this.watchUrl = result;
         this.player.src(this.watchUrl); // url 播放地址
@@ -108,7 +108,7 @@ export default {
       };
       sendMessage({
         message: JSON.stringify(obj),
-        bizid: this.$route.query.id || window.localStorage.a,
+        bizid: this.$route.query.id,
       }).then(() => {
       });
       this.dialogVisible = false;
@@ -154,7 +154,7 @@ export default {
     },
     wsInit() {
       this.ws = new WebSocket(
-        `ws://110.40.205.103:8577/webSocket/${window.localStorage.a}`
+        `ws://110.40.205.103:8577/webSocket/${this.$route.query.id}`
       );
       this.ws.onmessage = this.onmessage;
       this.ws.onerror = this.onerror;
