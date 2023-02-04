@@ -7,10 +7,6 @@
     >
       <div class="paperInfo">
         <div class="paperName">{{ paperData.homeworkName }}</div>
-        <div class="timeInterval">
-          {{ paperData.beginTime }}~
-          <div>{{ paperData.endTime }}</div>
-        </div>
       </div>
       <div class="topicTab">
         <h4>题号</h4>
@@ -204,20 +200,7 @@ export default {
       document.querySelector(idName).scrollIntoView(true);
     },
     submitAnswerFun() {
-      let end=new Date(this.paperData.endTime).getTime(new Date(this.paperData.endTime));
-      let now=new Date().getTime();
-      if(now>end){
-        this.$alert('已过截止日期', '提交失败', {
-          confirmButtonText: '确定',
-          callback: () => {
-            this.$message({
-              type: 'error',
-              message: `提交失败`
-            });
-          }
-        });
-      }else{
-        this.$confirm("确定提交试卷？", "提示", {
+      this.$confirm("确定提交试卷？", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
@@ -251,7 +234,6 @@ export default {
             message: "已取消提交",
           });
         });
-      }
     },
     richTextFun(index, event) {
       this.$myRichText({ oriHtml: this.userAnswer[index].answer })
@@ -373,8 +355,9 @@ html {
 }
 .paperInfo {
   display: flex;
+  width: 100%;
   flex-direction: column;
-  height: 200px;
+  height: 100px;
   font-size: 16px;
   color: #666;
   float: right;
@@ -391,8 +374,7 @@ html {
   }
 }
 .countDown {
-  width: 90%;
-  margin-left: 5%;
+  width: 100%;
   border-top: 1px solid rgb(230, 230, 230);
   border-bottom: 1px solid rgb(230, 230, 230);
   font-size: 15px;
