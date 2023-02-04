@@ -188,6 +188,8 @@ export default {
         Message.warning("请填写姓名");
       } else if (this.changeInfo.name.replace(/ /g, "").length == 0) {
         Message.warning("姓名不能全为空格");
+      }else if(this.changeInfo.name.length >8){
+        Message.warning("姓名长度不能大于8")
       } else if (this.changeInfo.nativePlace == undefined) {
         Message.warning("请选择籍贯");
       } else {
