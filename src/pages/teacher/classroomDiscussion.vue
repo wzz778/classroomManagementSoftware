@@ -1,22 +1,24 @@
 <template>
   <div>
-    <TitleBlock text="课堂话题"/>
-    课堂：
-    <el-select v-model="course" placeholder="请选择">
-      <el-option
-        v-for="item in courseArr"
-        :key="item.id"
-        :label="item.courseName"
-        :value="item.id"
-      ></el-option>
-    </el-select>
-    <span style="margin-left: 20px"></span>
-    <el-button type="primary" @click="chagepage"
-      ><i class="el-icon-search"></i> 查询</el-button
-    >
-    <el-button type="success" @click="addTopic"
-      ><i class="el-icon-plus"></i> 添加话题</el-button
-    >
+      <TitleBlock text="课堂话题"/>
+    <div v-if="!isUserRouter">
+      课堂：
+      <el-select v-model="course" placeholder="请选择">
+        <el-option
+          v-for="item in courseArr"
+          :key="item.id"
+          :label="item.courseName"
+          :value="item.id"
+        ></el-option>
+      </el-select>
+      <span style="margin-left: 20px"></span>
+      <el-button type="primary" @click="chagepage"
+        ><i class="el-icon-search"></i> 查询</el-button
+      >
+      <el-button type="success" @click="addTopic"
+        ><i class="el-icon-plus"></i> 添加话题</el-button
+      >
+    </div>
     <el-empty v-if="tableDate.length==0" description="暂无回复内容"></el-empty>
     <TopicList v-for="(p) of tableDate"  :key="p.topic.id" style="width:100%" :jsonText="JSON.stringify(p)"/>
     <el-dialog
@@ -222,6 +224,7 @@ export default {
   
   created(){
     let patharr=this.$route.path.toString().split("/")
+    console.log(patharr);
     if(patharr[1]=="student"){
       this.isUserRouter=true;
     }
@@ -245,6 +248,7 @@ export default {
       this.course = this.$route.query.id;
       this.searchform.courseId = this.$route.query.id;
       this.form.courseId = this.$route.query.id;
+      this.chagepage()
       }else{
         this.getAllCourse();
     }

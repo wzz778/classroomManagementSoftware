@@ -46,6 +46,7 @@ import DiscussList from '@/components/admin/DiscussList'
 import TitleBlock from '@/components/admin/TitleBlock'
 // 引入解析工具
 import jwtDecode from "jwt-decode";
+import axios from 'axios';
 export default {
   name: "discussionDetails",
   components: {
@@ -107,14 +108,12 @@ export default {
         });
     },
     chagepage(){
-      // console.log("sdas");
         getAllDiscuss(this.searchform)
         .then((data) => {
           console.log(data);
           if (data.status == 200) {
             let req = data.data;
             this.discussionDate = req.list;
-            console.log(this.discussionDate);
             if (req.list.length == 0) {
               if (this.searchform.beginIndex != 1) {
                 this.searchform.beginIndex--;
@@ -153,8 +152,12 @@ export default {
                 type: "success",
               });
               this.dialogFormVisible=false;
+              if(this.form.superId){
+                this.$router.go(0)
+              }
               this.clearform()
               this.chagepage()
+              // this.$router.go(0)
             }else{
               this.$message({
                 type: "warning",
