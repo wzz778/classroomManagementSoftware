@@ -15,7 +15,7 @@
       <el-row>
         <el-col :span="5">
           <el-form-item label="班级:">
-            <el-select v-model="className" placeholder="请选择班级">
+            <el-select v-model="className" placeholder="请选择班级" clearable>
               <el-option
                 v-for="(item, index) in gradeArr"
                 :key="index"
@@ -200,8 +200,8 @@ export default {
       this.$router.push({
         path: "/correctHomework",
         query: {
-          hId: this.$route.query.homeworkId,
-          stuId: obj.studentId,
+          hid: this.$route.query.homeworkId,
+          stuid: obj.studentId,
         },
       });
     },

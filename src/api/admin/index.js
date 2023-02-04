@@ -8,6 +8,8 @@ export const deleteUser = async (params) => requests({url: "/admin/deleteUser",m
 export const resetPassword = async (params) => requests({url: "admin/resetPassword",method: "POST",params})
 //更改某用户信息
 export const updateUserInfo = async (params) => requests({url: "admin/updateUserInfo",method: "PUT",params})
+//更改某用户权限
+export const updatePower = async (params) => requests({url: "admin/updatePower",method: "PUT",params})
 //获取全部学科
 export const getHerCourse = async (params) =>requests({url:'/admin/getAllCourse',method:'get',params});
 //删除某学科

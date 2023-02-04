@@ -1,7 +1,7 @@
 <template>
   <div>
       <TitleBlock text="课堂话题"/>
-    <div v-if="!isUserRouter">
+    <div style="margin-top:10px;" v-if="!isUserRouter">
       课堂：
       <el-select v-model="course" placeholder="请选择">
         <el-option
