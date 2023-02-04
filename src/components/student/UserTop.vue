@@ -21,9 +21,7 @@
       <el-menu-item index="2"
         ><router-link to="/user/InboxPage">消息中心</router-link></el-menu-item
       >
-      <el-menu-item index="3" @click="open">
-        输入邀请码</el-menu-item
-      >
+      <el-menu-item index="3" @click="open"> 输入邀请码</el-menu-item>
       <el-menu-item index="5"
         ><router-link to="/user/IndexBase">课程空间</router-link></el-menu-item
       >
@@ -51,7 +49,7 @@
 </template>
 
 <script>
-import { ZaddGrade, ZlogOut } from "@/api/user/index";
+import { ZaddGrade, ZlogOut, ZgetUserInfo } from "@/api/user/index";
 export default {
   name: "UserTop",
   data() {
@@ -64,7 +62,6 @@ export default {
   mounted: function () {},
   methods: {
     open() {
-      console.log("页面链接：" + this.$route.path);
       this.$prompt("请输入课程邀请码", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -76,21 +73,31 @@ export default {
           let data = {
             code: value,
           };
-          ZaddGrade(data).then((result) => {
-            console.log("加入课程", result);
-            if (result.data == "已加入") {
+          ZgetUserInfo().then((result) => {
+            console.log("用户信息", result);
+            if (result.data.gradeId == "0") {
               this.$message({
                 type: "success",
-                message: "加入课程成功",
+                message: "请先加入班级",
               });
-              if (
-                this.$route.path == "/user/IndexBase" ||
-                this.$route.path == "/user/InboxPage"
-              ) {
-                this.msg++;
-              }
             } else {
-              this.$message.error("邀请码错误");
+              ZaddGrade(data).then((result) => {
+                console.log("加入课程", result);
+                if (result.data == "已加入") {
+                  this.$message({
+                    type: "success",
+                    message: "加入课程成功",
+                  });
+                  if (
+                    this.$route.path == "/user/IndexBase" ||
+                    this.$route.path == "/user/InboxPage"
+                  ) {
+                    this.msg++;
+                  }
+                } else {
+                  this.$message.error("邀请码错误");
+                }
+              });
             }
           });
         })
@@ -150,13 +157,13 @@ export default {
     li {
       float: right;
     }
-    li:hover{
-    cursor: default;
+    li:hover {
+      cursor: default;
     }
   }
 }
-a:hover{
-cursor: pointer;
+a:hover {
+  cursor: pointer;
 }
 
 .footer {

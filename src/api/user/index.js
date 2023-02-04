@@ -75,7 +75,7 @@ export const ZQuestion= async (data) =>requests({
     method:'get',
     params:data,
 });
-//回答课堂问题（正在使用）
+//回答课堂问题（已使用）
 export const ZAnswer= async (data) =>requests({
     url:'homework/publishAnswer',
     method:'post',
