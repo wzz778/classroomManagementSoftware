@@ -236,10 +236,10 @@ export default {
             userAnswer: this.userAnswer,
             userId: this.userInfo.id,
           };
-          console.log(data);
           submitAnswer(data).then(res=>{
             if(res.status==200){
               Message.success('提交成功！');
+              this.$router.go(-1);
             }else{
               Message.error("网络异常，提交失败！")
             }
@@ -269,7 +269,6 @@ export default {
       studentId:this.$route.query.stuid
     };
     getHomeworkById(data).then((res) => {
-      console.log(res);
       this.correct=res.data.correct;
       this.paperData = res.data.homework;
       this.paperData.remark = this.paperData.remark || "无";

@@ -295,6 +295,7 @@ export default {
           submitCorrect(correct).then((res) => {
             if (res.status == 200) {
               Message.success("提交成功");
+              this.$router.go(-1);
             } else {
               Message.error("网络异常，提交失败");
             }

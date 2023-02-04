@@ -128,7 +128,10 @@ export default {
     },
     chatInfo(val) {
       if (val.length != 0) {
-        document.querySelector(".msgViewArea").querySelector("#last").scrollIntoView(false);
+        document
+          .querySelector(".msgViewArea")
+          .querySelector("#last")
+          .scrollIntoView(false);
       }
     },
   },
@@ -139,7 +142,6 @@ export default {
   },
 
   mounted() {
-    console.log(jwt_decode(this.$store.state.token));
     this.seteditor();
     this.editor.txt.html(this.value);
     this.getUserInfoFun();
@@ -149,7 +151,6 @@ export default {
     getUserInfoFun() {
       getUserInfo().then((res) => {
         if (res.status == 200) {
-          console.log("用户信息",res.data);
           this.userInfo = res.data;
         } else {
           console.log("error");
@@ -197,7 +198,7 @@ export default {
         "justify", // 对齐方式
         "quote", // 引用
         "emoticon", // 表情
-        "image", // 插入图片
+        // "image", // 插入图片
         // "table", // 表格
         "code", // 插入代码
         "undo", // 撤销
@@ -206,24 +207,6 @@ export default {
       // 配置自定义按钮
       this.editor.menus.extend("alertMenu", AlertMenu); // 配置扩展的菜单
       this.editor.config.menus = this.editor.config.menus.concat("alertMenu");
-      this.editor.config.uploadImgShowBase64 = true; // base 64 存储图片
-
-      this.editor.config.uploadImgServer = ""; // 填写配置服务器端地址
-
-      this.editor.config.uploadImgHeaders = { Authorization: this.token }; // 自定义 header
-
-      this.editor.config.uploadFileName = "file"; // 后端接受上传文件的参数名
-
-      this.editor.config.uploadImgMaxSize = 8 * 1024 * 1024; // 将图片大小限制为 2M
-
-      this.editor.config.uploadImgMaxLength = 6; // 限制一次最多上传 6 张图片
-
-      this.editor.config.uploadImgTimeout = 3 * 60 * 1000; // 设置超时时间
-
-      // 自定义 onchange 触发的延迟时间，默认为 200 ms
-
-      this.editor.config.onchangeTimeout = 1000; // 单位 ms
-
       this.editor.config.onchange = (html) => {
         // console.log(html);
         this.chatText = html; // 绑定当前逐渐地值
@@ -233,31 +216,31 @@ export default {
 
       this.editor.create();
 
-      this.editor.config.uploadImgHooks = {
-        fail: (xhr, editor, result) => {
-          // 插入图片失败回调
-        },
-
-        success: (xhr, editor, result) => {
-          // 图片上传成功回调
-        },
-
-        timeout: (xhr, editor) => {
-          // 网络超时的回调
-        },
-
-        error: (xhr, editor) => {
-          // 图片上传错误的回调
-        },
-
-        customInsert: (insertImg, result, editor) => {
-          //循环插入图片
-
-          let url = result.data.url;
-
-          insertImg(url);
-        },
-      };
+      // this.editor.config.uploadImgShowBase64 = true; // base 64 存储图片
+      // this.editor.config.uploadImgServer = "/api/homework/addPicture";
+      // // 配置服务器端地址(这里的this.$api.getJavaEndPoint()是自己定义的一个地址前缀)
+      // this.editor.config.uploadFileName = "file"; // 后端接受上传文件的参数名
+      // this.editor.config.uploadImgHeaders = {
+      //   token: store.state.token, // 设置请求头
+      // };
+      // this.editor.config.uploadImgHooks = {
+      //   fail: function () {
+      //     this.$message({
+      //       message: "图片上传失败",
+      //       type: "warning",
+      //     });
+      //   },
+      //   error: function () {
+      //     this.$message.error("图片上传出错");
+      //   },
+      //   success: (xhr, editor, result) => {
+      //     // 图片上传成功回调
+      //     console.log("成功", result);
+      //   },
+      //   customInsert: (insertImg, result, editor) => {
+      //     insertImg(result.data);
+      //   },
+      // };
     },
     // 销毁
     destruction() {
@@ -274,7 +257,7 @@ export default {
      * 发送
      */
     sendChat() {
-      console.log(this.chatText);
+      // console.log(this.chatText);
       let content = {
         userInfo: this.userInfo,
         text: this.chatText,
@@ -284,7 +267,7 @@ export default {
         courseId: this.$route.query.id,
         groupId: this.groupId,
       };
-      console.log("发出消息：", data);
+      // console.log("发出消息：", data);
       // this.sendMessageFun(data);
       this.socket.send(JSON.stringify(data));
       this.editor.txt.clear();
@@ -300,7 +283,7 @@ export default {
       getMembers(data)
         .then((res) => {
           Object.keys(res.data).forEach((key) => {
-            console.log(res.data[key]); // foo
+            // console.log(res.data[key]); // foo
             for (let i = 0; i < res.data[key].length; i++) {
               if (
                 res.data[key][i].userName ==
@@ -327,7 +310,6 @@ export default {
     },
     OnOpen() {
       console.log("连接成功");
-      console.log(this.socket.readyState);
     },
     OnError() {
       console.log("WebSocket连接失败");
@@ -336,20 +318,17 @@ export default {
       console.log("WebSocket连接关闭");
     },
     OnMessage(e) {
-      console.log(JSON.parse(e.data));
       this.chatInfo.push(JSON.parse(e.data));
     },
 
     /**
      * 发送消息
      */
-    sendMessageFun(data) {
-      // this.socket.send(content);
-      console.log("111", data);
-      sendMessage(data).then((res) => {
-        console.log(res);
-      });
-    },
+    // sendMessageFun(data) {
+    //   sendMessage(data).then((res) => {
+    //     console.log(res);
+    //   });
+    // },
   },
   beforeDestroy() {
     this.OnClose();
