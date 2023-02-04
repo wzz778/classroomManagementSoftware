@@ -8,9 +8,9 @@
         <span>{{ homeworkInfo.beginTime }}</span>
         至<br />
         <span>{{ homeworkInfo.endTime }}</span>
-        <span>得分：{{correct.allScore}}/{{allScore}}</span>
+        <span>得分：{{ correct.allScore }}/{{ allScore }}</span>
       </div>
-     <div class="topicTab">
+      <div class="topicTab">
         <h4 style="text-align: center">题号</h4>
         <a
           v-for="(topic, index) in homeworkInfo.questionCount"
@@ -28,10 +28,12 @@
           >
         </a>
       </div>
+      <div class="remarkArea">备注：{{ homeworkInfo.remark }}</div>
     </el-aside>
 
     <el-container class="content">
       <el-header style="text-align: right; font-size: 12px" class="title">
+        <i class="el-icon-back" @click="goBack" id="goBack">返回</i>
         <h3 class="paperName">{{ homeworkInfo.homeworkName }}</h3>
         <span>总分：{{ allScore }}</span>
       </el-header>
@@ -110,7 +112,12 @@
             </template>
           </div>
           <div class="result">
-            <span class="resultItem">答案：<span style="word-break: break-all" v-html="answer[index].answer"></span></span>
+            <span class="resultItem"
+              >答案：<span
+                style="word-break: break-all"
+                v-html="answer[index].answer"
+              ></span
+            ></span>
             <span class="resultItem">
               分值：{{ haveScore[index].questionScore }}分
             </span>
@@ -130,7 +137,12 @@
               ></span
             >
             <span class="resultItem">得分：{{ haveScore[index].score }}分</span>
-            <span class="resultItem">解析：<span style="word-break: break-all" v-html="topics[index].questionContent.correct"></span></span>
+            <span class="resultItem"
+              >解析：<span
+                style="word-break: break-all"
+                v-html="topics[index].questionContent.correct"
+              ></span
+            ></span>
           </div>
         </div>
       </el-main>
@@ -162,7 +174,7 @@ import {
   Checkbox,
   CheckboxGroup,
   Backtop,
-  Rate
+  Rate,
 } from "element-ui";
 export default {
   name: "BrowseHomework",
@@ -174,11 +186,14 @@ export default {
       haveScore: "",
       answer: "",
       num: "",
-      correct:"",
-      allScore:0
+      correct: "",
+      allScore: 0,
     };
   },
   methods: {
+    goBack() {
+      this.$router.go(-1);
+    },
     toTopic(idName) {
       document.querySelector(idName).scrollIntoView(true);
     },
@@ -188,22 +203,30 @@ export default {
         studentId: this.$route.query.stuId,
       };
       getHomeworkById(data).then((res) => {
-        console.log(res);
-        this.homeworkInfo = res.data.homework;
-        this.homeworkInfo.remark = this.homeworkInfo.remark || "无";
-        this.topics = res.data.homework.question;
-        this.userAnswer = res.data.userAnswer.userAnswer;
-        this.haveScore = res.data.correct.deScore;
-        this.answer = res.data.homework.answer;
-        this.num = res.data.correct.deScore;
-        this.correct=res.data.correct;
-        for (let i = 0; i < this.homeworkInfo.questionCount; i++) {
-          this.allScore+=this.topics[i].score;
-          this.topics[i].questionContent = JSON.parse(
-            this.topics[i].questionContent
-          );
-          if (this.topics[i].questionContent.type == 2) {
-            this.userAnswer[i].answer = this.userAnswer[i].answer.split(",");
+        if (res.data.correct == null) {
+          this.$alert("该试卷未批改", "获取失败", {
+            confirmButtonText: "确定",
+            callback: () => {
+              this.$router.go(-1);
+            },
+          });
+        } else {
+          this.homeworkInfo = res.data.homework;
+          this.homeworkInfo.remark = this.homeworkInfo.remark || "无";
+          this.topics = res.data.homework.question;
+          this.userAnswer = res.data.userAnswer.userAnswer;
+          this.haveScore = res.data.correct.deScore;
+          this.answer = res.data.homework.answer;
+          this.num = res.data.correct.deScore;
+          this.correct = res.data.correct;
+          for (let i = 0; i < this.homeworkInfo.questionCount; i++) {
+            this.allScore += this.topics[i].score;
+            this.topics[i].questionContent = JSON.parse(
+              this.topics[i].questionContent
+            );
+            if (this.topics[i].questionContent.type == 2) {
+              this.userAnswer[i].answer = this.userAnswer[i].answer.split(",");
+            }
           }
         }
       });
@@ -234,7 +257,7 @@ export default {
     [CheckboxGroup.name]: CheckboxGroup,
     [Checkbox.name]: Checkbox,
     [Backtop.name]: Backtop,
-    [Rate.name]:Rate
+    [Rate.name]: Rate,
   },
 };
 </script>
@@ -303,6 +326,7 @@ html {
 .paperName {
   font-size: 18px;
   float: left;
+  margin-left: 20px;
 }
 .paperInfo {
   display: flex;
@@ -414,11 +438,17 @@ html {
   line-height: 30px;
   padding: 0 5px;
 }
-.topicTitle{
+.topicTitle {
   display: flex;
   word-break: break-all;
-  p{
+  p {
     display: inline-block;
   }
+}
+#goBack {
+  font-size: 17px;
+  float: left;
+  margin-top: 20px;
+  cursor: pointer;
 }
 </style>

@@ -1,43 +1,43 @@
 <template>
   <div class="mainBox">
     <div class="chatArea">
-      <div class="msgViewArea">
+      <div class="msgViewArea" id="msgViewArea">
         <div v-for="(info, index) in chatInfo" :key="index">
-          <div class="othersMsgBox" v-if="info.status == 1">
-            <div class="otherHeadPic"></div>
+          <div
+            class="othersMsgBox"
+            v-if="info.content.userInfo.studentId != userInfo.studentId"
+            :id="index == chatInfo.length - 1 ? 'last' : 'normal'"
+          >
+            <div
+              class="otherHeadPic"
+              :style="{
+                backgroundImage: `url(${info.content.userInfo.photo})`,
+              }"
+            ></div>
             <div class="msgBox">
-              <div class="othersName">{{ info.username }}</div>
-              <div class="othersMsg" v-html="info.text"></div>
+              <div class="othersName">{{ info.content.userInfo.name }}</div>
+              <div class="othersMsg" v-html="info.content.text"></div>
             </div>
           </div>
-          <div class="myMsgBox" v-else-if="info.status==0">
-              <div class="myHeadPic"></div>
-              <div class="myMsg" v-html="info.text"></div>
-            </div>
-        </div>
-        <!-- <div class="othersMsgBox">
-          <div class="otherHeadPic"></div>
-          <div class="msgBox">
-            <div class="othersName">成员</div>
-            <div class="othersMsg">你好</div>
+          <div
+            class="myMsgBox"
+            v-else-if="info.content.userInfo.studentId == userInfo.studentId"
+            :id="index == chatInfo.length - 1 ? 'last' : 'normal'"
+          >
+            <div
+              class="myHeadPic"
+              :style="{
+                backgroundImage: `url(${info.content.userInfo.photo})`,
+              }"
+            ></div>
+            <div class="myMsg" v-html="info.content.text"></div>
           </div>
         </div>
-        <div class="myMsgBox">
-          <div class="myHeadPic"></div>
-          <div class="myMsg">
-            你好,这是一段话，你好,这是一段话你好,这是一段话你好,这是一段话你好,这是一段话你好,这是一段话你好,这是一段话你好,这是一段话
-          </div>
-        </div>
-        <div class="myMsgBox">
-          <div class="myHeadPic"></div>
-          <div class="myMsg">你好</div>
-        </div>
-        <div class="myMsgBox">
-          <div class="myHeadPic"></div>
-          <div class="myMsg">你好</div>
-        </div> -->
       </div>
       <div class="sendWords">
+        <el-button type="success" plain class="sendBtn" @click="sendChat"
+          >发送</el-button
+        >
         <div class="editor">
           <div ref="editor" class="textNeirong"></div>
         </div>
@@ -50,44 +50,19 @@
           show-word-limit
         >
         </el-input> -->
-        <el-button type="success" plain class="sendBtn" @click="sendChat"
-          >发送</el-button
-        >
       </div>
     </div>
     <div class="viewGroupInfo">
-      <h3 class="groupName">第1组</h3>
+      <h3 class="groupName">第{{ groupName }}组</h3>
       <div class="groupMembers">
-        <div class="memberNum">小组成员（5）</div>
+        <div class="memberNum">小组成员（{{ members.length }}）</div>
         <ul class="memberItems">
-          <li class="memberItem">
-            <div class="memberHeadPic"></div>
-            <span style="margin-left: 10px">成员</span>
-            <span>(计科211)</span>
-          </li>
-          <li class="memberItem">
-            <div class="memberHeadPic"></div>
-            <span style="margin-left: 10px">成员</span>
-            <span>(计科211)</span>
-          </li>
-          <li class="memberItem">
-            <div class="memberHeadPic"></div>
-            <span style="margin-left: 10px">成员</span>
-            <span>(计科211)</span>
-          </li>
-          <li class="memberItem">
-            <div class="memberHeadPic"></div>
-            <span style="margin-left: 10px">成员</span>
-            <span>(计科211)</span>
-          </li>
-          <li class="memberItem">
-            <div class="memberHeadPic"></div>
-            <span style="margin-left: 10px">成员</span>
-            <span>(计科211)</span>
-          </li>
-          <li class="memberItem">
-            <div class="memberHeadPic"></div>
-            <span style="margin-left: 10px">成员</span>
+          <li class="memberItem" v-for="(m, index) in members" :key="index">
+            <div
+              class="memberHeadPic"
+              :style="{ backgroundImage: `url(${m.photo})` }"
+            ></div>
+            <span style="margin-left: 10px">{{ m.name }}</span>
             <span>(计科211)</span>
           </li>
         </ul>
@@ -103,6 +78,9 @@ import AlertMenu from "@/myText/myRichText"; // 根据AlertMenu.js文件实际�
 // import { Input,Button } from "element-ui";
 import store from "@/store/";
 import { Input, Button } from "element-ui";
+import { getMembers, sendMessage, getUserInfo } from "@/api/student/yxyAxios";
+import jwt_decode from "jwt-decode";
+
 export default {
   name: "GroupChat",
   data() {
@@ -112,9 +90,15 @@ export default {
       chatText: null,
 
       token: "",
+      userInfo: "",
       value: null,
       isClear: false,
-      chatInfo: [{ status: 1, username: "yy", text: "你好" }],
+      chatInfo: [],
+      members: "",
+      groupName: "",
+      groupId: "",
+      sever: "ws://110.40.205.103:8577/webSocket/",
+      socket: null,
     };
   },
   model: {
@@ -142,19 +126,60 @@ export default {
         this.editor.txt.html(this.value);
       }
     },
+    chatInfo(val) {
+      if (val.length != 0) {
+        document.querySelector(".msgViewArea").querySelector("#last").scrollIntoView(false);
+      }
+    },
   },
 
   created() {
     this.token = "Bearer " + store.getters.access_token;
+    this.initWebsocket();
   },
 
   mounted() {
+    console.log(jwt_decode(this.$store.state.token));
     this.seteditor();
-
     this.editor.txt.html(this.value);
+    this.getUserInfoFun();
   },
 
   methods: {
+    getUserInfoFun() {
+      getUserInfo().then((res) => {
+        if (res.status == 200) {
+          console.log("用户信息",res.data);
+          this.userInfo = res.data;
+        } else {
+          console.log("error");
+        }
+      });
+    },
+    toTopic(idName) {
+      document.querySelector(idName).scrollIntoView(true);
+    },
+    // getMembersFun() {
+    //   let data = {
+    //     courseId: this.$route.query.id,
+    //   };
+    //   getMembers(data).then((res) => {
+    //     Object.keys(res.data).forEach((key) => {
+    //       console.log(res.data[key]); // foo
+    //       for (let i = 0; i < res.data[key].length; i++) {
+    //         if (
+    //           res.data[key][i].userName ==
+    //           jwt_decode(this.$store.state.token).username
+    //         ) {
+    //           this.members = res.data[key];
+    //           this.groupName = key.substr(5);
+    //           this.sever += this.$route.query.id + key;
+    //           console.log(this.sever);
+    //         }
+    //       }
+    //     });
+    //   });
+    // },
     seteditor() {
       this.editor = new E(this.$refs.editor);
       this.editor.config.menus = [
@@ -173,7 +198,7 @@ export default {
         "quote", // 引用
         "emoticon", // 表情
         "image", // 插入图片
-        "table", // 表格
+        // "table", // 表格
         "code", // 插入代码
         "undo", // 撤销
         "redo", // 重复
@@ -245,17 +270,89 @@ export default {
       this.$destroy(true);
       this.$el.parentNode.removeChild(this.$el);
     },
+    /**
+     * 发送
+     */
     sendChat() {
       console.log(this.chatText);
-      let info = {
-        status: 0,
+      let content = {
+        userInfo: this.userInfo,
         text: this.chatText,
-        username: "",
       };
-      this.chatInfo.push(info);
-      console.log(this.chatInfo);
-      this.isClear = true;
+      let data = {
+        content: content,
+        courseId: this.$route.query.id,
+        groupId: this.groupId,
+      };
+      console.log("发出消息：", data);
+      // this.sendMessageFun(data);
+      this.socket.send(JSON.stringify(data));
+      this.editor.txt.clear();
     },
+
+    /**
+     * 初始化websocket
+     */
+    initWebsocket() {
+      let data = {
+        courseId: this.$route.query.id,
+      };
+      getMembers(data)
+        .then((res) => {
+          Object.keys(res.data).forEach((key) => {
+            console.log(res.data[key]); // foo
+            for (let i = 0; i < res.data[key].length; i++) {
+              if (
+                res.data[key][i].userName ==
+                jwt_decode(this.$store.state.token).username
+              ) {
+                this.members = res.data[key];
+                this.groupName = key.substr(5);
+                this.groupId = key;
+                this.sever += this.$route.query.id + key;
+              }
+            }
+          });
+        })
+        .then(() => {
+          // ReconnectingWebSocket是类库reconnecting-websocket , 可以进行自动的断线重连,引入连接 :
+          // let socket=new ReconnectingWebSocket(this.sever)
+          let socket = new WebSocket(this.sever);
+          this.socket = socket;
+          this.socket.onmessage = this.OnMessage;
+          this.socket.onopen = this.OnOpen;
+          this.socket.onerror = this.OnError;
+          this.socket.onclose = this.OnClose;
+        });
+    },
+    OnOpen() {
+      console.log("连接成功");
+      console.log(this.socket.readyState);
+    },
+    OnError() {
+      console.log("WebSocket连接失败");
+    },
+    OnClose() {
+      console.log("WebSocket连接关闭");
+    },
+    OnMessage(e) {
+      console.log(JSON.parse(e.data));
+      this.chatInfo.push(JSON.parse(e.data));
+    },
+
+    /**
+     * 发送消息
+     */
+    sendMessageFun(data) {
+      // this.socket.send(content);
+      console.log("111", data);
+      sendMessage(data).then((res) => {
+        console.log(res);
+      });
+    },
+  },
+  beforeDestroy() {
+    this.OnClose();
   },
 };
 </script>
@@ -283,6 +380,7 @@ export default {
   background-color: #fff;
   border-radius: 10px;
   overflow: auto;
+  scroll-behavior: smooth;
   .othersMsgBox {
     display: flex;
     width: 100%;
@@ -375,9 +473,6 @@ export default {
     // display: inline-block;
     width: 80px;
     height: 36px;
-    position: absolute;
-    top: 3px;
-    right: 100px;
     // text-align: center;
     // border: 1px solid #b3d8ff;
     // background-color: #ecf5ff;
