@@ -103,3 +103,9 @@ export const sendMessage=async(data)=>requests({
     method:'POST',
     params:data
 })
+
+export const addClass=async(data)=>requests({
+    url:'grade/enterGrade',
+    method:'POST',
+    params:data
+})

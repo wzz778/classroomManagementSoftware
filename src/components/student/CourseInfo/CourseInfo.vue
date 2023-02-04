@@ -163,7 +163,6 @@ export default {
     getUserInfoFun() {
       getUserInfo().then((res) => {
         if (res.status == 200) {
-          console.log(res.data);
           this.userInfo = res.data;
         } else {
           console.log("error");
@@ -172,13 +171,10 @@ export default {
     },
   },
   mounted() {
-    console.log(this.$route.query.id);
     let data = {
       id: this.$route.query.id,
     };
-    console.log(data);
     getCourseInfo(data).then((res) => {
-      console.log("获取课程信息", res);
       this.courseInfo = res.data;
     });
     this.getUserInfoFun();
