@@ -10,6 +10,13 @@ export const toLogin =async(data)=>requests({
     params:data
 })
 
+//注册
+export const register=async(data)=>requests({
+    url:'user/outLogin/register',
+    method:'POST',
+    params:data
+})
+
 //获取验证码
 export const getCode=async(data)=>requests({
     url:'user/logged/sendCode',
@@ -79,5 +86,26 @@ export const submitCorrect=async(data)=>requests({
 export const getCourseInfo=async(data)=>requests({
     url:'course/getCourseInfo',
     method:'GET',
+    params:data
+})
+
+export const getMembers=async(data)=>requests({
+    url:'user/getGroupById',
+    method:'GET',
+    params:data
+})
+
+/**
+ * 发送聊天
+ */
+export const sendMessage=async(data)=>requests({
+    url:'chatGroup/sendMessage',
+    method:'POST',
+    params:data
+})
+
+export const addClass=async(data)=>requests({
+    url:'grade/enterGrade',
+    method:'POST',
     params:data
 })

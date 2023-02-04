@@ -4,66 +4,78 @@
       <div class="title">易学堂</div>
       <div class="contentBox">
         <div class="scrollBox" :style="{ left: len }">
-          <!-- <div class="registerBox">
+          <div class="registerBox">
             <label for="inputAccount" style="margin-top: 50px">账号：</label>
             <el-input
               id="inputregisterAccount"
               class="registerInputs"
-              v-model="registerAccount"
-              placeholder="请输入账号"
+              v-model="registerInfo.newAccount"
+              placeholder="请输入11位数字作为账号"
+              maxlength="11"
+              minlength="11"
+              @keyup.native="judgeNewAccount"
             ></el-input>
             <br />
+            <p :style="newAccountStyle">账号不合规范</p>
             <label for="inputPassword">密码：</label>
             <el-input
               id="inputregisterPassword"
               class="registerInputs"
-              placeholder="请输入密码"
-              v-model="registerPassword"
+              placeholder="8-15位且包含数字与字母"
+              v-model="registerInfo.newPassword"
               show-password
+              @keyup.native="judgeNewPassword"
             ></el-input>
             <br />
+            <p :style="newPasswordStyle">密码不合规范</p>
             <label for="surePassword">确认密码：</label>
             <el-input
               id="sureRegisterPassword"
               class="registerInputs"
               placeholder="请确认密码"
-              v-model="surePassword"
+              v-model="registerInfo.newSurePassword"
               show-password
+              @keyup.native="judgeNewSurePassword"
             ></el-input>
             <br />
+            <p :style="newSurePasswordStyle">两次密码不一致</p>
             <label for="inputEmail">邮箱：</label>
             <el-input
               id="inputRegisterEmail"
               class="registerInputs"
               placeholder="请输入邮箱"
-              v-model="registerEmail"
+              v-model="registerInfo.newEmail"
+              @keyup.native="judgeNewEmail"
             ></el-input>
             <br />
+            <p :style="newEmailStyle">邮箱不合规范</p>
             <div class="getCodeBox">
               <el-input
                 id="inputRegisterCode"
                 placeholder="请输入验证码"
-                v-model="registerCode"
+                v-model="registerInfo.newCode"
                 style="width: 200px;"
               ></el-input>
-              <el-button class="getRegisterCodeBtn" type="primary" size="small"
-                >获取验证码</el-button
-              >
+              <GetCode
+                :judgeEmailRes="judgeNewEmailRes"
+                :email="registerInfo.newEmail"
+                :style="{width:'100px',height:'40px','margin-left':'38px'}"
+              ></GetCode>
             </div>
-            <el-button type="primary" class="registerBtn">注册</el-button>
+            <el-button type="primary" class="registerBtn" @click.native="registerFun" style="height: 40px" >注册</el-button>
             <div class="rollBtns">
               <span class="toLogin" @click="len = '-500px'"
                 >登录<i class="el-icon-right"></i
               ></span>
             </div>
-          </div> -->
+          </div>
 
           <div class="loginBox">
-            <label style="margin-top: 60px">用户名/邮箱:</label>
+            <label style="margin-top: 60px">账号/邮箱:</label>
             <el-input
               class="loginInputs"
               v-model="account"
-              placeholder="请输入用户名/邮箱"
+              placeholder="请输入账号/邮箱"
             ></el-input>
             <label style="margin-top: 20px">密码：</label>
             <el-input
@@ -80,17 +92,17 @@
               >登录</el-button
             >
             <div class="rollBtns">
-              <!-- <span class="toRegisterBox" @click="len = 0"
+              <span class="toRegisterBox" @click="len = 0"
                 ><i class="el-icon-back"></i>注册</span
-              > -->
-              <span class="toForgetPasswordBox" @click="len = '-500px'"
+              >
+              <span class="toForgetPasswordBox" @click="len = '-1000px'"
                 >忘记密码<i class="el-icon-right"></i
               ></span>
             </div>
           </div>
 
           <div class="forgetPasswordBox">
-            <label for="inputPassword" style="margin-top: 60px">密码：</label>
+            <label for="inputPassword" style="margin-top: 80px">密码：</label>
             <el-input
               id="inputforgetPassword"
               class="forgetInputs"
@@ -151,7 +163,7 @@
               >确认</el-button
             >
             <div class="rollBtns">
-              <span class="toLogin" @click="len = '0'"
+              <span class="toLogin" @click="len = '-500px'"
                 ><i class="el-icon-back"></i>登录</span
               >
             </div>
@@ -165,7 +177,7 @@
 <script>
 import { Input, Button, Icon, Message } from "element-ui";
 import GetCode from "@/components/student/GetCode/GetCode";
-import { toLogin, getCode, forgetPassword } from "@/api/student/yxyAxios";
+import { toLogin, getCode, forgetPassword,register } from "@/api/student/yxyAxios";
 import jwt_decode from "jwt-decode";
 export default {
   name: "LoginPage",
@@ -183,6 +195,16 @@ export default {
       forgetSurePassword: "",
       forgetCode: "",
       forgetEmail: "",
+      registerInfo:{
+        newAccount:"",
+        newPassword:"",
+        newEmail:"",
+        newCode:""
+      },
+      judgeNewAccountRes:false,
+      judgeNewPasswordRes: false,
+      judgeNewEmailRes: false,
+      judgeNewSurePasswordRes: false,
       judgePasswordRes: false,
       judgeEmailRes: false,
       judgeSurePasswordRes: false,
@@ -198,6 +220,18 @@ export default {
       passwordStyle: {
         height: 0,
       },
+      newEmailStyle: {
+        height: 0,
+      },
+      newSurePasswordStyle: {
+        height: 0,
+      },
+      newPasswordStyle: {
+        height: 0,
+      },
+      newAccountStyle: {
+        height: 0,
+      },
     };
   },
   components: {
@@ -207,6 +241,35 @@ export default {
     GetCode,
   },
   methods: {
+    registerFun(){
+      if(this.judgeNewAccountRes==false){
+        Message.warning("账号不合规范");
+      }else if(this.judgeNewPasswordRes==false){
+        Message.warning("密码不合规范");
+      }else if(this.judgeNewSurePasswordRes==false){
+        Message.warning("两次密码输入不一样");
+      }else if(this.judgeNewEmailRes==false){
+        Message.warning("邮箱不合规范");
+      }else if(this.registerInfo.newCode.replace('/ /g',"")==""){
+        Message.warning("请输入验证码");
+      }else{
+        let data={
+          code:this.registerInfo.newCode,
+          email:this.registerInfo.newEmail,
+          password:this.registerInfo.newPassword,
+          username:this.registerInfo.newAccount
+        }
+        register(data).then(res=>{
+          if(res.msg=='账号或邮箱已存在'){
+            Message.error("账号或邮箱已存在");
+          }else if(res.status==200){
+            Message.success("注册成功");
+          }else{
+            Message.error("网络异常，注册失败");
+          }
+        })
+      }
+    },
     loginFun() {
       let data = {
         username: this.account,
@@ -221,7 +284,7 @@ export default {
             this.$router.push("/user/IndexBase");
           }
           if (personInfo.power == 1) {
-            this.$router.push("/teacher");
+            this.$router.push("/teacher/myClassroom");
           }
           if (personInfo.power == 2) {
             this.$router.push("/admin/index");
@@ -230,6 +293,48 @@ export default {
           Message.error("网络异常，登录失败！");
         }
       });
+    },
+    judgeNewAccount(){
+      let accountReg=/^\d{11}$/;
+      let judgeRes=accountReg.test(this.registerInfo.newAccount);
+      if(judgeRes==false){
+        this.judgeNewAccountRes=false;
+        this.newAccountStyle.height='16px';
+      }else{
+        this.judgeNewAccountRes=true;
+        this.newAccountStyle.height='0';
+      }
+    },
+    judgeNewPassword() {
+      let passwordReg = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{8,15}$/;
+      let judgeRes = passwordReg.test(this.registerInfo.newPassword);
+      if (judgeRes == false) {
+        this.newPasswordStyle.height="16px";
+        this.judgeNewPasswordRes = false;
+      } else {
+        this.newPasswordStyle.height='0'
+        this.judgeNewPasswordRes = true;
+      }
+    },
+    judgeNewSurePassword() {
+      if (this.registerInfo.newPassword != this.registerInfo.newSurePassword) {
+        this.newSurePasswordStyle.height= "16px";
+        this.judgeNewSurePasswordRes = false;
+      } else {
+        this.newSurePasswordStyle.height="0";
+        this.judgeNewSurePasswordRes = true;
+      }
+    },
+    judgeNewEmail() {
+      let EmailReg =
+        /^[0-9A-Za-z_]+([-+.][0-9A-Za-z_]+)*@[0-9A-Za-z_]+([-.][0-9A-Za-z_]+)*\.[0-9A-Za-z_]+([-.][0-9A-Za-z_]+)*$/;
+      if (EmailReg.test(this.registerInfo.newEmail) == false) {
+        this.newEmailStyle.height= "16px";
+        this.judgeNewEmailRes = false;
+      } else {
+        this.newEmailStyle.height= "0";
+        this.judgeNewEmailRes = true;
+      }
     },
     judgePassword() {
       let passwordReg = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{8,15}$/;
@@ -348,7 +453,7 @@ body {
 .content {
   position: relative;
   width: 500px;
-  height: 400px;
+  height: 420px;
 }
 
 .contentBox {
@@ -410,7 +515,7 @@ body {
 .forgetPasswordBox {
   display: inline-block;
   width: 500px;
-  height: 400px;
+  height: 420px;
   background-color: #fff;
 }
 .forgetPasswordBox {

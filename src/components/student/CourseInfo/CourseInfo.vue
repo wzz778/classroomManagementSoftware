@@ -6,14 +6,14 @@
       >
       <div class="myBox">
         <router-link to="/user/userInfo"
-          ><div class="headPortrait"></div
+          ><div class="headPortrait" :style="{backgroundImage:`url(${userInfo.photo})`}"></div
         ></router-link>
       </div>
     </el-header>
     <el-container class="mainContent">
       <el-aside width="200px">
         <div class="classInfo">
-          <div class="classPic" :style="coverPic"></div>
+          <div class="classPic" :style="{backgroundImage:`url(${courseInfo.cover})`}"></div>
           <div class="className">{{ courseInfo.courseName }}</div>
         </div>
         <el-menu :default-active="pagePath" class="el-menu-vertical-demo">
@@ -57,7 +57,7 @@
           </router-link>
           <router-link
             :to="{
-              path: '/student/studyGroup',
+              path: '/student/groupChat',
               query: {
                 id: this.courid,
               },
@@ -79,7 +79,7 @@
               <span slot="title"><i class="el-icon-share"></i>共享资料</span>
             </el-menu-item>
           </router-link>
-          <router-link
+          <!-- <router-link
             :to="{
               path: '/student/learnDaily',
               query: {
@@ -92,7 +92,7 @@
                 ><i class="el-icon-notebook-2"></i>学习情况</span
               >
             </el-menu-item>
-          </router-link>
+          </router-link> -->
           <router-link
             :to="{
               path: '/student/ClassMembers',
@@ -127,7 +127,7 @@
 </template>
 
 <script>
-import { getCourseInfo } from "@/api/student/yxyAxios";
+import { getCourseInfo,getUserInfo } from "@/api/student/yxyAxios";
 import {
   Container,
   Header,
@@ -145,9 +145,7 @@ export default {
       pagePath: this.$route.path,
       courid: this.$route.query.id,
       courseInfo: "",
-      coverPic: {
-        backgroundImage: "",
-      },
+      userInfo:"",
     };
   },
   components: {
@@ -161,17 +159,26 @@ export default {
     [DropdownMenu.name]: DropdownMenu,
     [DropdownItem.name]: DropdownItem,
   },
+  methods: {
+    getUserInfoFun() {
+      getUserInfo().then((res) => {
+        if (res.status == 200) {
+          this.userInfo = res.data;
+        } else {
+          console.log("error");
+        }
+      });
+    },
+  },
   mounted() {
-    console.log(this.$route.query.id);
     let data = {
       id: this.$route.query.id,
     };
-    console.log(data);
     getCourseInfo(data).then((res) => {
-      console.log("获取课程信息", res);
       this.courseInfo = res.data;
-      this.coverPic.backgroundImage = "url(" + res.data.cover + ")";
     });
+    this.getUserInfoFun();
+    
   },
 };
 </script>

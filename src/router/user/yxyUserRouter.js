@@ -4,9 +4,9 @@ import CourseInfo from '@/components/student/CourseInfo/CourseInfo'
 import ClassTask from '@/pages/student/ClassTask'
 import ClassWork from '@/pages/student/ClassWork'
 import StudyGroup from '@/pages/student/StudyGroup'
-import ClassDiscussion from '@/pages/teacher/classroomDiscussion'
-import ShareData from '@/pages/student/ShareData'
-import LearnDaily from '@/pages/student/LearnDaily'
+import classroomDiscussion from '@/pages/teacher/classroomDiscussion'
+import ShareData from '@/pages/teacher/attachmentList'
+// import LearnDaily from '@/pages/student/LearnDaily'
 // import ClassStudents from '@/pages/student/ClassStudents'
 import IndexCourse from '@/pages/student/IndexCourse'
 import DoPaper from '@/pages/student/DoPaper'
@@ -45,7 +45,8 @@ export default [
             },
             {
                 path:'classDiscussion',
-                component:ClassDiscussion,
+                component:classroomDiscussion
+                ,
                 meta: {
                     title: "课程讨论"
                 },
@@ -64,13 +65,13 @@ export default [
                     title: "共享资料"
                 },
             },
-            {
-                path:'learnDaily',
-                component:LearnDaily,
-                meta: {
-                    title: "学习情况"
-                },
-            },
+            // {
+            //     path:'learnDaily',
+            //     component:LearnDaily,
+            //     meta: {
+            //         title: "学习情况"
+            //     },
+            // },
             {
                 path:'classStudents',
                 component:ClassMembers,

@@ -37,6 +37,7 @@
 
     <el-container class="content">
       <el-header style="text-align: right; font-size: 12px" class="title">
+        <i class="el-icon-back" @click="goBack" id="goBack">返回</i>
         <h3 class="paperName">{{ homeworkInfo.homeworkName }}</h3>
         <span>总分：{{ allScore }}</span>
       </el-header>
@@ -244,6 +245,9 @@ export default {
     [MessageBox.name]: MessageBox,
   },
   methods: {
+    goBack(){
+        this.$router.go(-1);
+    },
     toTopic(idName) {
       document.querySelector(idName).scrollIntoView(true);
     },
@@ -253,7 +257,6 @@ export default {
         studentId: this.$route.query.stuId,
       };
       getHomeworkById(data).then((res) => {
-        console.log(res);
         this.homeworkInfo = res.data.homework;
         this.homeworkInfo.remark = this.homeworkInfo.remark || "无";
         this.topics = res.data.homework.question;
@@ -292,6 +295,7 @@ export default {
           submitCorrect(correct).then((res) => {
             if (res.status == 200) {
               Message.success("提交成功");
+              this.$router.go(-1);
             } else {
               Message.error("网络异常，提交失败");
             }
@@ -375,6 +379,7 @@ html {
 .paperName {
   font-size: 18px;
   float: left;
+  margin-left: 20px;
 }
 .paperInfo {
   display: flex;
@@ -492,5 +497,11 @@ html {
   p {
     display: inline-block;
   }
+}
+#goBack{
+  font-size: 17px;
+  float: left;
+  margin-top: 20px;
+  cursor: pointer;
 }
 </style>

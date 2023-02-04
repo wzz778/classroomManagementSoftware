@@ -2,7 +2,7 @@
   <div>
     <div class="top">
       <el-row>
-        <el-col :span="6">
+        <el-col :span="6" v-if="isShow">
           <el-form label-width="80px">
             <el-form-item label="课程:">
               <el-select v-model="searchCourseId">
@@ -160,6 +160,7 @@ export default {
       fileCourseId: "",
       searchCourseId: "",
       isUpload: false,
+      isShow: true,
     };
   },
   methods: {
@@ -374,6 +375,8 @@ export default {
           showInfo: "下载",
         },
       ];
+      this.searchCourseId = this.$route.query.id;
+      this.isShow = false;
     }
   },
 };
