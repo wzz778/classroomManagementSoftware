@@ -113,9 +113,9 @@
       >
         <div class="dialogSty">
           <el-form label-width="80px" v-show="state == '查看问题'">
-            <!-- <el-form-item label="剩余时间:">
-              <div>{{ timer }}</div>
-            </el-form-item> -->
+            <el-form-item label="注意">
+              <div>做答时间只有10分钟</div>
+            </el-form-item>
             <el-form-item label="题干">
               <div v-html="topic.topicInfo"></div>
             </el-form-item>

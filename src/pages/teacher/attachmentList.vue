@@ -376,7 +376,7 @@ export default {
         },
       ];
       this.searchCourseId = this.$route.query.id;
-      this.isShow = true;
+      this.isShow = false;
     }
   },
 };
