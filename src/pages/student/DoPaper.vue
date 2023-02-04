@@ -32,16 +32,15 @@
       </div>
       <div class="remarkArea">备注：{{ paperData.remark }}</div>
       <div class="btn">
-        <el-button type="primary" @click="submitAnswerFun" v-if="userInfo.power=='0'">提交试卷</el-button>
+        <el-button type="primary" @click="submitAnswerFun" v-if="userInfo.power=='0'&&correct==null">提交试卷</el-button>
+        <el-button type="primary" @click="toBrowseHomework" v-if="userInfo.power=='0'&&correct!=null">查看批改</el-button>
       </div>
     </el-aside>
 
     <el-container class="content">
       <el-header style="text-align: right; font-size: 12px" class="title">
-        <div class="paperTimeInfo">
-          <!-- <span style="border-right: 1px solid rgb(202, 199, 199)"
-            >时长：{{ paperData.suggestTime }}分钟</span
-          > -->
+        <div>
+          <i class="el-icon-back" @click="goBack" id="goBack">返回</i>
           <span>总分：{{ allScore }}</span>
         </div>
       </el-header>
@@ -164,6 +163,7 @@ export default {
       userAnswer: [],
       userInfo:"",
       allScore:0,
+      correct:'',
     };
   },
   components: {
@@ -194,14 +194,30 @@ export default {
     // checkMore(val) {
     //   console.log(val);
     // },
-    judgeFun(val) {
-      console.log(val);
+    goBack(){
+        this.$router.go(-1);
+    },
+    toBrowseHomework(){
+      this.$router.push({path:'/browseHomework',query:{hid:this.$route.query.hid,stuId:this.userInfo.id}})
     },
     toTopic(idName) {
       document.querySelector(idName).scrollIntoView(true);
     },
     submitAnswerFun() {
-      this.$confirm("确定提交试卷？", "提示", {
+      let end=new Date(this.paperData.endTime).getTime(new Date(this.paperData.endTime));
+      let now=new Date().getTime();
+      if(now>end){
+        this.$alert('已过截止日期', '提交失败', {
+          confirmButtonText: '确定',
+          callback: () => {
+            this.$message({
+              type: 'error',
+              message: `提交失败`
+            });
+          }
+        });
+      }else{
+        this.$confirm("确定提交试卷？", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
@@ -235,6 +251,7 @@ export default {
             message: "已取消提交",
           });
         });
+      }
     },
     richTextFun(index, event) {
       this.$myRichText({ oriHtml: this.userAnswer[index].answer })
@@ -253,6 +270,7 @@ export default {
     };
     getHomeworkById(data).then((res) => {
       console.log(res);
+      this.correct=res.data.correct;
       this.paperData = res.data.homework;
       this.paperData.remark = this.paperData.remark || "无";
       this.topics = res.data.homework.question;
@@ -474,5 +492,11 @@ html {
   &:hover {
     border: 1px solid rgb(139, 180, 233);
   }
+}
+#goBack{
+  font-size: 17px;
+  float: left;
+  margin-top: 18px;
+  cursor: pointer;
 }
 </style>
