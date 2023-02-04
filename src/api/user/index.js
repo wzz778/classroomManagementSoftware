@@ -64,3 +64,20 @@ export const ZgetUserInfo= async () =>requests({
     url:'user/getUserInfo',
     method:'get',
 });
+//退出登录（已使用）
+export const ZlogOut= async () =>requests({
+    url:'user/logged/logOut',
+    method:'get',
+});
+//获取课堂问题（正在使用）
+export const ZQuestion= async (data) =>requests({
+    url:'homework/getCourseQuestion',
+    method:'get',
+    params:data,
+});
+//回答课堂问题（正在使用）
+export const ZAnswer= async (data) =>requests({
+    url:'homework/publishAnswer',
+    method:'post',
+    params:data,
+});

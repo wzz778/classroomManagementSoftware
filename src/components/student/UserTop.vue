@@ -16,20 +16,13 @@
             >账号管理</router-link
           ></el-menu-item
         >
-        <el-menu-item index="2-2">退出登录</el-menu-item>
+        <el-menu-item index="2-2" @click="logout">退出登录</el-menu-item>
       </el-submenu>
       <el-menu-item index="2"
         ><router-link to="/user/InboxPage">消息中心</router-link></el-menu-item
       >
-      <el-menu-item index="3">
-        <el-button type="text" @click="dialogVisible = true"
-          >进入直播</el-button
-        ></el-menu-item
-      >
-      <el-menu-item index="4">
-        <el-button type="text" @click="open"
-          >输入邀请码</el-button
-        ></el-menu-item
+      <el-menu-item index="3" @click="open">
+        输入邀请码</el-menu-item
       >
       <el-menu-item index="5"
         ><router-link to="/user/IndexBase">课程空间</router-link></el-menu-item
@@ -54,39 +47,18 @@
         </div>
       </div>
     </div>
-    <el-dialog
-      title="提示"
-      :visible.sync="dialogVisible"
-      width="60%"
-      :before-close="handleClose"
-    >
-      <div class="dialogSty">
-        <el-form label-width="80px">
-          <el-form-item label="房间号">
-            <el-input v-model="bvalue" clearable></el-input>
-          </el-form-item>
-        </el-form>
-      </div>
-      <div class="dialogOperator">
-        <el-button @click="dialogVisible = false" type="">取消</el-button>
-        <el-button v-model="bvalue" @click="jin" type="">确认</el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
 <script>
-import { ZaddGrade } from "@/api/user/index";
+import { ZaddGrade, ZlogOut } from "@/api/user/index";
 export default {
   name: "UserTop",
   data() {
     return {
-      activeIndex: "5",
+      activeIndex: "4",
       urlp: "/user/IndexBase",
       msg: 1,
-      //弹框
-      dialogVisible: false,
-      bvalue: "",
     };
   },
   mounted: function () {},
@@ -132,21 +104,21 @@ export default {
     handleSelect(key, keyPath) {
       console.log(key, keyPath);
     },
-    jin() {
-      this.dialogVisible = false;
-      if (this.bvalue) {
-        this.$router.push({
-          path: "/watchLive",
-          params: {
-            id: this.bvalue,
-          },
-        });
-      } else {
-        this.$message({
-          type: "info",
-          message: "房间号不能为空",
-        });
-      }
+    logout() {
+      ZlogOut().then((result) => {
+        console.log("退出登录", result);
+        if ((result.data = "已退出")) {
+          this.$message({
+            type: "success",
+            message: "退出登录成功",
+          });
+          window.localStorage.setItem("token", "");
+          this.$store.commit("DELTOKEN", "");
+          this.$router.push({
+            path: "/login",
+          });
+        }
+      });
     },
     //弹框
     handleClose(done) {
@@ -178,7 +150,13 @@ export default {
     li {
       float: right;
     }
+    li:hover{
+    cursor: default;
+    }
   }
+}
+a:hover{
+cursor: pointer;
 }
 
 .footer {

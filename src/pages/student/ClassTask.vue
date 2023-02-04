@@ -246,8 +246,8 @@ export default {
       this.saginprogress = [];
       let da = {
         courseId: this.cid,
-        nodePage: "",
-        pageSize: "",
+        nodePage: "1",
+        pageSize: "1000",
         type: 1,
       };
       ZgetMessage(da).then((result) => {

@@ -18,7 +18,7 @@
         <el-table-column
           label=""
           :cell-style="{ 'text-align': 'left' }"
-          prop="cont"
+          prop="fen"
           tableData
         >
           <template slot="header" slot-scope>
@@ -59,8 +59,6 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="fen" label="消息类型" width="200" show-overflow-tooltip>
-        </el-table-column>
         <el-table-column label="课程名称" width="200" show-overflow-tooltip>
           {{ className }}
         </el-table-column>
@@ -71,37 +69,96 @@
           show-overflow-tooltip
         >
         </el-table-column>
-        <!-- <el-table-column width="200" label="操作" prop="cont">
-          <el-button size="mini" type="success" @click="dialogVisible = true;content=cont"
-            >查看</el-button
-          >
-        </el-table-column> -->
+        <el-table-column width="200" label="操作">
+          <template slot-scope="scope">
+            <el-button
+              size="mini"
+              type="success"
+              @click="showCheck(scope.row, 'Details')"
+              >查看</el-button
+            >
+          </template>
+        </el-table-column>
       </el-table>
       <el-dialog
         title="提示"
         :visible.sync="dialogVisible"
-        width="60%"
+        width="50%"
         :before-close="handleClose"
       >
         <div class="dialogSty">
           {{ content }}
         </div>
         <div class="dialogOperator">
-          <!-- <el-button
-            @click="handelSend"
-            type="success"
-            v-if="!isChange"
-            :disabled="isUpload"
+          <el-button @click="dialogVisible = false" type="">取消</el-button>
+          <el-button
+            v-show="type != 2 && type != 5"
+            @click="dialogVisible = false"
+            type=""
+            >确认</el-button
+          >
+          <el-button v-show="type == 2" @click="news" type=""
+            >查看问题</el-button
+          >
+          <el-button v-show="type == 5" @click="zhi" type=""
+            >进入直播</el-button
+          >
+        </div>
+      </el-dialog>
+      <el-dialog
+        title="提示"
+        :visible.sync="dialogVisibleNews"
+        width="50%"
+        :before-close="handleClose"
+      >
+        <div class="dialogSty">
+          <el-form label-width="80px" v-show="state == '查看问题'">
+            <el-form-item label="题干">
+              <div v-html="topic.topicInfo"></div>
+            </el-form-item>
+            <el-form-item label="选项:">
+              <template v-for="(item, index) in topic.optopnsInfo">
+                <el-form-item
+                  :label="item.options"
+                  :key="index"
+                  label-width="50px"
+                >
+                  <div v-html="item.value"></div>
+                </el-form-item>
+              </template>
+            </el-form-item>
+            <el-form-item label="答案">
+              <el-select
+                v-model="answer"
+                clearable
+                placeholder="请选择"
+                style="margin-right: 20px"
+              >
+                <el-option
+                  v-for="item in xuan"
+                  :key="item.value"
+                  :label="item.value"
+                  :value="item.value"
+                >
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-form>
+          <el-form label-width="120px" v-show="state == '问题失效'">
+            <el-form-item label="答题已结束"> </el-form-item>
+          </el-form>
+        </div>
+        <div class="dialogOperator">
+          <el-button @click="dialogVisibleNews = false" type="">取消</el-button>
+          <el-button
+            @click="dialogVisibleNews = false"
+            type=""
+            v-show="state == '问题失效'"
+            >确认</el-button
+          >
+          <el-button @click="zanswer" type="" v-show="state == '查看问题'"
             >提交</el-button
           >
-          <el-button
-            @click="changeClass"
-            type="warning"
-            v-if="isChange"
-            :disabled="isUpload"
-            >修改</el-button
-          > -->
-          <el-button @click="dialogVisible = false" type="">确认</el-button>
         </div>
       </el-dialog>
     </el-main>
@@ -116,13 +173,21 @@ import {
   Table,
   TableColumn,
   Button,
+  Radio,
 } from "element-ui";
-import { ZgetEntered, ZgetOneCourse, ZgetMessage } from "@/api/user/index";
+import {
+  ZgetEntered,
+  ZgetOneCourse,
+  ZgetMessage,
+  ZQuestion,
+  ZAnswer,
+} from "@/api/user/index";
 export default {
   data() {
     return {
       //弹框
       dialogVisible: false,
+      dialogVisibleNews: false,
       //多选框内容
       types: [
         {
@@ -146,6 +211,20 @@ export default {
           label: "直播通知",
         },
       ],
+      xuan: [
+        {
+          value: "A",
+        },
+        {
+          value: "B",
+        },
+        {
+          value: "C",
+        },
+        {
+          value: "D",
+        },
+      ],
       value: "",
       type: "",
       lessons: [],
@@ -156,6 +235,10 @@ export default {
       multipleSelection: [],
       searchText: "",
       content: "",
+      xijie: "",
+      answer: "",
+      topic: "",
+      state: "查看问题",
     };
   },
   props: ["change"],
@@ -174,10 +257,68 @@ export default {
     },
   },
   methods: {
+    showCheck(row, name) {
+      this.dialogVisible = true;
+      console.log("每行数据", row); // 获取当前行数据
+      this.content = row.cont;
+      this.xijie = row.content;
+      this.type = row.type;
+    },
+    zhi() {
+      this.dialogVisible = false;
+      this.$router.push({
+        path: "/watchLive",
+        query: {
+          id: this.xijie,
+        },
+      });
+    },
+    news() {
+      let data = {
+        union: this.xijie,
+      };
+      ZQuestion(data).then((result) => {
+        console.log("获取课堂问题", result);
+        if (result.msg == "OK") {
+          if (result.data) {
+            var s = JSON.parse(result.data);
+            this.topic = JSON.parse(s.question);
+            this.state = "查看问题";
+            this.dialogVisible = false;
+            this.dialogVisibleNews = true;
+          } else {
+            //问题失效
+            this.state = "查看问题";
+            this.dialogVisible = false;
+            this.dialogVisibleNews = true;
+          }
+        } else {
+          this.$message.error("获取问题失败");
+        }
+      });
+    },
+    zanswer() {
+      if (this.answer) {
+        this.dialogVisibleNews = false;
+        let data = {
+          union: this.xijie,
+          answer: this.answer,
+        };
+        ZAnswer(data).then((result) => {
+          console.log("提交课堂问题", result);
+        });
+        // this.$message({
+        //   type: "success",
+        //   message: "成功提交答案",
+        // });
+      } else {
+        this.$message.error("请回答问题");
+      }
+    },
     Getclass() {
       let data = {
-        nodePage: "",
-        pageSize: "",
+        nodePage: "1",
+        pageSize: "1000",
       };
       ZgetEntered(data).then((response) => {
         if (response.msg == "OK") {
@@ -214,8 +355,8 @@ export default {
       this.className = this.$refs.optionRef.selected.label;
       let da = {
         courseId: this.valueid,
-        nodePage: "",
-        pageSize: "",
+        nodePage: "1",
+        pageSize: "1000",
         type: this.value,
       };
       ZgetMessage(da).then((result) => {
@@ -228,14 +369,14 @@ export default {
             if (result.data[h].type == 1) {
               atype = "课程签到";
               cont =
-                "签到开始时间为：" +
+                "请注意：签到开始时间为：" +
                 JSON.parse(result.data[h].content).createTime +
                 "；结束时间为：" +
                 JSON.parse(result.data[h].content).createTime +
                 "。";
             } else if (result.data[h].type == 2) {
               atype = "课程通知";
-              cont = "通知：" + result.data[h].content;
+              cont = "通知：请尽快查看问题并提交答案。";
             } else if (result.data[h].type == 3) {
               atype = "课程作业";
               cont = "各位同学好：老师新发布了一份作业，请按时完成。";
@@ -244,10 +385,7 @@ export default {
               cont = "各位同学好：新的小组已经分配完成，请及时查看。";
             } else if (result.data[h].type == 5) {
               atype = "直播通知";
-              cont =
-                "请进入房间" +
-                result.data[h].content +
-                "进行学习。"
+              cont = "请进入房间" + result.data[h].content + "进行学习。";
             }
             obje["fen"] = atype;
             obje["cont"] = cont;
@@ -287,6 +425,7 @@ export default {
     [Table.name]: Table,
     [TableColumn.name]: TableColumn,
     [Button.name]: Button,
+    [Radio.name]: Radio,
   },
 };
 </script>
