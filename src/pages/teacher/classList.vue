@@ -85,10 +85,6 @@ export default {
             showName: "班级口令",
           },
           {
-            dateType: "name",
-            showName: "班级人数",
-          },
-          {
             dateType: "createTime",
             showName: "创建时间",
           },
