@@ -1,9 +1,9 @@
 //对于axios进行二次封装
 import axios from "axios";
 
-// import nprogress from "nprogress";
+import nprogress from "nprogress";
 
-// import 'nprogress/nprogress.css'
+import 'nprogress/nprogress.css'
 
 //在当前模块中引入store
 import store from '@/store';
@@ -21,7 +21,7 @@ requests.interceptors.request.use((config) => {
   if (store.state.token) {
     config.headers.token = store.state.token;
   }
-  // nprogress.start()
+  nprogress.start()
   return config;
 });
 
@@ -29,11 +29,11 @@ requests.interceptors.request.use((config) => {
 requests.interceptors.response.use(
   (res) => {
     //相应成功做的事情
-    // nprogress.done()
+    nprogress.done()
     return res.data;
   },
   (err) => {
-    console.log(err);
+    // console.log(err);
     alert("服务器响应数据失败");
     return err
   }

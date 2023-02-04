@@ -66,7 +66,7 @@
         width="240"
         >
         <template slot-scope="scope">
-            <el-button @click="editClick(scope.row)" type="primary" size="small">修改权限</el-button>
+            <el-button @click="editClick(scope.row)" type="primary" size="small">权限</el-button>
             <el-button @click="resetclick(scope.row.studentId)" type="warning" size="small">重置密码</el-button>
             <el-button @click="deleteClick(scope.row.studentId)" type="danger" size="small">删除</el-button>
         </template>
