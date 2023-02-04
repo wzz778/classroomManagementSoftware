@@ -16,7 +16,7 @@
       <div class="name">
         <p style="margin-top: 12px">签到</p>
         <p class="nameTime">
-          2022-12-21 09:59
+          {{ time }}
           <span
             ><i
               class="el-icon-timer"
@@ -42,7 +42,7 @@
             ></i>
           </div>
           <div style="margin-top: 15px">签到未开始</div>
-          <div>开始时间：2023-2-14 12：00</div>
+          <div>开始时间：当前时间：{{time}}</div>
         </div>
       </div>
       <div class="detailed" v-show="meet == '签到中'">
@@ -59,7 +59,7 @@
             ></i>
           </div>
           <div style="margin-top: 15px">尚未签到</div>
-          <div>截止时间：2023-1-30 12：00</div>
+          <div>当前时间：{{time}}</div>
         </div>
         <div class="endq" v-show="adatar == '已签到'">
           <div>
@@ -74,7 +74,7 @@
             ></i>
           </div>
           <div style="margin-top: 15px">按时签到</div>
-          <div>签到时间：2023-1-14 12：00</div>
+          <div>当前时间：{{time}}</div>
         </div>
       </div>
       <div class="edetailed" v-show="meet == '签到结束'">
@@ -91,7 +91,7 @@
             ></i>
           </div>
           <div style="margin-top: 15px">签到已结束</div>
-          <div>结束时间：2023-1-14 12：00</div>
+          <div>当前时间：{{time}}</div>
         </div>
       </div>
     </div>
@@ -114,12 +114,41 @@ export default {
       text: "我是子组件传递的数据，我要发送给父组件",
       jiao: "任务",
       sid: this.$route.query.id,
+      time: this.getDate(),
     };
   },
   mounted: function () {
     // this.just();
   },
   methods: {
+    getDate() {
+      const date = new Date();
+      var year = date.getFullYear();
+      /* 在日期格式中，月份是从0开始的，因此要加0
+       * 使用三元表达式在小于10的前面加0，以达到格式统一  如 09:11:05
+       * */
+      var month =
+        date.getMonth() + 1 < 10
+          ? "0" + (date.getMonth() + 1)
+          : date.getMonth() + 1;
+      var day = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+      var hours =
+        date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
+      var minutes =
+        date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+      // 拼接
+      return (
+        year +
+        "-" +
+        month +
+        "-" +
+        day +
+        " " +
+        hours +
+        ":" +
+        minutes
+      );
+    },
     postChange() {
       let data = {
         courseId: this.sid,
@@ -143,7 +172,6 @@ export default {
         if (result.data == "已签到") {
           this.adatar = "已签到";
         } else {
-          
           this.adatar = "未签到";
         }
       });

@@ -14,9 +14,33 @@ const router = new VueRouter({
         ...admin,
     ]
 })
-let noTokenPages = ['/login', '/noPower', '/doPaper', '/ClassSeed', '/userInfo', '/Inbox', '/correctHomework', '/browseHomework']
+let noTokenPages = ['/login', '/noPower', '/doPaper', '/ClassSeed', '/userInfo', '/Inbox', '/correctHomework', '/browseHomework', '/watchLive']
 //全局前置路由守卫————初始化的时候、每次路由切换之前被调用
 router.beforeEach((to, from, next) => {
+    if (window.localStorage.token && window.localStorage.token != "") {
+        let obj = jwtDecode(window.localStorage.token)
+        // 判断访问的是不是登录页面
+        if (to.path.indexOf('/login') != -1) {
+            if (obj.power == '0') {
+                next({
+                    path: "/user/IndexBase"
+                })
+                return
+            }
+            if (obj.power == '1') {
+                next({
+                    path: "/teacher"
+                })
+                return
+            }
+            if (obj.power == '2') {
+                next({
+                    path: "/admin"
+                })
+                return
+            }
+        }
+    }
     // 判断是否判断token
     if (noTokenPages.indexOf(to.path) == -1) {
         if (window.localStorage.token == "") {

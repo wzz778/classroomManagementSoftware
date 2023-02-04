@@ -1,6 +1,8 @@
 <template>
   <div>
-    <el-button>刷新</el-button>
+    <div class="fearch">
+      <el-button @click="getInfo">刷新</el-button>
+    </div>
     <el-row>
       <!-- <el-col :span="12">
         <div
@@ -58,6 +60,7 @@ echarts.use([
   CanvasRenderer,
   PieChart,
 ]);
+import { getCourseOutCome } from "@/api/teacher";
 export default {
   name: "ansQuestion",
   components: {
@@ -66,16 +69,6 @@ export default {
   },
   data() {
     return {
-      dataInfoAllPeople: [
-        {
-          value: 35,
-          name: "正确(35)",
-        },
-        {
-          value: 65,
-          name: "错误(65)",
-        },
-      ],
       sexAccuracyData: [
         {
           value: 35,
@@ -124,34 +117,13 @@ export default {
       this.classAccuracy = echarts.init(
         document.getElementById("classAccuracy")
       );
-      // 绘制图表
-      //   this.drawAll();
-      this.drawSex();
-      this.drawClass();
-    },
-    drawAll() {
-      this.allPeopleChart.setOption(
-        {
-          tooltip: {},
-          title: {
-            text: "所有学生正确率",
-          },
-          series: [
-            {
-              type: "pie",
-              data: this.dataInfoAllPeople,
-            },
-          ],
-        },
-        true
-      );
     },
     drawSex() {
       this.sexAccuracy.setOption(
         {
           tooltip: {},
           title: {
-            text: "男女正确率",
+            text: "男女正确人数",
           },
           series: [
             {
@@ -168,7 +140,7 @@ export default {
         {
           tooltip: {},
           title: {
-            text: "班级正确率",
+            text: "班级正确人数",
           },
           series: [
             {
@@ -180,10 +152,36 @@ export default {
         true
       );
     },
+    getInfo() {
+      getCourseOutCome({
+        union: this.$route.query.id,
+      }).then((result) => {
+        this.sexAccuracyData = [
+          {
+            value: result.data.manCount,
+            name: `男正确人数(${result.data.manCount})`,
+          },
+          {
+            value: result.data.womanCount,
+            name: `女正确人数(${result.data.womanCount})`,
+          },
+        ];
+        let obj = [];
+        for (let i in result.data.map) {
+          obj.push({
+            value: result.data.map[i],
+            name: `${i}，正确人数(${result.data.map[i]})`,
+          });
+        }
+        this.classAccuracyData = obj;
+        this.drawSex();
+        this.drawClass();
+      });
+    },
   },
   mounted() {
     this.drawJobPeople();
-    console.log(this.$route.id);
+    this.getInfo();
   },
 };
 </script>
@@ -191,5 +189,9 @@ export default {
 <style scoped>
 .chartItem {
   margin: 0 auto;
+}
+
+.fearch {
+  margin-bottom: 20px;
 }
 </style>

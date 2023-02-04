@@ -80,6 +80,13 @@ export default [
                 },
             },
             {
+                path: "discussionDetails",
+                component: () => import('@/pages/teacher/discussionDetails'),
+                meta: {
+                    title: "话题回复"
+                }
+            },
+            {
                 path:'aboutClass',
                 component:IndexCourse,
                 meta: {

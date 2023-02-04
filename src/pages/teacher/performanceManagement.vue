@@ -56,12 +56,8 @@ export default {
     return {
       scope: [
         {
-          value: 35,
-          name: "未交(35)",
-        },
-        {
-          value: 65,
-          name: "已交(65)",
+          value: 0,
+          name: "没有成绩",
         },
       ],
     };
@@ -74,7 +70,7 @@ export default {
       myChart.setOption({
         tooltip: {},
         title: {
-          text: "平均分",
+          text: "最近一次作业平均分",
         },
         series: [
           {
@@ -87,7 +83,10 @@ export default {
     getInfo() {
       getOutcome()
         .then((result) => {
-          console.log(result);
+          if (result.status == 500) {
+            this.drawJobPeople();
+            return;
+          }
           let obj = [];
           for (
             let i = 0;

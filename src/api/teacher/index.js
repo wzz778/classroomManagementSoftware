@@ -162,7 +162,9 @@ export const getTaskInfo = async (data) => requests({
 export const publishQuestion = async (data) => requests({
     url: "/homework/publishQuestion",
     method: "POST",
-    data: data.question,
+    data: {
+        question: data.question
+    },
     params: data.params
 })
 
@@ -197,4 +199,10 @@ export const deleteTask = async (data) => requests({
 export const getUserInfo = async () => requests({
     url: "/user/getUserInfo",
     method: "GET"
+})
+
+export const getCourseOutCome = async (data) => requests({
+    url: "/homework/getCourseOutCome",
+    method: "GET",
+    params: data
 })

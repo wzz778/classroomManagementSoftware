@@ -415,7 +415,7 @@ export default {
     },
     deleteFn(obj) {
       console.log(obj);
-      this.$confirm("确定要删除班级吗?", "提示", {
+      this.$confirm("确定要删除作业吗?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
@@ -425,6 +425,12 @@ export default {
             homeworkId: obj.id,
           })
             .then(() => {
+              if (
+                this.myListConfiguration.tableData.length == 1 &&
+                this.nowPage != 1
+              ) {
+                this.nowPage--;
+              }
               this.getHomeWorkInfo();
               this.$message({
                 type: "success",
@@ -446,7 +452,7 @@ export default {
       this.$router.push({
         path: "/doPaper",
         query: {
-          hId: obj.id,
+          hid: obj.id,
         },
       });
     },

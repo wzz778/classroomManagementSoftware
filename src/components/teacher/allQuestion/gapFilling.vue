@@ -21,7 +21,6 @@
         <el-col>
           <el-button type="primary" @click="submitFn">确定</el-button>
           <el-button @click="cancelFn">取消</el-button>
-          <el-button type="success" @click="addOptionsFn">添加选项</el-button>
         </el-col>
       </el-form-item>
     </el-form>
@@ -99,13 +98,12 @@ export default {
         questionContent: JSON.stringify({
           type: 4,
           topicInfo: this.questionStem,
+          correct: this.parsing,
         }),
         answer: this.trueOptions.toString(),
-        correct: this.parsing,
         score: this.score,
         type: 4,
       };
-      console.log(obj);
       this.$store.commit("teacher/ADDQUESTION", {
         data: obj,
         answer: {

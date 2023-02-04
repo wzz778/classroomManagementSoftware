@@ -110,7 +110,7 @@ export default {
       this.getStudentInfo();
     },
     deleteFn(obj) {
-      this.$confirm("确定要删除班级吗?", "提示", {
+      this.$confirm("确定要移除该学生吗?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
@@ -119,11 +119,17 @@ export default {
           deleteStudentFromCourse({
             courseId: this.classId,
             studentId: obj.studentId,
-          }).then((result) => {
+          }).then(() => {
             this.$message({
               message: "已移除",
               type: "success",
             });
+            if (
+              this.myListConfiguration.tableData.length == 1 &&
+              this.nowPage != 1
+            ) {
+              this.nowPage--;
+            }
             this.getStudentInfo();
           });
         })
@@ -198,8 +204,7 @@ export default {
           }
           return Promise.all(arr);
         })
-        .then(() => {
-        })
+        .then(() => {})
         .catch((err) => {
           console.log(err);
         });

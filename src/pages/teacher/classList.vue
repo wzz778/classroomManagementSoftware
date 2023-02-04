@@ -143,7 +143,6 @@ export default {
       this.getInfo();
     },
     deleteFn(obj) {
-      console.log(obj);
       this.$confirm("确定要删除班级吗?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -153,8 +152,11 @@ export default {
           deleteGrade({
             gradeId: obj.id,
           })
-            .then((result) => {
-              console.log("删除", result);
+            .then(() => {
+              this.$message({
+                type: "success",
+                message: "删除成功!",
+              });
               this.judgePrevious();
             })
             .catch((err) => {
@@ -169,7 +171,6 @@ export default {
         });
     },
     editorFn(obj) {
-      console.log(obj);
       this.className = obj.className;
       this.id = obj.id;
       this.isChange = true;
@@ -186,8 +187,7 @@ export default {
       createGrade({
         className: this.className,
       })
-        .then((result) => {
-          console.log("添加", result);
+        .then(() => {
           this.$message({
             message: "添加成功",
             type: "success",
@@ -235,8 +235,7 @@ export default {
         className: this.className,
         id: this.id,
       })
-        .then((result) => {
-          console.log("修改", result);
+        .then(() => {
           this.dialogVisible = false;
           this.getInfo();
           this.$message({

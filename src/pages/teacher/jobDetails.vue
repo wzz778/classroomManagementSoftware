@@ -15,7 +15,7 @@
       <el-row>
         <el-col :span="5">
           <el-form-item label="班级:">
-            <el-select v-model="className" placeholder="请选择班级">
+            <el-select v-model="className" placeholder="请选择班级" clearable>
               <el-option
                 v-for="(item, index) in gradeArr"
                 :key="index"
@@ -196,27 +196,12 @@ export default {
     sizeChangeFn(val) {
       this.pageSize = val;
     },
-    deleteFn(obj) {
-      console.log(obj);
-      this.$confirm("确定要删除班级吗?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
-      })
-        .then(() => {})
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消删除",
-          });
-        });
-    },
     detailsFn(obj) {
       this.$router.push({
         path: "/correctHomework",
         query: {
-          hId: this.$route.query.homeworkId,
-          stuId: obj.studentId,
+          hid: this.$route.query.homeworkId,
+          stuid: obj.studentId,
         },
       });
     },
@@ -254,7 +239,6 @@ export default {
         taskId: this.$route.query.id,
       })
         .then((result) => {
-          console.log(result);
           this.allUserNumbers = result.data.allCount;
           return this.getDetalisInfo();
         })

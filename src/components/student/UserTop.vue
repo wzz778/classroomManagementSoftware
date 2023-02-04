@@ -11,16 +11,20 @@
     >
       <el-submenu index="1">
         <template slot="title">用户名</template>
-        <el-menu-item index="2-1"><router-link  to="/user/UserInfo" style="color:white;">账号管理</router-link></el-menu-item>
-        <el-menu-item index="2-2">退出登录</el-menu-item>
+        <el-menu-item index="2-1"
+          ><router-link to="/user/UserInfo" style="color: white"
+            >账号管理</router-link
+          ></el-menu-item
+        >
+        <el-menu-item index="2-2" @click="logout">退出登录</el-menu-item>
       </el-submenu>
-      <el-menu-item index="2"><router-link  to="/user/InboxPage">消息中心</router-link></el-menu-item>
-      <el-menu-item index="3">
-        <el-button type="text" @click="open"
-          >输入邀请码</el-button
-        ></el-menu-item
+      <el-menu-item index="2"
+        ><router-link to="/user/InboxPage">消息中心</router-link></el-menu-item
       >
-      <el-menu-item index="4"><router-link  to="/user/IndexBase">课程空间</router-link></el-menu-item>
+      <el-menu-item index="3" @click="open"> 输入邀请码</el-menu-item>
+      <el-menu-item index="5"
+        ><router-link to="/user/IndexBase">课程空间</router-link></el-menu-item
+      >
     </el-menu>
     <router-view :change="msg"></router-view>
     <div class="footer">
@@ -45,19 +49,19 @@
 </template>
 
 <script>
-import { ZaddGrade } from "@/api/user/index";
+import { ZaddGrade, ZlogOut, ZgetUserInfo } from "@/api/user/index";
 export default {
   name: "UserTop",
   data() {
     return {
-      activeIndex: "1",
+      activeIndex: "4",
       urlp: "/user/IndexBase",
-      msg:1,
+      msg: 1,
     };
   },
+  mounted: function () {},
   methods: {
     open() {
-      console.log("页面链接：" + this.$route.path);
       this.$prompt("请输入课程邀请码", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -69,18 +73,31 @@ export default {
           let data = {
             code: value,
           };
-          ZaddGrade(data).then((result) => {
-            console.log("加入课程", result);
-            if (result.data == "已加入") {
+          ZgetUserInfo().then((result) => {
+            console.log("用户信息", result);
+            if (result.data.gradeId == "0") {
               this.$message({
                 type: "success",
-                message: "加入课程成功",
+                message: "请先加入班级",
               });
-              if (this.$route.path == "/user/IndexBase"||this.$route.path=="/user/InboxPage") {
-                this.msg++;
-              }
             } else {
-              this.$message.error("邀请码错误");
+              ZaddGrade(data).then((result) => {
+                console.log("加入课程", result);
+                if (result.data == "已加入") {
+                  this.$message({
+                    type: "success",
+                    message: "加入课程成功",
+                  });
+                  if (
+                    this.$route.path == "/user/IndexBase" ||
+                    this.$route.path == "/user/InboxPage"
+                  ) {
+                    this.msg++;
+                  }
+                } else {
+                  this.$message.error("邀请码错误");
+                }
+              });
             }
           });
         })
@@ -94,8 +111,32 @@ export default {
     handleSelect(key, keyPath) {
       console.log(key, keyPath);
     },
+    logout() {
+      ZlogOut().then((result) => {
+        console.log("退出登录", result);
+        if ((result.data = "已退出")) {
+          this.$message({
+            type: "success",
+            message: "退出登录成功",
+          });
+          window.localStorage.setItem("token", "");
+          this.$store.commit("DELTOKEN", "");
+          this.$router.push({
+            path: "/login",
+          });
+        }
+      });
+    },
+    //弹框
+    handleClose(done) {
+      this.$confirm("确认关闭？")
+        .then((_) => {
+          done();
+        })
+        .catch((_) => {});
+    },
   },
-    // 组件内路由进入组件时
+  // 组件内路由进入组件时
   beforeCreate() {
     document
       .querySelector("body")
@@ -116,7 +157,13 @@ export default {
     li {
       float: right;
     }
+    li:hover {
+      cursor: default;
+    }
   }
+}
+a:hover {
+  cursor: pointer;
 }
 
 .footer {

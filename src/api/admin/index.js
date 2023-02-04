@@ -8,6 +8,8 @@ export const deleteUser = async (params) => requests({url: "/admin/deleteUser",m
 export const resetPassword = async (params) => requests({url: "admin/resetPassword",method: "POST",params})
 //更改某用户信息
 export const updateUserInfo = async (params) => requests({url: "admin/updateUserInfo",method: "PUT",params})
+//更改某用户权限
+export const updatePower = async (params) => requests({url: "admin/updatePower",method: "PUT",params})
 //获取全部学科
 export const getHerCourse = async (params) =>requests({url:'/admin/getAllCourse',method:'get',params});
 //删除某学科
@@ -40,3 +42,7 @@ export const publishDiscuss = async (params) => requests({url: "/discuss/publish
 export const getAllDiscuss = async (params) => requests({url: "/discuss/getAllDiscuss",method: "GET",params})
 // //删除评论
 export const deleteDiscuss = async (params) => requests({url: "/discuss/deleteDiscuss",method: "DELETE",params})
+//分组
+export const groupingAnd = async (params) => requests({url: "/teacher/groupingAnd",method: "GET",params})
+//获取分组信息
+export const groupInfo = async (params) => requests({url: "/chatGroup/groupInfo",method: "GET",params})

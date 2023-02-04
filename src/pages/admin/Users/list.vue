@@ -66,7 +66,7 @@
         width="240"
         >
         <template slot-scope="scope">
-            <!-- <el-button @click="editclick(scope.row.studentId)" type="primary" size="small">修改</el-button> -->
+            <el-button @click="editClick(scope.row)" type="primary" size="small">权限</el-button>
             <el-button @click="resetclick(scope.row.studentId)" type="warning" size="small">重置密码</el-button>
             <el-button @click="deleteClick(scope.row.studentId)" type="danger" size="small">删除</el-button>
         </template>
@@ -81,34 +81,36 @@
       layout="total, sizes, prev, pager, next, jumper"
       :total="alltotal">
     </el-pagination>
-      <el-dialog style="z-index:2001;" title="课堂封面更改" append-to-body :visible.sync="dialogFormVisible">
+      <el-dialog style="z-index:2001;" title="权限更改" append-to-body :visible.sync="dialogFormVisible">
         <el-form
           label-position="right"
           label-width="80px"
           ref="form">
-        <el-form-item label="课堂名称" prop="courseName">
-          <el-input v-model="form.courseName" clearable></el-input>
-        </el-form-item>
-        <el-form-item  label="课堂简介" prop="details">
-          <el-input type="textarea"  v-model="form.details" clearable></el-input>
+        <el-form-item label="课堂名称" prop="power">
+          <el-radio-group v-model="form.power">
+            <el-radio :label="0">学生</el-radio>
+            <el-radio :label="1">老师</el-radio>
+            <el-radio :label="2">管理员</el-radio>
+          </el-radio-group>
         </el-form-item>
           <el-button type="primary" @click="handelEditSend()"
             >确认更改</el-button
           >
-          <el-button @click="resetForm()">重置</el-button>
       </el-form>
       </el-dialog>
   </div>
 </template>
 <script>
-import { Select, Option , Tag} from "element-ui";
-import {resetPassword,getAllUser,deleteUser} from '@/api/admin/index'
+import { Select, Option , Tag,Radio,RadioGroup} from "element-ui";
+import {resetPassword,getAllUser,deleteUser,updatePower} from '@/api/admin/index'
 export default {
   name:'UsersList',
   components: {
     [Select.name]: Select,
     [Option.name]: Option,
-     [Tag.name]: Tag,
+    [Tag.name]: Tag,
+    [Radio.name]: Radio,
+    [RadioGroup.name]: RadioGroup,
   },
     data() {
       const item = {
@@ -125,8 +127,8 @@ export default {
         alltotal:0,
         dialogFormVisible:false,
         form:{
-          courseName:"",
-          details:"",
+          id:"",
+          power:0,
         },
         searchform:{
           nodePage: 1,
@@ -137,10 +139,12 @@ export default {
       }
     },
     methods:{
-      // editClick(row) {
-      //   console.log(row);
-      //   this.dialogFormVisible=true;
-      // },
+      editClick(row) {
+        console.log(row);
+        this.form.id=row.studentId
+        this.form.power=row.identity
+        this.dialogFormVisible=true;
+      },
       watchClick(row) {
         console.log(row);
       },
@@ -170,6 +174,36 @@ export default {
           this.$message({
             type: "info",
             message: "已取消删除",
+          });
+        });
+      },
+      handelEditSend(){
+        this.$confirm("确定要修改用户的权限吗?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        })
+        .then(() => {
+          updatePower(this.form).then((result) => {
+            if(result.status==200){
+              this.$message({
+                type: "success",
+                message: "修改成功!",
+              });
+              this.dialogFormVisible=false
+              this.chagepage();
+            }else{
+              this.$message({
+                type: "warning",
+                message: "操作失败",
+              });
+            }
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消修改",
           });
         });
       },

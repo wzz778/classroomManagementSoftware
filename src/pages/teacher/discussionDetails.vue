@@ -8,7 +8,7 @@
     <el-empty v-if="discussionDate.length==0" description="暂无回复内容"></el-empty>
     <DiscussList v-for="(p) of discussionDate"  :key="p.discuss.id"  style="width:100%" :jsonText="JSON.stringify(p)"/>
     </div>
-    <el-dialog style="z-index:2001;" title="发布话题" append-to-body :visible.sync="dialogFormVisible">
+    <el-dialog :before-close="handleClose" style="z-index:2001;" title="发布评论" append-to-body :visible.sync="dialogFormVisible">
       <el-form
         label-position="right"
         label-width="80px"
@@ -44,6 +44,9 @@ import {getAllDiscuss,publishDiscuss} from "@/api/admin/index";
 import TopicList from '@/components/admin/TopicList'
 import DiscussList from '@/components/admin/DiscussList'
 import TitleBlock from '@/components/admin/TitleBlock'
+// 引入解析工具
+import jwtDecode from "jwt-decode";
+import axios from 'axios';
 export default {
   name: "discussionDetails",
   components: {
@@ -61,7 +64,9 @@ export default {
         level:1,
         content:"",
         topicId:"",
-        sendId:11,
+        sendId:'',
+        superId:'',
+        fromId:''
       },
       discussionDate:[],
       searchform:{
@@ -78,6 +83,11 @@ export default {
     }
   },
   methods: {
+    handleClose(done) {
+      this.clearform()
+      this.$store.commit("admin/clearDiscussForm");
+      done()
+    },
     handleSizeChange(val) {
       this.searchform.pageSize=val;
       this.chagepage()
@@ -98,7 +108,6 @@ export default {
         });
     },
     chagepage(){
-      // console.log("sdas");
         getAllDiscuss(this.searchform)
         .then((data) => {
           console.log(data);
@@ -128,8 +137,13 @@ export default {
     //   console.log(id);
     // },
     submitForm(formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
+          if (this.form.content.replace(/(^\s*)|(\s*$)/g, "") == "") {
+            this.$message({
+              message: "请输入评论内容",
+              type: "warning",
+            });
+            return;
+          }
           publishDiscuss(this.form)
           .then((result) => {
             if(result.status==200){
@@ -138,8 +152,12 @@ export default {
                 type: "success",
               });
               this.dialogFormVisible=false;
-              this.$refs['form'].resetFields();
+              if(this.form.superId){
+                this.$router.go(0)
+              }
+              this.clearform()
               this.chagepage()
+              // this.$router.go(0)
             }else{
               this.$message({
                 type: "warning",
@@ -150,21 +168,41 @@ export default {
           .catch((err) => {
             console.log(err);
           });
-        } else {
-          console.log("error submit!!");
-          return false;
-        }
-      });
     },
     resetForm(formName) {
-      this.$refs[formName].resetFields();
+      this.form.content=''
     },
+    clearform(){
+        this.form.content=''
+        this.form.fromId=''
+        this.form.superId=''
+    }
   },
   created(){
     if(localStorage.getItem("topicForm")){
       this.topicform=JSON.parse(localStorage.getItem("topicForm"));
       this.searchform.topicId=this.topicform.topic.id;
       this.form.topicId=this.topicform.topic.id;
+      let obj = jwtDecode(window.localStorage.token)
+      this.form.sendId=obj.id;
+      this.$store.watch((state, getters) => {
+        return state.admin.deleteDiscussid
+      }, () => {
+          if(this.$store.state.admin.deleteDiscussid){
+            this.chagepage()
+          }
+      })
+      this.$store.watch((state, getters) => {
+        return state.admin.discussForm
+      }, () => {
+          if(this.$store.state.admin.discussForm){
+            this.dialogFormVisible=true
+            let redata=JSON.parse(this.$store.state.admin.discussForm);
+            this.form.fromId=redata.user.studentId
+            this.form.superId=redata.discuss.id
+            this.form.level=2
+          }
+      })
     }else{
       this.$router.push({
         path:"classroomDiscussion",
