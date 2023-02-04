@@ -155,8 +155,8 @@ export default {
             let req = data.data;
             this.tableDate = req.list;
             if (req.list.length == 0) {
-              if (this.searchform.nodePage != 1) {
-                this.searchform.nodePage--;
+              if (this.searchform.beginIndex != 1) {
+                this.searchform.beginIndex--;
                 this.chagepage();
               }
             }
