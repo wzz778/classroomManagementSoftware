@@ -11,43 +11,63 @@
     </div>
     <div class="zuo">
       <el-card class="box-card" v-show="radio == '1'">
-        <div v-for="o in enter" :key="o.id" class="text item">
+        <div
+          v-for="o in enter"
+          :key="o.id"
+          class="text item"
+          @click="jusp(o.id, o.sta)"
+        >
           <div class="name">
             <img :src="adatar ? adatar : require('@/assets/work.jpeg')" />
           </div>
           <div class="name">
             <span>{{ o.homeworkName }}</span>
-            <span class="tasktime" v-show="new Date(o.beginTime) > new Date()">开始时间：{{ o.beginTime }}</span
+            <span class="tasktime" v-show="new Date(o.beginTime) > new Date()"
+              >开始时间：{{ o.beginTime }}</span
             >
-            <span class="tasktime" v-show="new Date(o.beginTime) <= new Date()">结束时间：{{ o.endTime }}</span
+            <span class="tasktime" v-show="new Date(o.beginTime) <= new Date()"
+              >结束时间：{{ o.endTime }}</span
             >
           </div>
         </div>
       </el-card>
       <el-card class="box-card" v-show="radio == '2'">
-        <div v-for="o in endc" :key="o.id" class="text item">
+        <div
+          v-for="o in endc"
+          :key="o.id"
+          class="text item"
+          @click="jusp(o.id, o.sta)"
+        >
           <div class="name">
             <img :src="adatar ? adatar : require('@/assets/work.jpeg')" />
           </div>
           <div class="name">
             <span>{{ o.homeworkName }}</span>
-            <span class="tasktime" v-show="new Date(o.beginTime) > new Date()">开始时间：{{ o.beginTime }}</span
+            <span class="tasktime" v-show="new Date(o.beginTime) > new Date()"
+              >开始时间：{{ o.beginTime }}</span
             >
-            <span class="tasktime" v-show="new Date(o.beginTime) <= new Date()">结束时间：{{ o.endTime }}</span
+            <span class="tasktime" v-show="new Date(o.beginTime) <= new Date()"
+              >结束时间：{{ o.endTime }}</span
             >
           </div>
         </div>
       </el-card>
-      <el-card class="box-card" v-show="radio == '3'">
+      <el-card
+        class="box-card"
+        v-show="radio == '3'"
+        @click="jusp(o.homeworkId, o.sta)"
+      >
         <div v-for="o in nostat" :key="o.id" class="text item">
           <div class="name">
             <img :src="adatar ? adatar : require('@/assets/work.jpeg')" />
           </div>
           <div class="name">
             <span>{{ o.homeworkName }}</span>
-            <span class="tasktime" v-show="new Date(o.beginTime) > new Date()">开始时间：{{ o.beginTime }}</span
+            <span class="tasktime" v-show="new Date(o.beginTime) > new Date()"
+              >开始时间：{{ o.beginTime }}</span
             >
-            <span class="tasktime" v-show="new Date(o.beginTime) <= new Date()">结束时间：{{ o.endTime }}</span
+            <span class="tasktime" v-show="new Date(o.beginTime) <= new Date()"
+              >结束时间：{{ o.endTime }}</span
             >
           </div>
         </div>
@@ -139,12 +159,17 @@ export default {
               message: "暂无作业",
             });
           } else {
-            this.enter = result.data.records;
             for (let i = 0; i < result.data.records.length; i++) {
               if (result.data.records[i].answer.length == 0) {
-                this.nostat.push(result.data.records[i]);
+                let obj = result.data.records[i];
+                obj["sta"] = "未完成";
+                this.enter.push(obj);
+                this.nostat.push(obj);
               } else {
-                this.endc.push(result.data.records[i]);
+                let obje = result.data.records[i];
+                obje["sta"] = "已完成";
+                this.enter.push(obje);
+                this.endc.push(obje);
               }
             }
           }
@@ -157,6 +182,23 @@ export default {
       //整理参数
       this.limit = limit;
       this.handleCurrentChange();
+    },
+    jusp(value, state) {
+      if ((state == "已完成")) {
+        this.$router.push({
+          path: "/browseHomework",
+          query: {
+            hid: value,
+          },
+        });
+      } else {
+        this.$router.push({
+          path: "/doPaper",
+          query: {
+            hid: value,
+          },
+        });
+      }
     },
   },
 };
