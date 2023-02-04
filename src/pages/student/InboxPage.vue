@@ -113,9 +113,9 @@
       >
         <div class="dialogSty">
           <el-form label-width="80px" v-show="state == '查看问题'">
-            <el-form-item label="剩余时间:">
+            <!-- <el-form-item label="剩余时间:">
               <div>{{ timer }}</div>
-            </el-form-item>
+            </el-form-item> -->
             <el-form-item label="题干">
               <div v-html="topic.topicInfo"></div>
             </el-form-item>
@@ -292,7 +292,7 @@ export default {
             this.state = "查看问题";
             this.dialogVisible = false;
             this.dialogVisibleNews = true;
-            this.Time();
+            // this.Time();
           } else {
             //问题失效
             this.state = "问题失效";
@@ -415,24 +415,24 @@ export default {
     },
 
     // 分 秒 格式化函数
-    countDown() {
-      let m = parseInt((this.seconds / 60) % 60);
-      m = m < 10 ? "0" + m : m;
-      let s = parseInt(this.seconds % 60);
-      s = s < 10 ? "0" + s : s;
-      this.timer = m + "分" + s + "秒";
-    },
-    //定时器没过1秒参数减1
-    Time() {
-      var test = setInterval(() => {
-        this.seconds -= 1;
-        if (this.seconds == 0) {
-          this.state = "问题失效";
-          clearInterval(test);
-        }
-        this.countDown();
-      }, 1000);
-    },
+    // countDown() {
+    //   let m = parseInt((this.seconds / 60) % 60);
+    //   m = m < 10 ? "0" + m : m;
+    //   let s = parseInt(this.seconds % 60);
+    //   s = s < 10 ? "0" + s : s;
+    //   this.timer = m + "分" + s + "秒";
+    // },
+    // //定时器没过1秒参数减1
+    // Time() {
+    //   var test = setInterval(() => {
+    //     this.seconds -= 1;
+    //     if (this.seconds == 0) {
+    //       this.state = "问题失效";
+    //       clearInterval(test);
+    //     }
+    //     this.countDown();
+    //   }, 1000);
+    // },
 
     toggleSelection(rows) {
       if (rows) {
