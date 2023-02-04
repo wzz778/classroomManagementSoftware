@@ -75,9 +75,9 @@
         >
           <el-submenu index="1">
             <template slot="title">admin</template>
-            <el-menu-item index="2-1">个人信息</el-menu-item>
-            <el-menu-item index="2-2">主页</el-menu-item>
-            <el-menu-item index="2-3">退出</el-menu-item>
+            <!-- <el-menu-item index="2-1">个人信息</el-menu-item> -->
+            <!-- <el-menu-item index="2-2">主页</el-menu-item> -->
+            <el-menu-item @click="quitLogin" index="2-3">退出</el-menu-item>
           </el-submenu>
         </el-menu>
       </div>
@@ -160,6 +160,19 @@ export default {
     },
     handleSelect(key, keyPath) {
       console.log(key, keyPath);
+    },
+    quitLogin() {
+      this.$confirm("确定要退出登录吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(() => {
+        window.localStorage.setItem("token", "");
+        this.$store.commit("DELTOKEN", "");
+        this.$router.push({
+          path: "/login",
+        });
+      });
     },
     tabClick(tab){
       // console.log(tab.name);
