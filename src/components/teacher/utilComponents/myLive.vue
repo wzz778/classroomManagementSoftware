@@ -115,7 +115,6 @@ export default {
       // 获取推流地址
       createPushUrl()
         .then((result) => {
-          window.localStorage.setItem("a", result.data.bizid);
           this.bizid = result.data.bizid;
           this.pushUrl = result.data.address.replace("rtmp", "webrtc");
           this.livePusher = new TXLivePusher();

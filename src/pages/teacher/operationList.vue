@@ -452,7 +452,7 @@ export default {
       this.$router.push({
         path: "/doPaper",
         query: {
-          hId: obj.id,
+          hid: obj.id,
         },
       });
     },
