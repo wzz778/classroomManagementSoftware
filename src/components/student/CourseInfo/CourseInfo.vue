@@ -316,7 +316,7 @@ body > .el-container {
   height: 50px;
   border-radius: 50px;
   margin-top: 5px;
-  background-image: url(@/assets/yxy/userProfile.jpg);
+  background-image: url(@/assets/yxy/userProfile.webp);
   background-repeat: no-repeat;
   background-position: center center;
   background-size: cover;

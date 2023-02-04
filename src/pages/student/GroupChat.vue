@@ -377,7 +377,7 @@ export default {
       width: 35px;
       height: 35px;
       border-radius: 35px;
-      background-image: url(@/assets/yxy/userProfile.jpg);
+      background-image: url(@/assets/yxy/userProfile.webp);
       background-repeat: no-repeat;
       background-position: center center;
       background-size: cover;
@@ -412,7 +412,7 @@ export default {
       width: 35px;
       height: 35px;
       border-radius: 35px;
-      background-image: url(@/assets/yxy/userProfile.jpg);
+      background-image: url(@/assets/yxy/userProfile.webp);
       background-repeat: no-repeat;
       background-position: center center;
       background-size: cover;
@@ -522,7 +522,7 @@ export default {
       width: 35px;
       height: 35px;
       border-radius: 35px;
-      background-image: url(@/assets/yxy/userProfile.jpg);
+      background-image: url(@/assets/yxy/userProfile.webp);
       background-repeat: no-repeat;
       background-position: center center;
       background-size: cover;
