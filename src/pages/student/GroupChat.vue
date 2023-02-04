@@ -2,7 +2,20 @@
   <div class="mainBox">
     <div class="chatArea">
       <div class="msgViewArea">
-        <div class="othersMsgBox">
+        <div v-for="(info, index) in chatInfo" :key="index">
+          <div class="othersMsgBox" v-if="info.status == 1">
+            <div class="otherHeadPic"></div>
+            <div class="msgBox">
+              <div class="othersName">{{ info.username }}</div>
+              <div class="othersMsg" v-html="info.text"></div>
+            </div>
+          </div>
+          <div class="myMsgBox" v-else-if="info.status==0">
+              <div class="myHeadPic"></div>
+              <div class="myMsg" v-html="info.text"></div>
+            </div>
+        </div>
+        <!-- <div class="othersMsgBox">
           <div class="otherHeadPic"></div>
           <div class="msgBox">
             <div class="othersName">成员</div>
@@ -11,7 +24,9 @@
         </div>
         <div class="myMsgBox">
           <div class="myHeadPic"></div>
-          <div class="myMsg">你好,这是一段话，你好,这是一段话你好,这是一段话你好,这是一段话你好,这是一段话你好,这是一段话你好,这是一段话你好,这是一段话</div>
+          <div class="myMsg">
+            你好,这是一段话，你好,这是一段话你好,这是一段话你好,这是一段话你好,这是一段话你好,这是一段话你好,这是一段话你好,这是一段话
+          </div>
         </div>
         <div class="myMsgBox">
           <div class="myHeadPic"></div>
@@ -20,10 +35,12 @@
         <div class="myMsgBox">
           <div class="myHeadPic"></div>
           <div class="myMsg">你好</div>
-        </div>
+        </div> -->
       </div>
       <div class="sendWords">
-        <div id="editor"></div>
+        <div class="editor">
+          <div ref="editor" class="textNeirong"></div>
+        </div>
         <!-- <el-input
           type="textarea"
           :autosize="{ minRows: 2, maxRows: 4 }"
@@ -33,7 +50,9 @@
           show-word-limit
         >
         </el-input> -->
-        <button plain class="sendBtn">发送</button>
+        <el-button type="success" plain class="sendBtn" @click="sendChat"
+          >发送</el-button
+        >
       </div>
     </div>
     <div class="viewGroupInfo">
@@ -82,24 +101,62 @@
 import E from "wangeditor";
 import AlertMenu from "@/myText/myRichText"; // 根据AlertMenu.js文件实际路径进行引入即可
 // import { Input,Button } from "element-ui";
+import store from "@/store/";
 import { Input, Button } from "element-ui";
 export default {
   name: "GroupChat",
   data() {
     return {
-      words: "",
+      editor: null,
+
+      chatText: null,
+
+      token: "",
+      value: null,
+      isClear: false,
+      chatInfo: [{ status: 1, username: "yy", text: "你好" }],
     };
+  },
+  model: {
+    prop: "value",
+
+    event: "change",
   },
   components: {
     [Input.name]: Input,
     [Button.name]: Button,
   },
-  methods:{
-    createEditor() {
-      this.editor = new E("#editor");
-      this.editor.config.onchange = (html) => {
-        this.value = html;
-      };
+  watch: {
+    isClear(val) {
+      // 触发清除文本域内容
+
+      if (val) {
+        this.editor.txt.clear();
+
+        this.chatText = null;
+      }
+    },
+
+    value(value) {
+      if (value !== this.editor.txt.html()) {
+        this.editor.txt.html(this.value);
+      }
+    },
+  },
+
+  created() {
+    this.token = "Bearer " + store.getters.access_token;
+  },
+
+  mounted() {
+    this.seteditor();
+
+    this.editor.txt.html(this.value);
+  },
+
+  methods: {
+    seteditor() {
+      this.editor = new E(this.$refs.editor);
       this.editor.config.menus = [
         "head", // 标题
         "bold", // 粗体
@@ -124,50 +181,86 @@ export default {
       // 配置自定义按钮
       this.editor.menus.extend("alertMenu", AlertMenu); // 配置扩展的菜单
       this.editor.config.menus = this.editor.config.menus.concat("alertMenu");
-      // 配置上传图片
       this.editor.config.uploadImgShowBase64 = true; // base 64 存储图片
-      this.editor.config.uploadImgServer = "/api/admin/addPicture";
-      // 配置服务器端地址(这里的this.$api.getJavaEndPoint()是自己定义的一个地址前缀)
+
+      this.editor.config.uploadImgServer = ""; // 填写配置服务器端地址
+
+      this.editor.config.uploadImgHeaders = { Authorization: this.token }; // 自定义 header
+
       this.editor.config.uploadFileName = "file"; // 后端接受上传文件的参数名
-      this.editor.config.uploadImgHeaders = {
-        token: myStore.state.token, // 设置请求头
+
+      this.editor.config.uploadImgMaxSize = 8 * 1024 * 1024; // 将图片大小限制为 2M
+
+      this.editor.config.uploadImgMaxLength = 6; // 限制一次最多上传 6 张图片
+
+      this.editor.config.uploadImgTimeout = 3 * 60 * 1000; // 设置超时时间
+
+      // 自定义 onchange 触发的延迟时间，默认为 200 ms
+
+      this.editor.config.onchangeTimeout = 1000; // 单位 ms
+
+      this.editor.config.onchange = (html) => {
+        // console.log(html);
+        this.chatText = html; // 绑定当前逐渐地值
       };
+
+      // 创建富文本编辑器
+
+      this.editor.create();
+
       this.editor.config.uploadImgHooks = {
-        fail: function () {
-          this.$message({
-            message: "图片上传失败",
-            type: "warning",
-          });
+        fail: (xhr, editor, result) => {
+          // 插入图片失败回调
         },
-        error: function () {
-          this.$message.error("图片上传出错");
-        },
+
         success: (xhr, editor, result) => {
           // 图片上传成功回调
-          console.log("成功", result);
         },
+
+        timeout: (xhr, editor) => {
+          // 网络超时的回调
+        },
+
+        error: (xhr, editor) => {
+          // 图片上传错误的回调
+        },
+
         customInsert: (insertImg, result, editor) => {
-          // 图片上传成功，插入图片的回调
-          console.log(result);
-          console.log(editor);
-          insertImg(result.data);
+          //循环插入图片
+
+          let url = result.data.url;
+
+          insertImg(url);
         },
       };
-      this.editor.create();
-      this.editor.cmd.do("insertHTML", this.oriHtml);
     },
-    // 初始化
-    init() {
-      this.dialogVisible = true;
-      return new Promise((resolve, resject) => {
-        this.promiseResult = { resolve, resject };
-      });
+    // 销毁
+    destruction() {
+      //   console.log("是否销毁呢");
+      this.editor.destroy(true);
+      this.editor = null;
+      //   销毁实例
+      this.dialogVisible = false;
+      this.promiseResult.resject(this.orlHtml);
+      this.$destroy(true);
+      this.$el.parentNode.removeChild(this.$el);
     },
-  }
+    sendChat() {
+      console.log(this.chatText);
+      let info = {
+        status: 0,
+        text: this.chatText,
+        username: "",
+      };
+      this.chatInfo.push(info);
+      console.log(this.chatInfo);
+      this.isClear = true;
+    },
+  },
 };
 </script>
 
-<style lang="less">
+<style lang="less" scope>
 * {
   padding: 0;
   margin: 0;
@@ -185,9 +278,11 @@ export default {
   flex-direction: column;
   width: 100%;
   height: 75%;
+  min-height: 400px;
   margin-bottom: 20px;
   background-color: #fff;
   border-radius: 10px;
+  overflow: auto;
   .othersMsgBox {
     display: flex;
     width: 100%;
@@ -277,21 +372,20 @@ export default {
   flex-direction: column;
   justify-content: space-between;
   .sendBtn {
-    display: inline-block;
-    width: 60px;
-    height: 30px;
-    text-align: center;
-    margin-top: 10px;
-    border: 1px solid #b3d8ff;
-    background-color: #ecf5ff;
-    color: #409eff;
-    border-radius: 3px;
-    cursor: pointer;
-    transition: all 0.2s;
-    &:hover {
-      background-color: cornflowerblue;
-      color: #ecf5ff;
-    }
+    // display: inline-block;
+    width: 80px;
+    height: 36px;
+    position: absolute;
+    top: 3px;
+    right: 100px;
+    // text-align: center;
+    // border: 1px solid #b3d8ff;
+    // background-color: #ecf5ff;
+    // color: #409eff;
+    // border-radius: 3px;
+    // cursor: pointer;
+    // transition: all 0.2s;
+    z-index: 1000;
   }
 }
 #wordsInput {
@@ -380,5 +474,14 @@ export default {
 ::-webkit-scrollbar-track {
   background-color: #dbeffd;
   border-radius: 32px;
+}
+
+.editor {
+  width: 100%;
+
+  margin: auto;
+
+  position: relative;
+  z-index: 99;
 }
 </style>

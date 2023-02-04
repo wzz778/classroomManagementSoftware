@@ -21,7 +21,7 @@
         >
           <el-tag
             :type="
-              userAnswer[index] == '' || userAnswer[index] == []
+              userAnswer[index].answer == '' || userAnswer[index].answer == []
                 ? 'info'
                 : 'success'
             "
@@ -32,7 +32,7 @@
       </div>
       <div class="remarkArea">备注：{{ paperData.remark }}</div>
       <div class="btn">
-        <el-button type="primary" @click="submitAnswerFun">提交试卷</el-button>
+        <el-button type="primary" @click="submitAnswerFun" v-if="userInfo.power=='0'">提交试卷</el-button>
       </div>
     </el-aside>
 
@@ -42,7 +42,7 @@
           <!-- <span style="border-right: 1px solid rgb(202, 199, 199)"
             >时长：{{ paperData.suggestTime }}分钟</span
           > -->
-          <span>总分：{{ paperData.paperScore }}</span>
+          <span>总分：{{ allScore }}</span>
         </div>
       </el-header>
       <el-main>
@@ -69,7 +69,7 @@
                 "
               >
                 <div class="choiceItem">
-                  <el-radio-group v-model="userAnswer[index]">
+                  <el-radio-group v-model="userAnswer[index].answer">
                     <div
                       v-for="(op, index) in topic.questionContent.optionsInfo"
                       :key="index"
@@ -87,7 +87,7 @@
               <!-- 多选 -->
               <template v-if="topic.questionContent.type == 2">
                 <div class="choiceMoreItem">
-                  <el-checkbox-group v-model="userAnswer[index]">
+                  <el-checkbox-group v-model="userAnswer[index].answer">
                     <div
                       v-for="(op, index) in topic.questionContent.optionsInfo"
                       :key="index"
@@ -103,17 +103,6 @@
                   </el-checkbox-group>
                 </div>
               </template>
-              <!-- <template v-if="topic.questionContent.type == 3">
-                <div class="shortAnswerItem">
-                  <el-radio-group
-                    v-model="userAnswer[index]"
-                    @change="judgeFun"
-                  >
-                    <el-radio :label="false">错误</el-radio>
-                    <el-radio :label="true">正确</el-radio>
-                  </el-radio-group>
-                </div>
-              </template> -->
               <!-- 填空简答 -->
               <template
                 v-if="
@@ -162,15 +151,19 @@ import {
   Checkbox,
   CheckboxGroup,
   Backtop,
+  Message,
 } from "element-ui";
 import { getHomeworkById, submitAnswer } from "@/api/student/yxyAxios";
+import jwt_decode from "jwt-decode";
 export default {
   name: "DoPaper",
   data() {
     return {
       paperData: "",
       topics: "",
-      userAnswer: {},
+      userAnswer: [],
+      userInfo:"",
+      allScore:0,
     };
   },
   components: {
@@ -214,24 +207,27 @@ export default {
         type: "warning",
       })
         .then(() => {
-          console.log(JSON.stringify(this.userAnswer));
-          // let data = {
-          //   duration: 0,
-          //   hid: 15,
-          //   id: 0,
-          //   status: 0,
-          //   userAnswer: [
-          //     {
-          //       answer: JSON.stringify(this.userAnswer),
-          //       type: 0,
-          //     },
-          //   ],
-          //   userId: 0,
-          // };
-          // console.log(data);
-          // submitAnswer(data).then(res=>{
-          //   console.log(res);
-          // })
+          for (let i = 0; i < this.userAnswer.length; i++) {
+            if(this.userAnswer[i].answer instanceof Array){
+              this.userAnswer[i].answer=this.userAnswer[i].answer.toString();
+            }
+          }
+          let data = {
+            duration: 0,
+            hid: this.$route.query.hid,
+            id: 0,
+            status: 1,
+            userAnswer: this.userAnswer,
+            userId: this.userInfo.id,
+          };
+          console.log(data);
+          submitAnswer(data).then(res=>{
+            if(res.status==200){
+              Message.success('提交成功！');
+            }else{
+              Message.error("网络异常，提交失败！")
+            }
+          })
         })
         .catch(() => {
           this.$message({
@@ -241,42 +237,36 @@ export default {
         });
     },
     richTextFun(index, event) {
-      this.$myRichText({ oriHtml: this.userAnswer[index] })
+      this.$myRichText({ oriHtml: this.userAnswer[index].answer })
         .then((res) => {
           event.target.innerHTML = res;
-          this.userAnswer[index] = res;
+          this.userAnswer[index].answer = res;
         })
         .catch(() => {});
     },
   },
   mounted() {
+    this.userInfo=jwt_decode(this.$store.state.token);
     let data = {
-      // homeworkId: this.$route.query.pid,
-      homeworkId: 16,
+      homeworkId: this.$route.query.hid,
+      studentId:this.$route.query.stuid
     };
     getHomeworkById(data).then((res) => {
       console.log(res);
       this.paperData = res.data.homework;
       this.paperData.remark = this.paperData.remark || "无";
       this.topics = res.data.homework.question;
-      // this.paperData = res.data.records[0];
-      // this.topics = this.paperData.ob;
-      // this.count = this.paperData.suggestTime;
       for (let i = 0; i < this.paperData.questionCount; i++) {
+        this.allScore+=this.topics[i].score;
         this.topics[i].questionContent = JSON.parse(
           this.topics[i].questionContent
         );
         if (this.topics[i].questionContent.type == 2) {
-          this.$set(this.userAnswer, i, []);
+          this.userAnswer.push({'answer':[],'type':2})
         } else {
-          this.$set(this.userAnswer, i, "");
+           this.userAnswer.push({'answer':"",'type':this.topics[i].questionContent.type})
         }
       }
-      // Object.values(JSON.parse(res.data.records[0].paperFrame)).forEach(
-      //   (key) => {
-      //     this.titles[key.beginIndex] = key.value;
-      //   }
-      // );
     });
   },
 };
@@ -430,8 +420,9 @@ html {
   margin-left: 20px;
 }
 .topicTitle {
-  display: inline-block;
+  display: flex;
   line-height: 30px;
+  word-break: break-all;
 }
 .radioItem {
   display: flex;
@@ -479,6 +470,7 @@ html {
   font-size: 15px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  word-break: break-all;
   &:hover {
     border: 1px solid rgb(139, 180, 233);
   }

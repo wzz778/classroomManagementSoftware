@@ -1,23 +1,20 @@
 <template>
   <el-container class="content">
     <el-header class="header">
-      <div class="logoPic">LOGO</div>
-      <el-dropdown class="myBox">
-        <span class="el-dropdown-link">
-          <div class="headPortrait"></div>
-        </span>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item>首页</el-dropdown-item>
-          <el-dropdown-item>我的</el-dropdown-item>
-          <el-dropdown-item @click.native="logout">退出登录</el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
+      <router-link to="/user/IndexBase" class="logoPic"
+        >课堂管理系统</router-link
+      >
+      <div class="myBox">
+        <router-link to="/user/userInfo"
+          ><div class="headPortrait"></div
+        ></router-link>
+      </div>
     </el-header>
     <el-container class="mainContent">
       <el-aside width="200px">
         <div class="classInfo">
-          <div class="classPic"></div>
-          <div class="className">高等数学</div>
+          <div class="classPic" :style="coverPic"></div>
+          <div class="className">{{ courseInfo.courseName }}</div>
         </div>
         <el-menu :default-active="pagePath" class="el-menu-vertical-demo">
           <router-link
@@ -44,24 +41,52 @@
               <span slot="title"><i class="el-icon-edit"></i>课程作业</span>
             </el-menu-item>
           </router-link>
-          <router-link to="/student/classDiscussion">
+          <router-link
+            :to="{
+              path: '/student/classDiscussion',
+              query: {
+                id: this.courid,
+              },
+            }"
+          >
             <el-menu-item index="/student/classDiscussion">
               <span slot="title"
                 ><i class="el-icon-chat-line-square"></i> 课程讨论</span
               >
             </el-menu-item>
           </router-link>
-          <router-link to="/student/studyGroup">
+          <router-link
+            :to="{
+              path: '/student/studyGroup',
+              query: {
+                id: this.courid,
+              },
+            }"
+          >
             <el-menu-item index="/student/studyGroup">
               <span slot="title"><i class="el-icon-house"></i>我的小组</span>
             </el-menu-item>
           </router-link>
-          <router-link to="/student/shareData">
+          <router-link
+            :to="{
+              path: '/student/shareData',
+              query: {
+                id: this.courid,
+              },
+            }"
+          >
             <el-menu-item index="/student/shareData">
               <span slot="title"><i class="el-icon-share"></i>共享资料</span>
             </el-menu-item>
           </router-link>
-          <router-link to="/student/learnDaily">
+          <router-link
+            :to="{
+              path: '/student/learnDaily',
+              query: {
+                id: this.courid,
+              },
+            }"
+          >
             <el-menu-item index="/student/learnDaily">
               <span slot="title"
                 ><i class="el-icon-notebook-2"></i>学习情况</span
@@ -102,6 +127,7 @@
 </template>
 
 <script>
+import { getCourseInfo } from "@/api/student/yxyAxios";
 import {
   Container,
   Header,
@@ -118,6 +144,10 @@ export default {
     return {
       pagePath: this.$route.path,
       courid: this.$route.query.id,
+      courseInfo: "",
+      coverPic: {
+        backgroundImage: "",
+      },
     };
   },
   components: {
@@ -130,6 +160,18 @@ export default {
     [Dropdown.name]: Dropdown,
     [DropdownMenu.name]: DropdownMenu,
     [DropdownItem.name]: DropdownItem,
+  },
+  mounted() {
+    console.log(this.$route.query.id);
+    let data = {
+      id: this.$route.query.id,
+    };
+    console.log(data);
+    getCourseInfo(data).then((res) => {
+      console.log("获取课程信息", res);
+      this.courseInfo = res.data;
+      this.coverPic.backgroundImage = "url(" + res.data.cover + ")";
+    });
   },
 };
 </script>
@@ -267,13 +309,16 @@ body > .el-container {
 
 .logoPic {
   display: inline-block;
-  width: 50px;
+  width: auto;
   height: 50px;
   margin-top: 5px;
   float: left;
-  margin-left: 60px;
+  margin-left: 20px;
+  font-size: 22px;
+  font-weight: 700;
+  cursor: pointer;
 }
-.mainContent{
+.mainContent {
   overflow: auto;
 }
 </style>
