@@ -63,7 +63,7 @@
               },
             }"
           >
-            <el-menu-item index="/student/studyGroup">
+            <el-menu-item index="/student/groupChat">
               <span slot="title"><i class="el-icon-house"></i>我的小组</span>
             </el-menu-item>
           </router-link>

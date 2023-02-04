@@ -77,7 +77,7 @@ import E from "wangeditor";
 import AlertMenu from "@/myText/myRichText"; // 根据AlertMenu.js文件实际路径进行引入即可
 // import { Input,Button } from "element-ui";
 import store from "@/store/";
-import { Input, Button } from "element-ui";
+import { Input, Button, Message } from "element-ui";
 import { getMembers, sendMessage, getUserInfo } from "@/api/student/yxyAxios";
 import jwt_decode from "jwt-decode";
 
@@ -280,8 +280,8 @@ export default {
       let data = {
         courseId: this.$route.query.id,
       };
-      getMembers(data)
-        .then((res) => {
+      getMembers(data).then((res) => {
+        if (res.status == 200) {
           Object.keys(res.data).forEach((key) => {
             // console.log(res.data[key]); // foo
             for (let i = 0; i < res.data[key].length; i++) {
@@ -293,20 +293,21 @@ export default {
                 this.groupName = key.substr(5);
                 this.groupId = key;
                 this.sever += this.$route.query.id + key;
+                // ReconnectingWebSocket是类库reconnecting-websocket , 可以进行自动的断线重连,引入连接 :
+                // let socket=new ReconnectingWebSocket(this.sever)
+                let socket = new WebSocket(this.sever);
+                this.socket = socket;
+                this.socket.onmessage = this.OnMessage;
+                this.socket.onopen = this.OnOpen;
+                this.socket.onerror = this.OnError;
+                this.socket.onclose = this.OnClose;
               }
             }
           });
-        })
-        .then(() => {
-          // ReconnectingWebSocket是类库reconnecting-websocket , 可以进行自动的断线重连,引入连接 :
-          // let socket=new ReconnectingWebSocket(this.sever)
-          let socket = new WebSocket(this.sever);
-          this.socket = socket;
-          this.socket.onmessage = this.OnMessage;
-          this.socket.onopen = this.OnOpen;
-          this.socket.onerror = this.OnError;
-          this.socket.onclose = this.OnClose;
-        });
+        } else {
+          Message.warning("该课程暂无分组");
+        }
+      });
     },
     OnOpen() {
       console.log("连接成功");
