@@ -101,6 +101,7 @@ export default {
         size: 5,
         courseId: '',
       },
+      isUserRouter:false,
       rules: {
         topicName: [
           { required: true, message: "请输入话题标题", trigger: "blur" },
