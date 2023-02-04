@@ -35,6 +35,7 @@
     layout="total, sizes, prev, pager, next, jumper"
     :total="alltotal">
   </el-pagination>
+  <!-- <div v-if="true">{{discussionDate}}</div> -->
   </div>
 </template>
 
@@ -152,12 +153,8 @@ export default {
                 type: "success",
               });
               this.dialogFormVisible=false;
-              if(this.form.superId){
-                this.$router.go(0)
-              }
               this.clearform()
               this.chagepage()
-              // this.$router.go(0)
             }else{
               this.$message({
                 type: "warning",

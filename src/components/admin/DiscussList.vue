@@ -42,8 +42,7 @@
                         </div>
                     </div>
                     <div class="topicListright">
-                    <a href="javascript:;" v-if="deletePower||p.user.studentId==this.form.user.studentId" @click="deleteDiscuss(p.discuss.id)"><i class="el-icon-delete"></i></a>
-                        <!-- <a href="javascript:;" @click="addDiscuss"><i class="el-icon-chat-line-round"></i></a> -->
+                        <a href="javascript:;" v-if="deletePower||p.user.studentId==form.user.studentId" @click="deleteDiscuss(p.discuss.id)"><i class="el-icon-delete"></i></a>
                     </div>
                 </div>
             </div>
@@ -69,7 +68,7 @@ import { deleteDiscuss } from "@/api/admin/index";
                     cancelButtonText: "取消",
                     type: "warning",
                 })
-                    .then(() => {
+                .then(() => {
                     deleteDiscuss({ discussId: value}).then((result) => {
                         console.log(result);
                         if (result.status == 200) {
@@ -77,7 +76,6 @@ import { deleteDiscuss } from "@/api/admin/index";
                             type: "success",
                             message: "删除成功!",
                         });
-                        this.$router.go(0)
                         this.$store.commit("admin/deleteDiscuss", value);
                         } else {
                         this.$message({
@@ -92,7 +90,7 @@ import { deleteDiscuss } from "@/api/admin/index";
                         type: "info",
                         message: "已取消删除",
                     });
-                    });
+                });
             },
             addDiscuss(){
                 this.$store.commit("admin/setDiscussForm", this.jsonText);
@@ -111,18 +109,17 @@ import { deleteDiscuss } from "@/api/admin/index";
         filters:{
             toidentity(value){
                 if(value==0){
-                return"学生"
+                    return"学生"
                 }else if(value==1){
-                return"老师"
+                    return"老师"
                 }else{
-                return"管理员"
+                    return"管理员"
                 }
             }
         },
         created() {
             // console.log(jsonText);
             this.form = JSON.parse(this.jsonText);
-            // console.log(this.form);
             this.sonDiscuss=this.form.discussList;
             let obj = jwtDecode(window.localStorage.token)
             if(this.form.user.studentId==obj.id){
