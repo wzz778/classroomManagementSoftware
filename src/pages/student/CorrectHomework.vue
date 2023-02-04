@@ -2,12 +2,7 @@
   <el-container style="height: 100%; border: 1px solid #eee">
     <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
       <div class="doResult">
-        <span style="color: #666; font-weight: 700">作业提交时间：</span>
-        <span>{{ homeworkInfo.createTime }}</span>
-        <span style="color: #666; font-weight: 700">作业规定时间：</span>
-        <span>{{ homeworkInfo.beginTime }}</span>
-        至<br />
-        <span>{{ homeworkInfo.endTime }}</span>
+        <h3 class="paperName">{{ homeworkInfo.homeworkName }}</h3>
       </div>
       <div class="topicTab">
         <h4 style="text-align: center">题号</h4>
@@ -38,7 +33,6 @@
     <el-container class="content">
       <el-header style="text-align: right; font-size: 12px" class="title">
         <i class="el-icon-back" @click="goBack" id="goBack">返回</i>
-        <h3 class="paperName">{{ homeworkInfo.homeworkName }}</h3>
         <span>总分：{{ allScore }}</span>
       </el-header>
       <el-main>
@@ -398,14 +392,16 @@ html {
 .doResult {
   display: flex;
   flex-direction: column;
-  width: 90%;
-  margin-left: 5%;
+  width: 100%;
   border-top: 1px solid rgb(230, 230, 230);
   border-bottom: 1px solid rgb(230, 230, 230);
   font-size: 15px;
   color: #666;
   text-align: center;
   padding: 20px 0;
+  h3{
+    margin-left: 0;
+  }
   span {
     margin: 10px 0;
   }
