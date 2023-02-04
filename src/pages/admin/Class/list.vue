@@ -60,7 +60,7 @@
         </template>
         </el-table-column>
     </el-table>
-    <el-pagination
+    <el-pagination 
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       :current-page="searchform.nodePage"

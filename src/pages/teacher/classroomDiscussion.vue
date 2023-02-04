@@ -63,7 +63,7 @@
     <!-- 卧龙凤雏 -->
     <template>
       <div v-if="false">
-      {{tableDate}}{{deleteid}}
+      {{tableDate}}
       </div>
     </template>
     <!-- 卧龙凤雏 -->
@@ -220,14 +220,18 @@ export default {
     },
   },
   
-  computed:{
-    deleteid(){
-      // console.log(this.$store.state.admin.deleteTopicid);
+  created(){
+    let patharr=this.$route.path.toString().split("/")
+    if(patharr[1]=="student"){
+      this.isUserRouter=true;
+    }
+     this.$store.watch((state, getters) => {
+        return state.admin.deleteTopicid
+      }, () => {
       if(this.$store.state.admin.deleteTopicid){
         this.chagepage()
       }
-      return this.$store.state.admin.deleteTopicid;
-    }
+      })
   },
   mounted() {
     if (sessionStorage.getItem("Topicpage")) {
@@ -237,9 +241,13 @@ export default {
     } else {
       sessionStorage.setItem("Topicpage", 1);
     }
-    this.getAllCourse();
-    // this.$refs.topiclist.$on('deleteTopic',this.deleteTopic) //绑定自定义事件
-    //  sessionStorage.setItem("AdminClassMessage",JSON.stringify(row))
+    if(this.isUserRouter){
+      this.course = this.$route.query.id;
+      this.searchform.courseId = this.$route.query.id;
+      this.form.courseId = this.$route.query.id;
+      }else{
+        this.getAllCourse();
+    }
   },
 };
 </script>
