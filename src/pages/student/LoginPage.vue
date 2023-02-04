@@ -284,7 +284,7 @@ export default {
             this.$router.push("/user/IndexBase");
           }
           if (personInfo.power == 1) {
-            this.$router.push("/teacher");
+            this.$router.push("/teacher/myClassroom");
           }
           if (personInfo.power == 2) {
             this.$router.push("/admin/index");

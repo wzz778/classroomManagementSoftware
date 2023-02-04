@@ -19,7 +19,16 @@
       </div>
       <div class="unchangeableInfo">
         <div class="studentAccount">账号：{{ userInfo.userName }}</div>
-        <div class="studentClass" v-if="userInfo.identity==0">班级：{{ userInfo.gradeId }}<el-button v-if="userInfo.gradeId!='未加入'">加入</el-button></div>
+        <div class="studentClass" v-if="userInfo.identity == 0">
+          班级：{{ userInfo.gradeId }}
+          <el-button
+            type="success"
+            v-if="userInfo.gradeId == '未加入'"
+            style="width: 76px; height: 26px"
+            @click.native="addClassFun"
+            >加入班级</el-button
+          >
+        </div>
         <div class="studentEmail">邮箱：{{ userInfo.email }}</div>
       </div>
     </div>
@@ -81,6 +90,7 @@ import {
   updatePhoto,
   updateInfo,
   getAllAddress,
+  addClass,
 } from "@/api/student/yxyAxios";
 import {
   Radio,
@@ -130,18 +140,18 @@ export default {
       getUserInfo().then((res) => {
         if (res.status == 200) {
           this.userInfo = res.data;
-          if(this.userInfo.gradeId==0){
-            this.userInfo.gradeId="未加入";
+          if (this.userInfo.gradeId == 0) {
+            this.userInfo.gradeId = "未加入";
           }
           this.changeInfo.sex = res.data.sex;
           this.changeInfo.nativePlace = res.data.nativePlace.split("/");
-          this.changeInfo.name=res.data.name;
+          this.changeInfo.name = res.data.name;
           if (res.data.nativePlace != "无") {
             this.changeInfo.nativePlace = res.data.nativePlace.split("/");
           }
           this.photo.backgroundImage = "url(" + res.data.photo + ")";
         } else {
-          console.log("error");
+          Message.error("网络异常，用户信息获取失败");
         }
       });
     },
@@ -181,15 +191,15 @@ export default {
       } else if (this.changeInfo.nativePlace == undefined) {
         Message.warning("请选择籍贯");
       } else {
-        this.changeInfo.nativePlace=this.changeInfo.nativePlace.join("/"),
-        updateInfo(this.changeInfo).then((res) => {
-          if (res.status == 200) {
-            Message.success("修改成功!");
-            this.getUserInfoFun();
-          } else {
-            Message.error("网络异常，修改失败");
-          }
-        });
+        (this.changeInfo.nativePlace = this.changeInfo.nativePlace.join("/")),
+          updateInfo(this.changeInfo).then((res) => {
+            if (res.status == 200) {
+              Message.success("修改成功!");
+              this.getUserInfoFun();
+            } else {
+              Message.error("网络异常，修改失败");
+            }
+          });
       }
     },
     /**
@@ -197,8 +207,6 @@ export default {
      */
     getAllAddressFun() {
       getAllAddress().then((res) => {
-        console.log("籍贯：", res);
-        console.log(this.addressOptions);
         if (res.status == 200) {
           let data = JSON.stringify(res.data.address.provinces).replace(
             /provinceName/g,
@@ -206,11 +214,47 @@ export default {
           );
           data = data.replace(/cityName/g, "addressName");
           this.addressOptions = JSON.parse(data);
-          console.log(this.addressOptions);
         } else {
           Message.warning("网络异常，获取籍贯失败");
         }
       });
+    },
+    addClassFun() {
+      this.$prompt("请输入班级码", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+      })
+        .then(({ value }) => {
+          let data = {
+            regexCode: value,
+          };
+          this.$confirm("加入班级后不可更改, 是否继续?", "提示", {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning",
+          })
+            .then(() => {
+              addClass(data).then((res) => {
+                if(res.status==200){
+                  Message.success("加入成功！");
+                }else{
+                  Message.error("加入失败！");
+                }
+              });
+            })
+            .catch(() => {
+              this.$message({
+                type: "info",
+                message: "已取消",
+              });
+            });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "取消输入",
+          });
+        });
     },
     handleChange(value) {
       this.changeInfo.nativePlace = value;
@@ -310,7 +354,7 @@ export default {
     margin-top: 40px;
   }
   .nativePlace {
-    margin: 40px 0 10px  0;
+    margin: 40px 0 10px 0;
   }
 }
 
