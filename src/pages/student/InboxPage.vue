@@ -113,11 +113,14 @@
       >
         <div class="dialogSty">
           <el-form label-width="80px" v-show="state == '查看问题'">
+            <el-form-item label="剩余时间:">
+              <div>{{ timer }}</div>
+            </el-form-item>
             <el-form-item label="题干">
               <div v-html="topic.topicInfo"></div>
             </el-form-item>
             <el-form-item label="选项:">
-              <template v-for="(item, index) in topic.optopnsInfo">
+              <template v-for="(item, index) in topic.optionsInfo">
                 <el-form-item
                   :label="item.options"
                   :key="index"
@@ -129,7 +132,7 @@
             </el-form-item>
             <el-form-item label="答案">
               <el-select
-                v-model="answer"
+                v-model="answerk"
                 clearable
                 placeholder="请选择"
                 style="margin-right: 20px"
@@ -236,9 +239,11 @@ export default {
       searchText: "",
       content: "",
       xijie: "",
-      answer: "",
+      answerk: "",
       topic: "",
       state: "查看问题",
+      timer: "",
+      seconds: "600",
     };
   },
   props: ["change"],
@@ -274,6 +279,7 @@ export default {
       });
     },
     news() {
+      this.seconds = "600";
       let data = {
         union: this.xijie,
       };
@@ -286,9 +292,10 @@ export default {
             this.state = "查看问题";
             this.dialogVisible = false;
             this.dialogVisibleNews = true;
+            this.Time();
           } else {
             //问题失效
-            this.state = "查看问题";
+            this.state = "问题失效";
             this.dialogVisible = false;
             this.dialogVisibleNews = true;
           }
@@ -298,19 +305,21 @@ export default {
       });
     },
     zanswer() {
-      if (this.answer) {
-        this.dialogVisibleNews = false;
+      if (this.answerk) {
         let data = {
           union: this.xijie,
-          answer: this.answer,
+          answer: this.answerk,
         };
         ZAnswer(data).then((result) => {
           console.log("提交课堂问题", result);
+          if (result.msg == "OK") {
+            this.$message({
+              type: "success",
+              message: "成功提交答案",
+            });
+            this.dialogVisibleNews = false;
+          }
         });
-        // this.$message({
-        //   type: "success",
-        //   message: "成功提交答案",
-        // });
       } else {
         this.$message.error("请回答问题");
       }
@@ -403,6 +412,26 @@ export default {
           done();
         })
         .catch((_) => {});
+    },
+
+    // 分 秒 格式化函数
+    countDown() {
+      let m = parseInt((this.seconds / 60) % 60);
+      m = m < 10 ? "0" + m : m;
+      let s = parseInt(this.seconds % 60);
+      s = s < 10 ? "0" + s : s;
+      this.timer = m + "分" + s + "秒";
+    },
+    //定时器没过1秒参数减1
+    Time() {
+      var test = setInterval(() => {
+        this.seconds -= 1;
+        if (this.seconds == 0) {
+          this.state = "问题失效";
+          clearInterval(test);
+        }
+        this.countDown();
+      }, 1000);
     },
 
     toggleSelection(rows) {
