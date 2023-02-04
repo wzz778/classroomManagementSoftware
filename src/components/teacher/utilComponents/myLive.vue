@@ -115,7 +115,6 @@ export default {
       // 获取推流地址
       createPushUrl()
         .then((result) => {
-          console.log(result);
           window.localStorage.setItem("a", result.data.bizid);
           this.bizid = result.data.bizid;
           this.pushUrl = result.data.address.replace("rtmp", "webrtc");
@@ -194,7 +193,7 @@ export default {
       });
     },
     ansQusetionDetails() {
-      if (this.union == "" && window.localStorage.union == "") {
+      if (this.union == "" && !window.localStorage.union) {
         this.$message.error("请先发布课堂问题");
         return;
       }
@@ -254,29 +253,34 @@ export default {
         }),
         params: {
           answer: this.trueOptions,
-          time: this.getTime(),
+          time: this.getTime()+600,
           union: this.getUnion(),
         },
       };
       publishQuestion(obj)
-        .then(() => {
+        .then((result) => {
+          console.log("发布问题", result);
+          console.log(this.union);
+          window.localStorage.union = this.union;
           this.dialogVisible = false;
-          this.clearAll();
           return addMessage({
             content: this.union,
             courseId: this.$route.query.id,
             type: 2,
           });
         })
-        .then((result) => {
-          console.log("发布消息", result);
+        .then(() => {
+          this.clearAll();
+          this.$message({
+            message: "发布完成",
+            type: "success",
+          });
         })
         .catch((err) => {
           console.log(err);
         });
     },
     clearAll() {
-      this.union = "";
       this.trueOptions = "";
       this.question = "";
       this.showOptions = [

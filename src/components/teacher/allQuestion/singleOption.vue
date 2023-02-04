@@ -183,9 +183,9 @@ export default {
           optionsInfo: {
             ...this.showOptions,
           },
+          correct: this.parsing,
         }),
         answer: this.trueOptions.toString(),
-        correct: this.parsing,
         score: this.score,
         type: 1,
       };

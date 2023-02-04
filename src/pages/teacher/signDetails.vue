@@ -189,9 +189,8 @@ export default {
           this.dialogVisible = false;
           this.clearAll();
         })
-        .then((result) => {
+        .then(() => {
           this.clearAll();
-          console.log("发送信息", result);
         })
         .catch((err) => {
           console.log(err);

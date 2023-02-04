@@ -124,12 +124,17 @@ export default {
         .then(() => {
           deleteTask({
             taskId: obj.task.id,
-          }).then((result) => {
-            console.log("删除", result);
+          }).then(() => {
             this.$message({
               type: "success",
               message: "已删除",
             });
+            if (
+              this.myListConfiguration.tableData.length == 1 &&
+              this.nowPage != 1
+            ) {
+              this.nowPage--;
+            }
             this.getTaskInfo();
           });
         })
@@ -167,7 +172,6 @@ export default {
         courseId: this.courseId,
       })
         .then((result) => {
-          console.log(result);
           this.allNums = result.data.allCount;
           this.myListConfiguration.tableData = result.data.list;
         })

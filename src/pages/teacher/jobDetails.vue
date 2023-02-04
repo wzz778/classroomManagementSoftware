@@ -196,21 +196,6 @@ export default {
     sizeChangeFn(val) {
       this.pageSize = val;
     },
-    deleteFn(obj) {
-      console.log(obj);
-      this.$confirm("确定要删除班级吗?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
-      })
-        .then(() => {})
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消删除",
-          });
-        });
-    },
     detailsFn(obj) {
       this.$router.push({
         path: "/correctHomework",
@@ -254,7 +239,6 @@ export default {
         taskId: this.$route.query.id,
       })
         .then((result) => {
-          console.log(result);
           this.allUserNumbers = result.data.allCount;
           return this.getDetalisInfo();
         })
