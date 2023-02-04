@@ -19,7 +19,7 @@
       </div>
       <div class="unchangeableInfo">
         <div class="studentAccount">账号：{{ userInfo.userName }}</div>
-        <div class="studentClass" v-if="userInfo.identity==0">班级：{{ userInfo.gradeId }}</div>
+        <div class="studentClass" v-if="userInfo.identity==0">班级：{{ userInfo.gradeId }}<el-button v-if="userInfo.gradeId!='未加入'">加入</el-button></div>
         <div class="studentEmail">邮箱：{{ userInfo.email }}</div>
       </div>
     </div>
@@ -130,6 +130,9 @@ export default {
       getUserInfo().then((res) => {
         if (res.status == 200) {
           this.userInfo = res.data;
+          if(this.userInfo.gradeId==0){
+            this.userInfo.gradeId="未加入";
+          }
           this.changeInfo.sex = res.data.sex;
           this.changeInfo.nativePlace = res.data.nativePlace.split("/");
           this.changeInfo.name=res.data.name;
