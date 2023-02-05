@@ -68,7 +68,7 @@ export default {
   getName(){
             ZgetUserInfo().then((result) => {
             console.log("用户信息", result);
-            this.username=result.data.name
+            this.username=result.data.user.name
           });
   },
     open() {
@@ -85,7 +85,7 @@ export default {
           };
           ZgetUserInfo().then((result) => {
             console.log("用户信息", result);
-            if (result.data.gradeId == "0") {
+            if (result.data.user.gradeId == "0") {
               this.$message({
                 type: "success",
                 message: "请先加入班级",

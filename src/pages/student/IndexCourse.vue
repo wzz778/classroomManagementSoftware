@@ -156,7 +156,7 @@ export default {
     Getuser() {
       ZgetUserInfo().then((result) => {
         console.log("用户信息", result);
-        this.user.identity = result.data.identity;
+        this.user.identity = result.data.user.identity;
       });
     },
   },

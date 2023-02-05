@@ -332,9 +332,23 @@ export default {
       ZgetEntered(data).then((response) => {
         if (response.msg == "OK") {
           this.sarr = response.data.records;
+          this.valueid = this.sarr[0].courseId;
           for (let q = 0; q < response.data.records.length; q++) {
-            this.getAllclass(this.sarr[q]);
-            this.valueid = this.sarr[0].courseId;
+            // this.getAllclass(this.sarr[q]);
+            let cid = {
+              id: response.data.records[q].courseId,
+            };
+            ZgetOneCourse(cid).then((result) => {
+              if (result.msg == "OK") {
+                let obj = {};
+                obj["valueid"] = result.data.id;
+                obj["label"] = result.data.courseName;
+                this.lessons.push(obj);
+                this.className = this.lessons[0].label;
+              } else {
+                this.$message.error("暂无数据");
+              }
+            });
           }
           this.GetInfo();
         } else {
@@ -342,22 +356,22 @@ export default {
         }
       });
     },
-    getAllclass(se) {
-      let cid = {
-        id: se.courseId,
-      };
-      ZgetOneCourse(cid).then((result) => {
-        if (result.msg == "OK") {
-          let obj = {};
-          obj["valueid"] = result.data.id;
-          obj["label"] = result.data.courseName;
-          this.lessons.push(obj);
-          this.className = this.lessons[0].label;
-        } else {
-          this.$message.error("暂无数据");
-        }
-      });
-    },
+    // getAllclass(se) {
+    //   let cid = {
+    //     id: se.courseId,
+    //   };
+    //   ZgetOneCourse(cid).then((result) => {
+    //     if (result.msg == "OK") {
+    //       let obj = {};
+    //       obj["valueid"] = result.data.id;
+    //       obj["label"] = result.data.courseName;
+    //       this.lessons.push(obj);
+    //       this.className = this.lessons[0].label;
+    //     } else {
+    //       this.$message.error("暂无数据");
+    //     }
+    //   });
+    // },
 
     GetInfo() {
       this.tableData = [];
