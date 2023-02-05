@@ -267,7 +267,6 @@ export default {
         obj.gradeId = this.className;
       }
       getCourseSignInfo(obj).then((result) => {
-        console.log(result);
         if (result.msg != "OK") {
           this.$message({
             message: "该班级没有学生",
