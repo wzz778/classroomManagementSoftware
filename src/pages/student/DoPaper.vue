@@ -28,8 +28,8 @@
       </div>
       <div class="remarkArea">备注：{{ paperData.remark }}</div>
       <div class="btn">
-        <el-button type="primary" @click="submitAnswerFun" v-if="userInfo.power=='0'&&correct==null">提交试卷</el-button>
-        <el-button type="primary" @click="toBrowseHomework" v-if="userInfo.power=='0'&&correct!=null">查看批改</el-button>
+        <el-button type="primary" @click="submitAnswerFun" v-if="userInfo.power=='0'&&correct==null&&haveDone=='false'">提交试卷</el-button>
+        <el-button type="primary" @click="toBrowseHomework" v-if="userInfo.power=='0'&&correct!=null&&haveDone=='true'">查看批改</el-button>
       </div>
     </el-aside>
 
@@ -160,6 +160,7 @@ export default {
       userInfo:"",
       allScore:0,
       correct:'',
+      haveDone:'true'
     };
   },
   components: {
@@ -251,6 +252,15 @@ export default {
       studentId:this.$route.query.stuid
     };
     getHomeworkById(data).then((res) => {
+      console.log(res);
+      if(res.data.userAnswer==null){
+        this.haveDone='false';
+      }
+      if(res.data.correct!=null){
+        Message.success("您的试卷已批改啦！");
+      }else if(res.data.userAnswer!=null){
+        Message.warning("该试卷您已提交过啦！");
+      }
       this.correct=res.data.correct;
       this.paperData = res.data.homework;
       this.paperData.remark = this.paperData.remark || "无";
