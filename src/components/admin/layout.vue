@@ -45,10 +45,10 @@
           <el-menu-item index="/admin/subject/edit">课堂创编</el-menu-item>
         </el-submenu>
 
-        <el-menu-item index="/admin/journal/list">
+        <!-- <el-menu-item index="/admin/journal/list">
           <i class="el-icon-date"></i>
           <span slot="title">日志中心</span>
-        </el-menu-item>
+        </el-menu-item> -->
       </el-menu>
     </div>
     <div id="head" :class="rehead">
@@ -74,10 +74,10 @@
           router
         >
           <el-submenu index="1">
-            <template slot="title">admin</template>
+            <template slot="title">{{userName}}</template>
             <!-- <el-menu-item index="2-1">个人信息</el-menu-item> -->
             <!-- <el-menu-item index="2-2">主页</el-menu-item> -->
-            <el-menu-item @click="quitLogin" index="2-3">退出</el-menu-item>
+            <el-menu-item @click="quitLogin">退出登录</el-menu-item>
           </el-submenu>
         </el-menu>
       </div>
@@ -110,7 +110,7 @@
 </template>
 
 <script>
-// import 'animate.css'
+import jwtDecode from "jwt-decode";
 import {
   Submenu,
   Menu,
@@ -148,7 +148,8 @@ export default {
       tabIndex: 2,
       cstyle:{
         width:"200px"
-      }
+      },
+      userName:'admin'
     };
   },
   methods: {
@@ -264,6 +265,11 @@ export default {
         },
         set(){}
       }
+  },
+  created(){
+     let obj = jwtDecode(this.$store.state.token);
+     this.userName=obj.username;
+     console.log(obj);
   },
   mounted(){
     // console.log(this.$store.state.admin.editableTabs);
