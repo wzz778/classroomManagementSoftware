@@ -42,7 +42,7 @@
               clearable
             ></el-input>
           </el-form-item>
-          <el-form-item label="课程">
+          <el-form-item label="课程" v-if="isShow">
             <el-select
               v-model="fileCourseId"
               placeholder="请选择"
@@ -161,6 +161,7 @@ export default {
       searchCourseId: "",
       isUpload: false,
       isShow: true,
+      power: "",
     };
   },
   methods: {
@@ -365,8 +366,8 @@ export default {
     },
   },
   mounted() {
-    this.getAllCourse();
     let obj = jwtDecode(this.$store.state.token);
+    this.power = obj.power;
     if (obj.power != 1) {
       this.myListConfiguration.objFn = [
         {
@@ -376,8 +377,11 @@ export default {
         },
       ];
       this.searchCourseId = this.$route.query.id;
+      this.fileCourseId = this.$route.query.id;
       this.isShow = false;
+      return;
     }
+    this.getAllCourse();
   },
 };
 </script>
