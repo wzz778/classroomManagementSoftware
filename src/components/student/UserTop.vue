@@ -10,12 +10,13 @@
       active-text-color="#ffd04b"
     >
       <el-submenu index="1">
-        <template slot="title">用户名</template>
+        <template slot="title">{{username}}</template>
+        <router-link to="/user/UserInfo" style="color: white"
+            >
         <el-menu-item index="2-1"
-          ><router-link to="/user/UserInfo" style="color: white"
-            >账号管理</router-link
-          ></el-menu-item
-        >
+          >账号管理</el-menu-item
+        ></router-link
+          >
         <el-menu-item index="2-2" @click="logout">退出登录</el-menu-item>
       </el-submenu>
       <el-menu-item index="2"
@@ -57,10 +58,19 @@ export default {
       activeIndex: "4",
       urlp: "/user/IndexBase",
       msg: 1,
+      username:"",
     };
   },
-  mounted: function () {},
+  mounted: function () {
+  this.getName()
+  },
   methods: {
+  getName(){
+            ZgetUserInfo().then((result) => {
+            console.log("用户信息", result);
+            this.username=result.data.name
+          });
+  },
     open() {
       this.$prompt("请输入课程邀请码", "提示", {
         confirmButtonText: "确定",
