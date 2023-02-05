@@ -117,11 +117,12 @@
 <script>
 import { Row, Col, DatePicker } from "element-ui";
 import {
-  getGrade,
   myCourse,
   signCourse,
   getCourseSignInfo,
   addMessage,
+  getMessage,
+  getGradeByCourse,
 } from "@/api/teacher";
 
 export default {
@@ -143,10 +144,18 @@ export default {
       classAll: "",
       unSignUser: [],
       signedUser: [],
+      judgeEndTime: "",
     };
   },
   methods: {
     submitFn() {
+      if (Date.now() < Date.parse(this.judgeEndTime)) {
+        this.$message({
+          message: "上次签到未结束",
+          type: "warning",
+        });
+        return;
+      }
       if (Date.parse(this.startTime) > Date.parse(this.endTime)) {
         this.$message({
           message: "结束时间不能先于开始时间",
@@ -161,39 +170,56 @@ export default {
         });
         return;
       }
-      signCourse({
-        createTime: this.startTime,
-        endTime: this.endTime,
-        id: this.classAll,
-      })
-        .then((result) => {
-          if (result.msg == "OK") {
-            this.$message({
-              type: "success",
-              message: "已发布",
-            });
-            this.dialogVisible = false;
-            return addMessage({
-              content: JSON.stringify({
-                createTime: this.startTime,
-                endTime: this.endTime,
-              }),
-              courseId: this.classAll,
-              type: 1,
-            });
-          }
-          this.$message({
-            type: "warning",
-            message: result.msg,
-          });
-          this.dialogVisible = false;
-          this.clearAll();
-        })
+      this.$confirm(
+        "发布签到在该签到结束之前不能再次发布签到, 是否继续?",
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        }
+      )
         .then(() => {
-          this.clearAll();
+          signCourse({
+            createTime: this.startTime,
+            endTime: this.endTime,
+            id: this.classAll,
+          })
+            .then((result) => {
+              if (result.msg == "OK") {
+                this.$message({
+                  type: "success",
+                  message: "已发布",
+                });
+                this.dialogVisible = false;
+                return addMessage({
+                  content: JSON.stringify({
+                    createTime: this.startTime,
+                    endTime: this.endTime,
+                  }),
+                  courseId: this.classAll,
+                  type: 1,
+                });
+              }
+              this.$message({
+                type: "warning",
+                message: result.msg,
+              });
+              this.dialogVisible = false;
+              this.clearAll();
+            })
+            .then(() => {
+              this.clearAll();
+            })
+            .catch((err) => {
+              console.log(err);
+            });
         })
-        .catch((err) => {
-          console.log(err);
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除",
+          });
         });
     },
     handleClose(done) {
@@ -206,19 +232,12 @@ export default {
     addFn() {
       this.dialogVisible = true;
     },
-    getAllGradeFn() {
-      getGrade({
-        beginIndex: 1,
-        size: 1,
+    getGradeFn() {
+      getGradeByCourse({
+        courseId: this.course,
       })
         .then((result) => {
-          return getGrade({
-            beginIndex: 1,
-            size: result.data.total,
-          });
-        })
-        .then((result) => {
-          this.gradeArr = result.data.records;
+          this.gradeArr = result.data;
         })
         .catch((err) => {
           console.log(err);
@@ -248,6 +267,7 @@ export default {
         obj.gradeId = this.className;
       }
       getCourseSignInfo(obj).then((result) => {
+        console.log(result);
         if (result.msg != "OK") {
           this.$message({
             message: "该班级没有学生",
@@ -261,9 +281,40 @@ export default {
         this.unSignUser = result.data.unSignUser ? result.data.unSignUser : [];
       });
     },
+    getMessageInfo() {
+      getMessage({
+        courseId: this.classAll,
+        nodePage: 1,
+        type: 1,
+      })
+        .then((result) => {
+          console.log("获取信息", result);
+          if (result.status == 500) {
+            this.judgeEndTime = 0;
+            return;
+          }
+          this.judgeEndTime = JSON.parse(
+            result.data[result.data.length - 1].content
+          ).endTime;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+  },
+  watch: {
+    course() {
+      this.getGradeFn();
+      this.className = "";
+    },
+    classAll(value) {
+      if (value == "") {
+        return;
+      }
+      this.getMessageInfo();
+    },
   },
   mounted() {
-    this.getAllGradeFn();
     this.getAllCourse();
   },
 };

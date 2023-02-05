@@ -206,3 +206,15 @@ export const getCourseOutCome = async (data) => requests({
     method: "GET",
     params: data
 })
+
+export const getMessage = async (data) => requests({
+    url: "/message/getMessage",
+    method: "GET",
+    params: data
+})
+
+export const getGradeByCourse = async (data) => requests({
+    url: "/grade/getGradeByCourse",
+    method: "GET",
+    params: data
+})
