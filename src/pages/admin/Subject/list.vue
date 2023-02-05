@@ -158,7 +158,7 @@ export default {
             path:"userlist",
         })
         sessionStorage.setItem("subjectListSearch",JSON.stringify(this.searchform))
-        // sessionStorage.setItem("AdminClassMessage",JSON.stringify(row))
+        sessionStorage.setItem("AdminClassMessage",JSON.stringify(row))
       },
       editClick(row) {
         console.log(row);

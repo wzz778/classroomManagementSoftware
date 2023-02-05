@@ -63,7 +63,7 @@
               },
             }"
           >
-            <el-menu-item index="/student/studyGroup">
+            <el-menu-item index="/student/groupChat">
               <span slot="title"><i class="el-icon-house"></i>我的小组</span>
             </el-menu-item>
           </router-link>
@@ -296,6 +296,14 @@ body > .el-container {
   height: 30px;
   line-height: 30px;
   color: cornflowerblue;
+  /*1. 先强制一行内显示文本*/
+   white-space: nowrap;
+    
+  /*2. 超出的部分隐藏*/
+   overflow: hidden;
+    
+  /*3. 文字用省略号替代超出的部分*/
+  text-overflow:ellipsis;
 }
 
 .myBox {
@@ -308,7 +316,7 @@ body > .el-container {
   height: 50px;
   border-radius: 50px;
   margin-top: 5px;
-  background-image: url(@/assets/yxy/userProfile.jpg);
+  background-image: url(@/assets/yxy/userProfile.webp);
   background-repeat: no-repeat;
   background-position: center center;
   background-size: cover;

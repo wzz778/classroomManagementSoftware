@@ -185,7 +185,7 @@ export default {
     return {
       account: "",
       password: "",
-      len: "0",
+      len: "-500px",
       registerAccount: "",
       registerPassword: "",
       surePassword: "",

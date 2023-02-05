@@ -41,7 +41,7 @@
         label="创建时间"
         >
         </el-table-column>
-        <el-table-column
+        <!-- <el-table-column
           prop="deleted"
           label="状态"
           width="70"
@@ -49,7 +49,7 @@
           <template slot-scope="scope">
             <el-tag :type="scope.row.deleted? 'warning' : 'success'">{{scope.row.deleted|toch()}}</el-tag>
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column
         label="操作"
         >
@@ -220,7 +220,7 @@ export default {
                 message: "修改成功",
                 type: "success",
               });
-              this.dialogFormVisible = true;
+              this.dialogFormVisible = false;
           }else{
             this.$message({
               type: "warning",
