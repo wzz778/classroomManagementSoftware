@@ -2,7 +2,7 @@
   <div>
     <div class="task" v-show="check == '任务'">
       <div class="taskTop">
-        <span>高等数学</span>
+        <span>{{name}}</span>
       </div>
       <div class="state">
         <span>筛选</span>
@@ -169,7 +169,7 @@
 
 <script>
 import { Card, Radio } from "element-ui";
-import { ZgetTask, ZgetMessage } from "@/api/user/index";
+import { ZgetTask, ZgetMessage ,ZgetOneCourse} from "@/api/user/index";
 import SignIn from "@/components/student/CourseInfo/SignIn";
 export default {
   name: "ClassTask",
@@ -186,6 +186,7 @@ export default {
       saginnotStart: [],
       saginprogress: [],
       saginend: [],
+      name:"",
     };
   },
   components: {
@@ -195,8 +196,20 @@ export default {
   },
   mounted: function () {
     this.getTask();
+    this.getAllclass()
   },
   methods: {
+      getAllclass() {
+      let cid = {
+        id: this.cid,
+      };
+      ZgetOneCourse(cid).then((result) => {
+        console.log("取出课程信息", result);
+        if (result.msg == "OK") {
+        this.name=result.data.courseName
+        }
+      });
+    },
     changeMsg(text, value) {
       console.log(text, value);
       this.check = value;
