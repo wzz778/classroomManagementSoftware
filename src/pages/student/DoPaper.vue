@@ -5,7 +5,7 @@
       width="200px"
       style="background-color: rgb(238, 241, 246)"
     >
-      <div class="paperInfo">
+      <div class="paperInfo" style="width:100%">
         <div class="paperName">{{ paperData.homeworkName }}</div>
       </div>
       <div class="topicTab">
@@ -352,6 +352,14 @@ html {
 .paperName {
   font-size: 18px;
   float: left;
+  /*1. 先强制一行内显示文本*/
+   white-space: nowrap;
+    
+  /*2. 超出的部分隐藏*/
+   overflow: hidden;
+    
+  /*3. 文字用省略号替代超出的部分*/
+  text-overflow:ellipsis;
 }
 .paperInfo {
   display: flex;

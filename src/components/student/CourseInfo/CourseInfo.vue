@@ -63,7 +63,7 @@
               },
             }"
           >
-            <el-menu-item index="/student/studyGroup">
+            <el-menu-item index="/student/groupChat">
               <span slot="title"><i class="el-icon-house"></i>我的小组</span>
             </el-menu-item>
           </router-link>
@@ -316,7 +316,7 @@ body > .el-container {
   height: 50px;
   border-radius: 50px;
   margin-top: 5px;
-  background-image: url(@/assets/yxy/userProfile.jpg);
+  background-image: url(@/assets/yxy/userProfile.webp);
   background-repeat: no-repeat;
   background-position: center center;
   background-size: cover;
