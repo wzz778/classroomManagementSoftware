@@ -334,8 +334,8 @@ export default {
           this.sarr = response.data.records;
           for (let q = 0; q < response.data.records.length; q++) {
             this.getAllclass(this.sarr[q]);
+            this.valueid = this.sarr[0].courseId;
           }
-          this.valueid = this.sarr[0].courseId;
           this.GetInfo();
         } else {
           this.$message.error("暂无数据");
@@ -413,26 +413,6 @@ export default {
         })
         .catch((_) => {});
     },
-
-    // 分 秒 格式化函数
-    // countDown() {
-    //   let m = parseInt((this.seconds / 60) % 60);
-    //   m = m < 10 ? "0" + m : m;
-    //   let s = parseInt(this.seconds % 60);
-    //   s = s < 10 ? "0" + s : s;
-    //   this.timer = m + "分" + s + "秒";
-    // },
-    // //定时器没过1秒参数减1
-    // Time() {
-    //   var test = setInterval(() => {
-    //     this.seconds -= 1;
-    //     if (this.seconds == 0) {
-    //       this.state = "问题失效";
-    //       clearInterval(test);
-    //     }
-    //     this.countDown();
-    //   }, 1000);
-    // },
 
     toggleSelection(rows) {
       if (rows) {
