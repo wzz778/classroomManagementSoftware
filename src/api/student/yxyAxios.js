@@ -109,3 +109,4 @@ export const addClass=async(data)=>requests({
     method:'POST',
     params:data
 })
+
