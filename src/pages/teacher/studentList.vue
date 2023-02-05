@@ -54,8 +54,12 @@ export default {
       myListConfiguration: {
         allType: [
           {
-            dateType: "userName",
+            dateType: "name",
             showName: "姓名",
+          },
+          {
+            dateType: "userName",
+            showName: "账号",
           },
           {
             dateType: "sex",
@@ -191,6 +195,7 @@ export default {
         pageSize: this.pageSize,
       })
         .then((result) => {
+          console.log(result);
           this.myListConfiguration.tableData = result.data.records;
           this.allNums = result.data.total;
           return getTerm();
