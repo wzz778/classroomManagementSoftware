@@ -2,7 +2,7 @@
   <div>
     <div class="task" v-show="check == '任务'">
       <div class="taskTop">
-        <span>{{name}}</span>
+        <span>{{ name }}</span>
       </div>
       <div class="state">
         <span>筛选</span>
@@ -19,12 +19,7 @@
         </div>
         <div class="zuo">
           <el-card class="box-card">
-            <div
-              v-for="o in notStart"
-              :key="o.task.id"
-              class="text item"
-              @click="jusp(o.task.homeworkId, o.sta)"
-            >
+            <div v-for="o in notStart" :key="o.task.id" class="text item">
               <div class="name">
                 <img
                   :src="adatar ? adatar : require('@/assets/yxy/classPic.jpg')"
@@ -46,7 +41,7 @@
               v-for="o in progress"
               :key="o.task.id"
               class="text item"
-              @click="jusp(o.task.homeworkId, o.sta)"
+              @click="jusp(o.task.homeworkId, o.sta, o.work)"
             >
               <div class="name">
                 <img
@@ -69,7 +64,7 @@
               v-for="o in end"
               :key="o.task.id"
               class="text item"
-              @click="jusp(o.task.homeworkId, o.sta)"
+              @click="jusp(o.task.homeworkId, o.sta, o.work)"
             >
               <div class="name">
                 <img
@@ -169,7 +164,7 @@
 
 <script>
 import { Card, Radio } from "element-ui";
-import { ZgetTask, ZgetMessage ,ZgetOneCourse} from "@/api/user/index";
+import { ZgetTask, ZgetMessage, ZgetOneCourse } from "@/api/user/index";
 import SignIn from "@/components/student/CourseInfo/SignIn";
 export default {
   name: "ClassTask",
@@ -186,7 +181,7 @@ export default {
       saginnotStart: [],
       saginprogress: [],
       saginend: [],
-      name:"",
+      name: "",
     };
   },
   components: {
@@ -196,17 +191,16 @@ export default {
   },
   mounted: function () {
     this.getTask();
-    this.getAllclass()
+    this.getAllclass();
   },
   methods: {
-      getAllclass() {
+    getAllclass() {
       let cid = {
         id: this.cid,
       };
       ZgetOneCourse(cid).then((result) => {
-        console.log("取出课程信息", result);
         if (result.msg == "OK") {
-        this.name=result.data.courseName
+          this.name = result.data.courseName;
         }
       });
     },
@@ -214,22 +208,31 @@ export default {
       console.log(text, value);
       this.check = value;
     },
-    jusp(value,state) {
+    jusp(value, state, zuo) {
       this.check = "任务";
-      if ((state == "已结束")) {
+      if (state == "已结束") {
         this.$router.push({
           path: "/browseHomework",
           query: {
             hid: value,
           },
         });
-      }else{
-      this.$router.push({
-          path: "/doPaper",
-          query: {
-            hid: value,
-          },
-        });
+      } else {
+        if (zuo == "已提交") {
+          this.$router.push({
+            path: "/browseHomework",
+            query: {
+              hid: value,
+            },
+          });
+        } else {
+          this.$router.push({
+            path: "/doPaper",
+            query: {
+              hid: value,
+            },
+          });
+        }
       }
     },
     notify: function () {
@@ -246,7 +249,6 @@ export default {
         size: "1000",
       };
       ZgetTask(data).then((result) => {
-        console.log("取出课程任务", result);
         if (result.msg == "OK") {
           if (result.data.allCount == 0) {
             this.$message({
@@ -255,25 +257,33 @@ export default {
             });
           } else {
             for (let i = 0; i < result.data.list.length; i++) {
+              console.log("课程任务", result.data.list[i]);
               if (new Date(result.data.list[i].task.beginTime) > new Date()) {
                 let obj = result.data.list[i];
                 obj["sta"] = "未开始";
+                obj["work"] = "未提交";
                 this.notStart.push(obj);
               } else if (
                 new Date(result.data.list[i].task.endTime) < new Date()
               ) {
                 let ob = result.data.list[i];
                 ob["sta"] = "已结束";
+                ob["work"] = "已提交";
                 this.end.push(ob);
               } else {
                 let obje = result.data.list[i];
                 obje["sta"] = "进行中";
+                if (result.data.list[i].userAnswer) {
+                  obje["work"] = "已提交";
+                } else {
+                  obje["work"] = "未提交";
+                }
                 this.progress.push(obje);
               }
             }
           }
         } else {
-          this.$message.error("获取课程任务失败");
+          this.$message.error("暂无数据");
         }
       });
     },
