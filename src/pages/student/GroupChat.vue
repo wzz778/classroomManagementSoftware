@@ -152,7 +152,7 @@ export default {
     getUserInfoFun() {
       getUserInfo().then((res) => {
         if (res.status == 200) {
-          this.userInfo = res.data;
+          this.userInfo = res.data.user;
         } else {
           console.log("error");
         }

@@ -20,10 +20,10 @@
       <div class="unchangeableInfo">
         <div class="studentAccount">账号：{{ userInfo.userName }}</div>
         <div class="studentClass" v-if="userInfo.identity == 0">
-          班级：{{ userInfo.gradeId }}
+          班级：{{ className }}
           <el-button
             type="success"
-            v-if="userInfo.gradeId == '未加入'"
+            v-if="userInfo.gradeId == '0'"
             style="width: 76px; height: 26px"
             @click.native="addClassFun"
             >加入班级</el-button
@@ -116,6 +116,7 @@ export default {
       photo: {
         backgroundImage: "",
       },
+      className:"",
       imageUrl: "",
       fileList: [],
       addrssDate: {
@@ -139,17 +140,14 @@ export default {
     getUserInfoFun() {
       getUserInfo().then((res) => {
         if (res.status == 200) {
-          this.userInfo = res.data;
-          if (this.userInfo.gradeId == 0) {
-            this.userInfo.gradeId = "未加入";
-          }
-          this.changeInfo.sex = res.data.sex;
-          this.changeInfo.nativePlace = res.data.nativePlace.split("/");
-          this.changeInfo.name = res.data.name;
+          this.userInfo = res.data.user;
+          this.className=res.data.className
+          this.changeInfo.sex = res.data.user.sex;
+          this.changeInfo.name = res.data.user.name;
           if (res.data.nativePlace != "无") {
-            this.changeInfo.nativePlace = res.data.nativePlace.split("/");
+            this.changeInfo.nativePlace = res.data.user.nativePlace.split("/");
           }
-          this.photo.backgroundImage = "url(" + res.data.photo + ")";
+          this.photo.backgroundImage = "url(" + res.data.user.photo + ")";
         } else {
           Message.error("网络异常，用户信息获取失败");
         }
@@ -239,6 +237,7 @@ export default {
               addClass(data).then((res) => {
                 if(res.status==200){
                   Message.success("加入成功！");
+                  this.getUserInfoFun();
                 }else{
                   Message.error("加入失败！");
                 }
