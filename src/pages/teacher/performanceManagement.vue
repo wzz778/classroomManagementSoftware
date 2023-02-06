@@ -83,7 +83,7 @@ export default {
     getInfo() {
       getOutcome()
         .then((result) => {
-          if (result.status == 500) {
+          if (result.status == 500 || result.data.length == 0) {
             this.drawJobPeople();
             return;
           }

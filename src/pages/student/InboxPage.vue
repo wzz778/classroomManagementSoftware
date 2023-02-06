@@ -52,7 +52,7 @@
                 </el-option>
               </el-select>
               <div class="searchBtns">
-                <el-button type="primary" plain @click="GetInfo"
+                <el-button type="primary" plain @click="GetInfooo"
                   >筛选</el-button
                 >
               </div>
@@ -244,6 +244,7 @@ export default {
       state: "查看问题",
       timer: "",
       seconds: "600",
+      xin: "",
     };
   },
   props: ["change"],
@@ -311,7 +312,6 @@ export default {
           answer: this.answerk,
         };
         ZAnswer(data).then((result) => {
-          console.log("提交课堂问题", result);
           if (result.msg == "OK") {
             this.$message({
               type: "success",
@@ -332,7 +332,6 @@ export default {
       ZgetEntered(data).then((response) => {
         if (response.msg == "OK") {
           this.sarr = response.data.records;
-          this.valueid = this.sarr[0].courseId;
           for (let q = 0; q < response.data.records.length; q++) {
             // this.getAllclass(this.sarr[q]);
             let cid = {
@@ -340,17 +339,21 @@ export default {
             };
             ZgetOneCourse(cid).then((result) => {
               if (result.msg == "OK") {
+              this.xin = 1;
+                if (q == 0) {
+                  this.valueid = result.data.id;
+                  this.className = result.data.courseName;
+                  this.GetInfo();
+                }
                 let obj = {};
                 obj["valueid"] = result.data.id;
                 obj["label"] = result.data.courseName;
                 this.lessons.push(obj);
-                this.className = this.lessons[0].label;
               } else {
                 this.$message.error("暂无数据");
               }
             });
           }
-          this.GetInfo();
         } else {
           this.$message.error("暂无数据");
         }
@@ -372,10 +375,16 @@ export default {
     //     }
     //   });
     // },
+    GetInfooo() {
+      this.xin = 2;
+      this.GetInfo();
+    },
 
     GetInfo() {
       this.tableData = [];
-      this.className = this.$refs.optionRef.selected.label;
+      if (this.xin == 2) {
+        this.className = this.$refs.optionRef.selected.label;
+      }
       let da = {
         courseId: this.valueid,
         nodePage: "1",
