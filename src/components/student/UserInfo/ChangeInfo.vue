@@ -175,7 +175,12 @@ export default {
         if (res.status == 200) {
           Message.success("修改成功!");
           this.getUserInfoFun();
+        }else{
+          Message.error("修改失败，请重试！");
         }
+      }).catch(err=>{
+        console.log(err);
+        Message.error('网络异常，修改失败！');
       });
     },
     /**

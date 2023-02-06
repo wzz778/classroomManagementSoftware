@@ -1,36 +1,36 @@
 <template>
   <div class="mainBox">
     <div class="chatArea">
-      <div class="msgViewArea" id="msgViewArea">
+      <div class="msgViewArea" id="msgViewArea" @scroll="scrollLoadMore">
         <div v-for="(info, index) in chatInfo" :key="index">
           <div
             class="othersMsgBox"
-            v-if="info.content.userInfo.studentId != userInfo.studentId"
-            :id="index == chatInfo.length - 1 ? 'last' : 'normal'"
+            v-if="info.userInfo.studentId != userInfo.studentId"
+            :id="index == 0 ? 'first' : 'normal'"
           >
             <div
               class="otherHeadPic"
               :style="{
-                backgroundImage: `url(${info.content.userInfo.photo})`,
+                backgroundImage: `url(${info.userInfo.photo})`,
               }"
             ></div>
             <div class="msgBox">
-              <div class="othersName">{{ info.content.userInfo.name }}</div>
-              <div class="othersMsg" v-html="info.content.text"></div>
+              <div class="othersName">{{ info.userInfo.name }}</div>
+              <div class="othersMsg" v-html="info.text"></div>
             </div>
           </div>
           <div
             class="myMsgBox"
-            v-else-if="info.content.userInfo.studentId == userInfo.studentId"
-            :id="index == chatInfo.length - 1 ? 'last' : 'normal'"
+            v-else-if="info.userInfo.studentId == userInfo.studentId"
+            :id="index == 0 ? 'first' : 'normal'"
           >
             <div
               class="myHeadPic"
               :style="{
-                backgroundImage: `url(${info.content.userInfo.photo})`,
+                backgroundImage: `url(${info.userInfo.photo})`,
               }"
             ></div>
-            <div class="myMsg" v-html="info.content.text"></div>
+            <div class="myMsg" v-html="info.text"></div>
           </div>
         </div>
       </div>
@@ -78,7 +78,12 @@ import AlertMenu from "@/myText/myRichText"; // 根据AlertMenu.js文件实际�
 // import { Input,Button } from "element-ui";
 import store from "@/store/";
 import { Input, Button, Message } from "element-ui";
-import { getMembers, sendMessage, getUserInfo } from "@/api/student/yxyAxios";
+import {
+  getMembers,
+  sendMessage,
+  getUserInfo,
+  getHistoryChat,
+} from "@/api/student/yxyAxios";
 import jwt_decode from "jwt-decode";
 
 export default {
@@ -100,6 +105,9 @@ export default {
       sever: "ws://110.40.205.103:8577/webSocket/",
       socket: null,
       haveGroup: false,
+      nodePage: 1,
+      pages: 1,
+      isNewInfo:false
     };
   },
   model: {
@@ -127,14 +135,6 @@ export default {
         this.editor.txt.html(this.value);
       }
     },
-    chatInfo(val) {
-      if (val.length != 0) {
-        document
-          .querySelector(".msgViewArea")
-          .querySelector("#last")
-          .scrollIntoView(false);
-      }
-    },
   },
 
   created() {
@@ -147,16 +147,37 @@ export default {
     this.editor.txt.html(this.value);
     this.getUserInfoFun();
   },
-
+  updated() {
+    if (this.chatInfo.length != 0&&this.isNewInfo==false||this.nodePage==1) {
+      document
+        .querySelector(".msgViewArea")
+        .lastElementChild.scrollIntoView(false);
+    }
+  },
   methods: {
-    getUserInfoFun() {
-      getUserInfo().then((res) => {
-        if (res.status == 200) {
-          this.userInfo = res.data.user;
+    scrollLoadMore() {
+      if (document.querySelector("#msgViewArea").scrollTop <= 0) {
+        if (this.nodePage == this.pages) {
+          Message.warning("已获取全部历史消息");
         } else {
-          console.log("error");
+          this.nodePage++;
+          this.getHistoryChatFun();
         }
-      });
+      }
+    },
+    getUserInfoFun() {
+      getUserInfo()
+        .then((res) => {
+          if (res.status == 200) {
+            this.userInfo = res.data.user;
+          } else {
+            Message.error("网络异常，获取用户信息失败！");
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          Message.error("网络异常，获取用户信息失败！");
+        });
     },
     toTopic(idName) {
       document.querySelector(idName).scrollIntoView(true);
@@ -263,17 +284,15 @@ export default {
         Message.warning("该课程还没有分组");
       } else {
         let content = {
-          userInfo: this.userInfo,
+          userInfo: JSON.stringify(this.userInfo),
           text: this.chatText,
         };
         let data = {
-          content: content,
+          content: JSON.stringify(content),
           courseId: this.$route.query.id,
           groupId: this.groupId,
         };
-        // console.log("发出消息：", data);
-        // this.sendMessageFun(data);
-        this.socket.send(JSON.stringify(data));
+        this.sendMessageFun(data);
         this.editor.txt.clear();
       }
     },
@@ -296,7 +315,7 @@ export default {
                 jwt_decode(this.$store.state.token).username
               ) {
                 this.members = res.data[key];
-                this.groupName = '第'+key.substr(5)+'组';
+                this.groupName = "第" + key.substr(5) + "组";
                 this.groupId = key;
                 this.sever += this.$route.query.id + key;
                 // ReconnectingWebSocket是类库reconnecting-websocket , 可以进行自动的断线重连,引入连接 :
@@ -307,6 +326,7 @@ export default {
                 this.socket.onopen = this.OnOpen;
                 this.socket.onerror = this.OnError;
                 this.socket.onclose = this.OnClose;
+                this.getHistoryChatFun();
               }
             }
           });
@@ -326,17 +346,46 @@ export default {
       console.log("WebSocket连接关闭");
     },
     OnMessage(e) {
-      this.chatInfo.push(JSON.parse(e.data));
+      let info = JSON.parse(e.data);
+      info.userInfo = JSON.parse(info.userInfo);
+      this.chatInfo.push(info);
+      console.log("总消息", this.chatInfo);
     },
 
     /**
      * 发送消息
      */
-    // sendMessageFun(data) {
-    //   sendMessage(data).then((res) => {
-    //     console.log(res);
-    //   });
-    // },
+    sendMessageFun(data) {
+      sendMessage(data).then((res) => {
+        if(res.status!=200){
+          Message.error("发送失败！,请重试");
+        }
+      }).catch(err=>{
+        console.log(err);
+        Message.error("发送失败！,请重试");
+      });
+    },
+    /**
+     * 获取历史消息
+     */
+    getHistoryChatFun() {
+      let data = {
+        courseId: this.$route.query.id,
+        groupId: this.groupId,
+        nodePage: this.nodePage,
+        pageSize: 20,
+      };
+      getHistoryChat(data).then((res) => {
+        this.pages = res.data.pages;
+        for (let i = 0; i < res.data.records.length; i++) {
+          res.data.records[i].content = JSON.parse(res.data.records[i].content);
+          res.data.records[i].content.userInfo = JSON.parse(
+            res.data.records[i].content.userInfo
+          );
+          this.chatInfo.unshift(res.data.records[i].content);
+        }
+      });
+    },
   },
   beforeDestroy() {
     this.OnClose();

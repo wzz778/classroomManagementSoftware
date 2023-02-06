@@ -209,7 +209,7 @@ export default {
       answer: "",
       num: "",
       correct: "",
-      allScore:0
+      allScore: 0,
     };
   },
   components: {
@@ -239,8 +239,8 @@ export default {
     [MessageBox.name]: MessageBox,
   },
   methods: {
-    goBack(){
-        this.$router.go(-1);
+    goBack() {
+      this.$router.go(-1);
     },
     toTopic(idName) {
       document.querySelector(idName).scrollIntoView(true);
@@ -250,25 +250,35 @@ export default {
         homeworkId: this.$route.query.hid,
         studentId: this.$route.query.stuId,
       };
-      getHomeworkById(data).then((res) => {
-        this.homeworkInfo = res.data.homework;
-        this.homeworkInfo.remark = this.homeworkInfo.remark || "无";
-        this.topics = res.data.homework.question;
-        this.userAnswer = res.data.userAnswer.userAnswer;
-        this.haveScore = res.data.correct.deScore;
-        this.answer = res.data.homework.answer;
-        this.num = res.data.correct.deScore;
-        this.correct = res.data.correct;
-        for (let i = 0; i < this.homeworkInfo.questionCount; i++) {
-          this.allScore+=this.topics[i].score;
-          this.topics[i].questionContent = JSON.parse(
-            this.topics[i].questionContent
-          );
-          if (this.topics[i].questionContent.type == 2) {
-            this.userAnswer[i].answer = this.userAnswer[i].answer.split(",");
+      getHomeworkById(data)
+        .then((res) => {
+          if (rse.status == 200) {
+            this.homeworkInfo = res.data.homework;
+            this.homeworkInfo.remark = this.homeworkInfo.remark || "无";
+            this.topics = res.data.homework.question;
+            this.userAnswer = res.data.userAnswer.userAnswer;
+            this.haveScore = res.data.correct.deScore;
+            this.answer = res.data.homework.answer;
+            this.num = res.data.correct.deScore;
+            this.correct = res.data.correct;
+            for (let i = 0; i < this.homeworkInfo.questionCount; i++) {
+              this.allScore += this.topics[i].score;
+              this.topics[i].questionContent = JSON.parse(
+                this.topics[i].questionContent
+              );
+              if (this.topics[i].questionContent.type == 2) {
+                this.userAnswer[i].answer =
+                  this.userAnswer[i].answer.split(",");
+              }
+            }
+          } else {
+            Message.error("网络异常，获取试卷失败！");
           }
-        }
-      });
+        })
+        .catch((err) => {
+          console.log(err);
+          Message.error("网络异常，获取试卷失败！");
+        });
     },
     submitCorrect() {
       let correct = this.correct;
@@ -293,6 +303,9 @@ export default {
             } else {
               Message.error("网络异常，提交失败");
             }
+          }).catch(err=>{
+            console.log(err);
+            Message.error("网络异常，提交失败");
           });
         })
         .catch(() => {
@@ -375,13 +388,13 @@ html {
   float: left;
   margin-left: 20px;
   /*1. 先强制一行内显示文本*/
-   white-space: nowrap;
-    
+  white-space: nowrap;
+
   /*2. 超出的部分隐藏*/
-   overflow: hidden;
-    
+  overflow: hidden;
+
   /*3. 文字用省略号替代超出的部分*/
-  text-overflow:ellipsis;
+  text-overflow: ellipsis;
 }
 .paperInfo {
   display: flex;
@@ -407,7 +420,7 @@ html {
   color: #666;
   text-align: center;
   padding: 20px 0;
-  h3{
+  h3 {
     margin-left: 0;
   }
   span {
@@ -502,7 +515,7 @@ html {
     display: inline-block;
   }
 }
-#goBack{
+#goBack {
   font-size: 17px;
   float: left;
   margin-top: 20px;

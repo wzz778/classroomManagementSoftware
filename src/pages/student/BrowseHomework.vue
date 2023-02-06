@@ -169,6 +169,7 @@ import {
   CheckboxGroup,
   Backtop,
   Rate,
+  Message,
 } from "element-ui";
 export default {
   name: "BrowseHomework",
@@ -196,34 +197,44 @@ export default {
         homeworkId: this.$route.query.hid,
         studentId: this.$route.query.stuId,
       };
-      getHomeworkById(data).then((res) => {
-        if (res.data.correct == null) {
-          this.$alert("该试卷未批改", "获取失败", {
-            confirmButtonText: "确定",
-            callback: () => {
-              this.$router.go(-1);
-            },
-          });
-        } else {
-          this.homeworkInfo = res.data.homework;
-          this.homeworkInfo.remark = this.homeworkInfo.remark || "无";
-          this.topics = res.data.homework.question;
-          this.userAnswer = res.data.userAnswer.userAnswer;
-          this.haveScore = res.data.correct.deScore;
-          this.answer = res.data.homework.answer;
-          this.num = res.data.correct.deScore;
-          this.correct = res.data.correct;
-          for (let i = 0; i < this.homeworkInfo.questionCount; i++) {
-            this.allScore += this.topics[i].score;
-            this.topics[i].questionContent = JSON.parse(
-              this.topics[i].questionContent
-            );
-            if (this.topics[i].questionContent.type == 2) {
-              this.userAnswer[i].answer = this.userAnswer[i].answer.split(",");
+      getHomeworkById(data)
+        .then((res) => {
+          if (res.status == 200) {
+            if (res.data.correct == null) {
+              this.$alert("该试卷未批改", "获取失败", {
+                confirmButtonText: "确定",
+                callback: () => {
+                  this.$router.go(-1);
+                },
+              });
+            } else {
+              this.homeworkInfo = res.data.homework;
+              this.homeworkInfo.remark = this.homeworkInfo.remark || "无";
+              this.topics = res.data.homework.question;
+              this.userAnswer = res.data.userAnswer.userAnswer;
+              this.haveScore = res.data.correct.deScore;
+              this.answer = res.data.homework.answer;
+              this.num = res.data.correct.deScore;
+              this.correct = res.data.correct;
+              for (let i = 0; i < this.homeworkInfo.questionCount; i++) {
+                this.allScore += this.topics[i].score;
+                this.topics[i].questionContent = JSON.parse(
+                  this.topics[i].questionContent
+                );
+                if (this.topics[i].questionContent.type == 2) {
+                  this.userAnswer[i].answer =
+                    this.userAnswer[i].answer.split(",");
+                }
+              }
             }
+          } else {
+            Message.err("网络异常，获取试卷失败！");
           }
-        }
-      });
+        })
+        .catch((err) => {
+          console.log(err);
+          Message.err("网络异常，获取试卷失败！");
+        });
     },
   },
   mounted() {
@@ -321,13 +332,13 @@ html {
   font-size: 18px;
   float: left;
   /*1. 先强制一行内显示文本*/
-   white-space: nowrap;
-    
+  white-space: nowrap;
+
   /*2. 超出的部分隐藏*/
-   overflow: hidden;
-    
+  overflow: hidden;
+
   /*3. 文字用省略号替代超出的部分*/
-  text-overflow:ellipsis;
+  text-overflow: ellipsis;
 }
 .paperInfo {
   display: flex;

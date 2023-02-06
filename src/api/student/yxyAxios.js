@@ -110,3 +110,8 @@ export const addClass=async(data)=>requests({
     params:data
 })
 
+export const getHistoryChat=async(data)=>requests({
+    url:'chatGroup/getHistory',
+    method:'GET',
+    params:data
+})

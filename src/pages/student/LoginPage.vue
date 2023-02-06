@@ -267,6 +267,9 @@ export default {
           }else{
             Message.error("网络异常，注册失败");
           }
+        }).catch(err=>{
+          console.log(err);
+          Message.error("网络异常，注册失败");
         })
       }
     },
@@ -290,8 +293,10 @@ export default {
             this.$router.push("/admin/index");
           }
         } else {
-          Message.error("网络异常，登录失败！");
+          Message.error("登录失败,请检查账号/邮箱、密码是否正确！");
         }
+      }).catch(err=>{
+        Message.error("网络异常，登录失败！")
       });
     },
     judgeNewAccount(){
@@ -392,8 +397,11 @@ export default {
           if (res.status == 200) {
             Message.success("获取成功！");
           } else {
-            Message.error("网络异常，发送失败！");
+            Message.error("发送失败，请检查邮箱是否正确！");
           }
+        }).catch(err=>{
+          console.log(err);
+          Message.error("网络异常，发送失败！");
         });
       }
     },

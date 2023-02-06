@@ -5,7 +5,7 @@
       width="200px"
       style="background-color: rgb(238, 241, 246)"
     >
-      <div class="paperInfo" style="width:100%">
+      <div class="paperInfo" style="width: 100%">
         <div class="paperName">{{ paperData.homeworkName }}</div>
       </div>
       <div class="topicTab">
@@ -28,8 +28,18 @@
       </div>
       <div class="remarkArea">备注：{{ paperData.remark }}</div>
       <div class="btn">
-        <el-button type="primary" @click="submitAnswerFun" v-if="userInfo.power=='0'&&correct==null&&haveDone=='false'">提交试卷</el-button>
-        <el-button type="primary" @click="toBrowseHomework" v-if="userInfo.power=='0'&&correct!=null&&haveDone=='true'">查看批改</el-button>
+        <el-button
+          type="primary"
+          @click="submitAnswerFun"
+          v-if="userInfo.power == '0' && correct == null && haveDone == 'false'"
+          >提交试卷</el-button
+        >
+        <el-button
+          type="primary"
+          @click="toBrowseHomework"
+          v-if="userInfo.power == '0' && correct != null && haveDone == 'true'"
+          >查看批改</el-button
+        >
       </div>
     </el-aside>
 
@@ -137,7 +147,7 @@ import {
   Submenu,
   MenuItem,
   MenuItemGroup,
-  MessageBox ,
+  MessageBox,
   Tag,
   Button,
   Input,
@@ -157,10 +167,10 @@ export default {
       paperData: "",
       topics: "",
       userAnswer: [],
-      userInfo:"",
-      allScore:0,
-      correct:'',
-      haveDone:'true'
+      userInfo: "",
+      allScore: 0,
+      correct: "",
+      haveDone: "true",
     };
   },
   components: {
@@ -185,17 +195,20 @@ export default {
     [CheckboxGroup.name]: CheckboxGroup,
     [Checkbox.name]: Checkbox,
     [Backtop.name]: Backtop,
-    [MessageBox.name]:MessageBox
+    [MessageBox.name]: MessageBox,
   },
   methods: {
     // checkMore(val) {
     //   console.log(val);
     // },
-    goBack(){
-        this.$router.go(-1);
+    goBack() {
+      this.$router.go(-1);
     },
-    toBrowseHomework(){
-      this.$router.push({path:'/browseHomework',query:{hid:this.$route.query.hid,stuId:this.userInfo.id}})
+    toBrowseHomework() {
+      this.$router.push({
+        path: "/browseHomework",
+        query: { hid: this.$route.query.hid, stuId: this.userInfo.id },
+      });
     },
     toTopic(idName) {
       document.querySelector(idName).scrollIntoView(true);
@@ -208,8 +221,8 @@ export default {
       })
         .then(() => {
           for (let i = 0; i < this.userAnswer.length; i++) {
-            if(this.userAnswer[i].answer instanceof Array){
-              this.userAnswer[i].answer=this.userAnswer[i].answer.toString();
+            if (this.userAnswer[i].answer instanceof Array) {
+              this.userAnswer[i].answer = this.userAnswer[i].answer.toString();
             }
           }
           let data = {
@@ -220,14 +233,17 @@ export default {
             userAnswer: this.userAnswer,
             userId: this.userInfo.id,
           };
-          submitAnswer(data).then(res=>{
-            if(res.status==200){
-              Message.success('提交成功！');
+          submitAnswer(data).then((res) => {
+            if (res.status == 200) {
+              Message.success("提交成功！");
               this.$router.go(-1);
             }else{
-              Message.error("网络异常，提交失败！")
+              Message.error("网络异常，提交失败");
             }
-          })
+          }).catch(err=>{
+            console.log(err);
+            Message.error("网络异常，提交失败");
+          });
         })
         .catch(() => {
           this.$message({
@@ -246,37 +262,48 @@ export default {
     },
   },
   mounted() {
-    this.userInfo=jwt_decode(this.$store.state.token);
+    this.userInfo = jwt_decode(this.$store.state.token);
     let data = {
       homeworkId: this.$route.query.hid,
-      studentId:this.$route.query.stuid
+      studentId: this.$route.query.stuid,
     };
-    getHomeworkById(data).then((res) => {
-      console.log(res);
-      if(res.data.userAnswer==null){
-        this.haveDone='false';
-      }
-      if(res.data.correct!=null){
-        Message.success("您的试卷已批改啦！");
-      }else if(res.data.userAnswer!=null){
-        Message.warning("该试卷您已提交过啦！");
-      }
-      this.correct=res.data.correct;
-      this.paperData = res.data.homework;
-      this.paperData.remark = this.paperData.remark || "无";
-      this.topics = res.data.homework.question;
-      for (let i = 0; i < this.paperData.questionCount; i++) {
-        this.allScore+=this.topics[i].score;
-        this.topics[i].questionContent = JSON.parse(
-          this.topics[i].questionContent
-        );
-        if (this.topics[i].questionContent.type == 2) {
-          this.userAnswer.push({'answer':[],'type':2})
-        } else {
-           this.userAnswer.push({'answer':"",'type':this.topics[i].questionContent.type})
+    getHomeworkById(data)
+      .then((res) => {
+        if (res.status == 200) {
+          if (res.data.userAnswer == null) {
+            this.haveDone = "false";
+          }
+          if (res.data.correct != null) {
+            Message.success("您的试卷已批改啦！");
+          } else if (res.data.userAnswer != null) {
+            Message.warning("该试卷您已提交过啦！");
+          }
+          this.correct = res.data.correct;
+          this.paperData = res.data.homework;
+          this.paperData.remark = this.paperData.remark || "无";
+          this.topics = res.data.homework.question;
+          for (let i = 0; i < this.paperData.questionCount; i++) {
+            this.allScore += this.topics[i].score;
+            this.topics[i].questionContent = JSON.parse(
+              this.topics[i].questionContent
+            );
+            if (this.topics[i].questionContent.type == 2) {
+              this.userAnswer.push({ answer: [], type: 2 });
+            } else {
+              this.userAnswer.push({
+                answer: "",
+                type: this.topics[i].questionContent.type,
+              });
+            }
+          }
+        }else{
+          Message.error("网络异常，无法获取试卷");
         }
-      }
-    });
+      })
+      .catch((err) => {
+        console.log(err);
+        Message.error("网络异常，无法获取试卷");
+      });
   },
 };
 </script>
@@ -363,13 +390,13 @@ html {
   font-size: 18px;
   float: left;
   /*1. 先强制一行内显示文本*/
-   white-space: nowrap;
-    
+  white-space: nowrap;
+
   /*2. 超出的部分隐藏*/
-   overflow: hidden;
-    
+  overflow: hidden;
+
   /*3. 文字用省略号替代超出的部分*/
-  text-overflow:ellipsis;
+  text-overflow: ellipsis;
 }
 .paperInfo {
   display: flex;
@@ -492,7 +519,7 @@ html {
     border: 1px solid rgb(139, 180, 233);
   }
 }
-#goBack{
+#goBack {
   font-size: 17px;
   float: left;
   margin-top: 18px;
