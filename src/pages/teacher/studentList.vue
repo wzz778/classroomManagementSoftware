@@ -47,8 +47,8 @@ export default {
     return {
       myTopConfiguration: {
         seletcInfoObjOne: {
-          showName: "班级",
-          type: "getAllGradeFn",
+          showName: "课程",
+          type: "getAllCourse",
         },
       },
       myListConfiguration: {
