@@ -252,7 +252,7 @@ export default {
       };
       getHomeworkById(data)
         .then((res) => {
-          if (rse.status == 200) {
+          if (res.status == 200) {
             this.homeworkInfo = res.data.homework;
             this.homeworkInfo.remark = this.homeworkInfo.remark || "无";
             this.topics = res.data.homework.question;
