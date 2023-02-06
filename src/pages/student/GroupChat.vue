@@ -63,7 +63,7 @@
               :style="{ backgroundImage: `url(${m.photo})` }"
             ></div> -->
             <span style="margin-left: 10px">{{ m.name }}</span>
-            <span>({{m.userName}})</span>
+            <!-- <span>({{m.userName}})</span> -->
           </li>
         </ul>
       </div>
