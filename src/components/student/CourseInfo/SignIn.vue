@@ -155,8 +155,19 @@ export default {
       };
       Zsign(data).then((result) => {
         console.log("签到状态", result);
-        if (result.data == "已签到") {
+        if (result.msg == "OK") {
           this.adatar = "已签到";
+          this.$message({
+            type: "success",
+            message: "签到成功",
+          });
+        }else if(result.msg=="签到时间已过"){
+        this.$message({
+            type: "success",
+            message: "签到时间已过",
+          });
+        }else{
+        this.$message.error("签到失败");
         }
       });
     },

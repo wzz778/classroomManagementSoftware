@@ -69,7 +69,7 @@ export const ZlogOut= async () =>requests({
     url:'user/logged/logOut',
     method:'get',
 });
-//获取课堂问题（正在使用）
+//获取课堂问题（已使用）
 export const ZQuestion= async (data) =>requests({
     url:'homework/getCourseQuestion',
     method:'get',
@@ -79,5 +79,11 @@ export const ZQuestion= async (data) =>requests({
 export const ZAnswer= async (data) =>requests({
     url:'homework/publishAnswer',
     method:'post',
+    params:data,
+});
+//获取单个作业（不需要使用）
+export const ZgetHomeworkById= async (data) =>requests({
+    url:'homework/getHomeworkById',
+    method:'get',
     params:data,
 });
