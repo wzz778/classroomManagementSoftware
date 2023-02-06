@@ -6,7 +6,7 @@
           <div
             class="othersMsgBox"
             v-if="info.userInfo.studentId != userInfo.studentId"
-            :id="index == 0 ? 'first' : 'normal'"
+            :id="index == dataInfoNum ? 'first' : 'normal'"
           >
             <div
               class="otherHeadPic"
@@ -22,7 +22,7 @@
           <div
             class="myMsgBox"
             v-else-if="info.userInfo.studentId == userInfo.studentId"
-            :id="index == 0 ? 'first' : 'normal'"
+            :id="index == dataInfoNum ? 'first' : 'normal'"
           >
             <div
               class="myHeadPic"
@@ -106,8 +106,11 @@ export default {
       socket: null,
       haveGroup: false,
       nodePage: 1,
+      pageSize:15,
       pages: 1,
-      isNewInfo:false
+      isNewInfo:false,
+      wsInfo:0,
+      dataInfoNum:0
     };
   },
   model: {
@@ -148,20 +151,31 @@ export default {
     this.getUserInfoFun();
   },
   updated() {
-    if (this.chatInfo.length != 0&&this.isNewInfo==false||this.nodePage==1) {
+    if(this.isNewInfo==false){
+      document
+        .querySelector(".msgViewArea")
+        .querySelector('#first').scrollIntoView(false);
+    }
+    if ((this.chatInfo.length != 0&&this.isNewInfo==true&&this.nodePage!=this.pageSize)) {
       document
         .querySelector(".msgViewArea")
         .lastElementChild.scrollIntoView(false);
     }
   },
   methods: {
+    /**滚动事件 */
     scrollLoadMore() {
       if (document.querySelector("#msgViewArea").scrollTop <= 0) {
         if (this.nodePage == this.pages) {
           Message.warning("已获取全部历史消息");
         } else {
-          this.nodePage++;
-          this.getHistoryChatFun();
+          // this.nodePage++;
+          if(this.wsInfo%this.pageSize==0){
+            this.nodePage+=this.wsInfo%this.pageSize+1;
+          }else{
+            this.nodePage+=Math.ceil(this.wsInfo/this.pageSize)
+          }
+          this.getHistoryChatFun(this.nodePage,this.wsInfo%this.pageSize);
         }
       }
     },
@@ -326,7 +340,7 @@ export default {
                 this.socket.onopen = this.OnOpen;
                 this.socket.onerror = this.OnError;
                 this.socket.onclose = this.OnClose;
-                this.getHistoryChatFun();
+                this.getHistoryChatFun(1,0);
               }
             }
           });
@@ -349,7 +363,8 @@ export default {
       let info = JSON.parse(e.data);
       info.userInfo = JSON.parse(info.userInfo);
       this.chatInfo.push(info);
-      console.log("总消息", this.chatInfo);
+      this.wsInfo++;
+      this.isNewInfo=true;
     },
 
     /**
@@ -357,8 +372,8 @@ export default {
      */
     sendMessageFun(data) {
       sendMessage(data).then((res) => {
-        if(res.status!=200){
-          Message.error("发送失败！,请重试");
+        if(res.status==200){
+          this.isNewInfo=true;
         }
       }).catch(err=>{
         console.log(err);
@@ -368,15 +383,22 @@ export default {
     /**
      * 获取历史消息
      */
-    getHistoryChatFun() {
+    getHistoryChatFun(page,sliceNum) {
+      if(page==1){
+        this.isNewInfo=true;
+      }else{
+        this.isNewInfo=false;
+      }
       let data = {
         courseId: this.$route.query.id,
         groupId: this.groupId,
-        nodePage: this.nodePage,
-        pageSize: 20,
+        nodePage: page,
+        pageSize: this.pageSize,
       };
       getHistoryChat(data).then((res) => {
         this.pages = res.data.pages;
+        res.records=res.data.records.slice(sliceNum-1);
+        this.dataInfoNum=res.data.records.length;
         for (let i = 0; i < res.data.records.length; i++) {
           res.data.records[i].content = JSON.parse(res.data.records[i].content);
           res.data.records[i].content.userInfo = JSON.parse(
