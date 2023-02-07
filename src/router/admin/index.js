@@ -98,6 +98,15 @@ export default [
                 }
 
             },
+            {
+                path:'attachmentList', 
+                component: () => import('@/pages/teacher/attachmentList'),
+                name:"attachmentList",
+                meta:{
+                    title:"附件管理",
+                }
+
+            },
         ]
     },
 ]

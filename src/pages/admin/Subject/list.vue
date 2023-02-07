@@ -18,7 +18,8 @@
         </el-table-column>
         <el-table-column
         prop="courseCode"
-        label="课堂码">
+        label="课堂码"
+        width="120">
         </el-table-column>
         <el-table-column
         prop="cover"
@@ -38,20 +39,23 @@
         </el-table-column>
         <el-table-column
         prop="isDeleted"
-        label="状态">
+        label="状态"
+        width="70">
           <template slot-scope="scope">
             <el-tag :type="scope.row.isDeleted?'warning' : 'success'">{{scope.row.isDeleted|toch()}}</el-tag>
           </template>
         </el-table-column>
         <el-table-column
         prop="creatorId"
-        label="创建人ID">
+        label="创建人ID"
+        width="60">
         </el-table-column>
         <el-table-column
         fixed="right"
         label="操作">
         <template slot-scope="scope">
             <el-button @click="watchClick(scope.row)" type="text" size="small">人员</el-button>
+            <el-button @click="watchFileClick(scope.row)" type="text" size="small">附件</el-button>
             <el-button @click="editClick(scope.row)" type="text" size="small">编辑</el-button>
             <el-button @click="deleteClick(scope.row.id)" type="text" size="small">禁用</el-button>
         </template>
@@ -159,6 +163,17 @@ export default {
         })
         sessionStorage.setItem("subjectListSearch",JSON.stringify(this.searchform))
         sessionStorage.setItem("AdminClassMessage",JSON.stringify(row))
+      },
+      watchFileClick(row) {
+        console.log(row);
+        this.$router.replace({
+            path:"attachmentList",
+            query:{
+              id:row.id
+            }
+        })
+        sessionStorage.setItem("subjectListSearch",JSON.stringify(this.searchform))
+        // sessionStorage.setItem("AdminClassMessage",JSON.stringify(row))
       },
       editClick(row) {
         console.log(row);
