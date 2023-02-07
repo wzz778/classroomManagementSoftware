@@ -6,6 +6,7 @@
         v-if="!livePusher || !livePusher.isPushing()"
         type="primary"
         @click="liveInit"
+        :disabled="isShow"
         >开启直播</el-button
       >
       <template v-if="livePusher && livePusher.isPushing()">
@@ -108,10 +109,12 @@ export default {
       trueOptions: "",
       bizid: "",
       union: "",
+      isShow: false,
     };
   },
   methods: {
     liveInit() {
+      this.isShow = true;
       // 获取推流地址
       createPushUrl()
         .then((result) => {
@@ -119,14 +122,6 @@ export default {
           this.pushUrl = result.data.address.replace("rtmp", "webrtc");
           this.livePusher = new TXLivePusher();
           this.startLive();
-          return addMessage({
-            content: this.bizid,
-            courseId: this.$route.query.id,
-            type: 5,
-          });
-        })
-        .then((result) => {
-          console.log("发布信息", result);
         })
         .catch((err) => {
           console.log(err);
@@ -140,11 +135,23 @@ export default {
       Promise.all([
         this.livePusher.startScreenCapture(),
         this.livePusher.startMicrophone(),
-      ]).then(() => {
-        this.livePusher.startPush(this.pushUrl).then(() => {
-          console.log("pushing");
+      ])
+        .then(() => {
+          this.isShow = false;
+          this.livePusher.startPush(this.pushUrl).then(() => {});
+          return addMessage({
+            content: this.bizid,
+            courseId: this.$route.query.id,
+            type: 5,
+          });
+        })
+        .then(() => {})
+        .catch(() => {
+          this.isShow = false;
+          this.livePusher.stopPush();
+          this.livePusher.stopMicrophone();
+          this.livePusher.stopScreenCapture();
         });
-      });
     },
     stopLive() {
       this.$confirm("大量观众正在路上, 是否确定关闭直播?", "提示", {
@@ -177,7 +184,6 @@ export default {
     },
     getRandomName() {
       randomName({ id: this.$route.query.id }).then((result) => {
-        console.log(result);
         this.$confirm(
           `账号：${result.data.userName}，姓名：${result.data.name}`,
           "提示",
@@ -252,13 +258,12 @@ export default {
         }),
         params: {
           answer: this.trueOptions,
-          time: this.getTime()+600,
+          time: this.getTime() + 600,
           union: this.getUnion(),
         },
       };
       publishQuestion(obj)
-        .then((result) => {
-          console.log("发布问题", result);
+        .then(() => {
           console.log(this.union);
           window.localStorage.union = this.union;
           this.dialogVisible = false;

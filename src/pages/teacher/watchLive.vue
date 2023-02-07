@@ -109,7 +109,9 @@ export default {
       sendMessage({
         message: JSON.stringify(obj),
         bizid: this.$route.query.id,
-      }).then(() => {});
+      }).then(() => {
+        this.clearAll();
+      });
       this.dialogVisible = false;
     },
     clearAll() {

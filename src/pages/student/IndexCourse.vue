@@ -118,7 +118,7 @@ export default {
   },
   methods: {
     handleClick(tab, event) {
-      console.log(tab, event);
+      // console.log(tab, event);
     },
     Getnews() {
       console.log("id值：" + this.leid);
@@ -126,7 +126,6 @@ export default {
         id: this.leid,
       };
       ZgetOneCourse(data).then((result) => {
-        console.log("课程详情页取出课程信息", result);
         if (result.msg == "OK") {
           this.lesson.name = result.data.courseName;
           this.lesson.photo = result.data.cover;
@@ -155,7 +154,6 @@ export default {
     },
     Getuser() {
       ZgetUserInfo().then((result) => {
-        console.log("用户信息", result);
         this.user.identity = result.data.user.identity;
       });
     },

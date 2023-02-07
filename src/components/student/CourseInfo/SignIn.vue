@@ -154,7 +154,6 @@ export default {
         courseId: this.sid,
       };
       Zsign(data).then((result) => {
-        console.log("签到状态", result);
         if (result.msg == "OK") {
           this.adatar = "已签到";
           this.$message({
@@ -179,7 +178,6 @@ export default {
         courseId: this.sid,
       };
       ZwhetherSign(data).then((result) => {
-        console.log("信息", result);
         if (result.data == "已签到") {
           this.adatar = "已签到";
         } else {

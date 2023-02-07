@@ -391,15 +391,17 @@ export default {
         );
       }
       Promise.all(arr)
-        .then((result) => {
-          console.log(result);
+        .then(() => {
           this.choiceCourse = [];
           this.taskName = "";
           this.taskYn = false;
           return Promise.all(messageArr);
         })
-        .then((result) => {
-          console.log("发布信息", result);
+        .then(() => {
+          this.$message({
+            message: "发布成功",
+            type: "success",
+          });
         })
         .catch((err) => {
           console.log(err);
@@ -459,10 +461,6 @@ export default {
     getAllGradeFn() {},
     submitFn() {
       // 判断值是否为空
-      console.log(
-        this.$store.state.teacher.questions,
-        this.$store.state.teacher.answer
-      );
       if (this.$store.state.teacher.questions.length == 0) {
         this.$message({
           message: "请添加问题",
@@ -485,8 +483,7 @@ export default {
         question: this.$store.state.teacher.questions,
       };
       createHomework(obj)
-        .then((result) => {
-          console.log(result);
+        .then(() => {
           this.$message({
             message: "发布成功",
             type: "success",

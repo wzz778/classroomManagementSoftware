@@ -218,3 +218,9 @@ export const getGradeByCourse = async (data) => requests({
     method: "GET",
     params: data
 })
+
+export const addPerformance = async (data) => requests({
+    url: "/teacher/addPerformance",
+    method: "POST",
+    params: data
+})

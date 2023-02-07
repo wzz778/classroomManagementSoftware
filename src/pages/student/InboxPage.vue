@@ -265,7 +265,6 @@ export default {
   methods: {
     showCheck(row, name) {
       this.dialogVisible = true;
-      console.log("每行数据", row); // 获取当前行数据
       this.content = row.cont;
       this.xijie = row.content;
       this.type = row.type;
@@ -285,7 +284,6 @@ export default {
         union: this.xijie,
       };
       ZQuestion(data).then((result) => {
-        console.log("获取课堂问题", result);
         if (result.msg == "OK") {
           if (result.data) {
             var s = JSON.parse(result.data);
@@ -392,7 +390,6 @@ export default {
         type: this.value,
       };
       ZgetMessage(da).then((result) => {
-        console.log(result);
         if (result.msg == "OK") {
           for (let h = 0; h < result.data.length; h++) {
             var obje = result.data[h];
@@ -404,7 +401,7 @@ export default {
                 "请注意：签到开始时间为：" +
                 JSON.parse(result.data[h].content).createTime +
                 "；结束时间为：" +
-                JSON.parse(result.data[h].content).createTime +
+                JSON.parse(result.data[h].content).endTime +
                 "。";
             } else if (result.data[h].type == 2) {
               atype = "课程通知";

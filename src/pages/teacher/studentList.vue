@@ -22,6 +22,22 @@
       :pageChangeFn="pageChangeFn"
       :sizeChangeFn="sizeChangeFn"
     ></myPaging>
+    <el-dialog title="提示" :visible.sync="dialogVisible" width="60%">
+      <el-form>
+        <el-form-item label="分数">
+          <el-input-number
+            v-model="num"
+            :min="1"
+            :max="100"
+            label="描述文字"
+          ></el-input-number>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="clearAll">取 消</el-button>
+        <el-button type="primary" @click="addPerformanceFn">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -35,13 +51,16 @@ import {
   resetPassword,
   getMyPerformanceByUserId,
   getTerm,
+  addPerformance,
 } from "@/api/teacher";
+import { InputNumber } from "element-ui";
 export default {
   name: "StudentList",
   components: {
     myPaging,
     myList,
     myTop,
+    [InputNumber.name]: InputNumber,
   },
   data() {
     return {
@@ -90,6 +109,11 @@ export default {
             callFn: this.deleteFn,
             showInfo: "删除",
           },
+          {
+            type: "success",
+            callFn: this.achievement,
+            showInfo: "成绩",
+          },
         ],
         // 数据
         tableData: [],
@@ -102,6 +126,10 @@ export default {
       classId: "",
       beginTime: "",
       endTime: "",
+      dialogVisible: false,
+      num: 1,
+      courseId: "",
+      userId: "",
     };
   },
   methods: {
@@ -148,7 +176,7 @@ export default {
       resetPassword({
         id: obj.studentId,
       })
-        .then((result) => {
+        .then(() => {
           this.$message({
             message: "已重置,初始密码为：123456",
             type: "success",
@@ -174,6 +202,7 @@ export default {
           afterTime: this.beginTime,
           beforeTime: this.endTime,
           userId: obj.studentId,
+          courseId: this.classId,
         })
           .then((result) => {
             if (result.msg == "OK") {
@@ -195,7 +224,6 @@ export default {
         pageSize: this.pageSize,
       })
         .then((result) => {
-          console.log(result);
           this.myListConfiguration.tableData = result.data.records;
           this.allNums = result.data.total;
           return getTerm();
@@ -210,6 +238,30 @@ export default {
           return Promise.all(arr);
         })
         .then(() => {})
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    achievement(obj) {
+      this.dialogVisible = true;
+      console.log(obj);
+      this.userId = obj.studentId;
+      this.courseId = obj.courseId;
+    },
+    clearAll() {
+      this.num = 1;
+      this.dialogVisible = false;
+    },
+    addPerformanceFn() {
+      addPerformance({
+        courseId: this.classId,
+        performance: this.num,
+        userId: this.userId,
+      })
+        .then(() => {
+          this.clearAll();
+          this.getInfo(this.classId);
+        })
         .catch((err) => {
           console.log(err);
         });

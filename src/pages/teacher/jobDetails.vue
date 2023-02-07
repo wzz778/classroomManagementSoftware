@@ -201,7 +201,7 @@ export default {
         path: "/correctHomework",
         query: {
           hid: this.$route.query.homeworkId,
-          stuid: obj.studentId,
+          stuId: obj.studentId,
         },
       });
     },

@@ -253,23 +253,28 @@ export default {
       getHomeworkById(data)
         .then((res) => {
           if (res.status == 200) {
-            this.homeworkInfo = res.data.homework;
-            this.homeworkInfo.remark = this.homeworkInfo.remark || "无";
-            this.topics = res.data.homework.question;
-            this.userAnswer = res.data.userAnswer.userAnswer;
-            this.haveScore = res.data.correct.deScore;
-            this.answer = res.data.homework.answer;
-            this.num = res.data.correct.deScore;
-            this.correct = res.data.correct;
-            for (let i = 0; i < this.homeworkInfo.questionCount; i++) {
-              this.allScore += this.topics[i].score;
-              this.topics[i].questionContent = JSON.parse(
-                this.topics[i].questionContent
-              );
-              if (this.topics[i].questionContent.type == 2) {
-                this.userAnswer[i].answer =
-                  this.userAnswer[i].answer.split(",");
+            if (res.data.userAnswer) {
+              this.homeworkInfo = res.data.homework;
+              this.homeworkInfo.remark = this.homeworkInfo.remark || "无";
+              this.topics = res.data.homework.question;
+              this.userAnswer = res.data.userAnswer.userAnswer;
+              this.haveScore = res.data.correct.deScore;
+              this.answer = res.data.homework.answer;
+              this.num = res.data.correct.deScore;
+              this.correct = res.data.correct;
+              for (let i = 0; i < this.homeworkInfo.questionCount; i++) {
+                this.allScore += this.topics[i].score;
+                this.topics[i].questionContent = JSON.parse(
+                  this.topics[i].questionContent
+                );
+                if (this.topics[i].questionContent.type == 2) {
+                  this.userAnswer[i].answer =
+                    this.userAnswer[i].answer.split(",");
+                }
               }
+            } else {
+              Message.warning("该用户还未提交作业！");
+              this.$router.go(-1);
             }
           } else {
             Message.error("网络异常，获取试卷失败！");
@@ -296,17 +301,19 @@ export default {
         }
       )
         .then(() => {
-          submitCorrect(correct).then((res) => {
-            if (res.status == 200) {
-              Message.success("提交成功");
-              this.$router.go(-1);
-            } else {
+          submitCorrect(correct)
+            .then((res) => {
+              if (res.status == 200) {
+                Message.success("提交成功");
+                this.$router.go(-1);
+              } else {
+                Message.error("网络异常，提交失败");
+              }
+            })
+            .catch((err) => {
+              console.log(err);
               Message.error("网络异常，提交失败");
-            }
-          }).catch(err=>{
-            console.log(err);
-            Message.error("网络异常，提交失败");
-          });
+            });
         })
         .catch(() => {
           this.$message({
