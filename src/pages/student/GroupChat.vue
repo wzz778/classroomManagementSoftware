@@ -276,32 +276,6 @@ export default {
       // 创建富文本编辑器
 
       this.editor.create();
-
-      // this.editor.config.uploadImgShowBase64 = true; // base 64 存储图片
-      // this.editor.config.uploadImgServer = "/api/homework/addPicture";
-      // // 配置服务器端地址(这里的this.$api.getJavaEndPoint()是自己定义的一个地址前缀)
-      // this.editor.config.uploadFileName = "file"; // 后端接受上传文件的参数名
-      // this.editor.config.uploadImgHeaders = {
-      //   token: store.state.token, // 设置请求头
-      // };
-      // this.editor.config.uploadImgHooks = {
-      //   fail: function () {
-      //     this.$message({
-      //       message: "图片上传失败",
-      //       type: "warning",
-      //     });
-      //   },
-      //   error: function () {
-      //     this.$message.error("图片上传出错");
-      //   },
-      //   success: (xhr, editor, result) => {
-      //     // 图片上传成功回调
-      //     console.log("成功", result);
-      //   },
-      //   customInsert: (insertImg, result, editor) => {
-      //     insertImg(result.data);
-      //   },
-      // };
     },
     // 销毁
     destruction() {
@@ -346,15 +320,14 @@ export default {
       getMembers(data).then((res) => {
         if (res.status == 200) {
           this.haveGroup = true;
-          Object.keys(res.data).forEach((key) => {
+          Object.keys(res.data).forEach((key,index) => {
             for (let i = 0; i < res.data[key].length; i++) {
               if (
                 res.data[key][i].userName ==
                 jwt_decode(this.$store.state.token).username
               ) {
                 this.members = res.data[key];
-                console.log(this.members);
-                this.groupName = "第" + key.substr(5) + "组";
+                this.groupName = "第" +(index*1+1)+ "组";
                 this.groupId = key;
                 this.sever += this.$route.query.id + key;
                 // ReconnectingWebSocket是类库reconnecting-websocket , 可以进行自动的断线重连,引入连接 :
