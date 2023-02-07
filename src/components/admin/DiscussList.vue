@@ -70,7 +70,7 @@ import { deleteDiscuss } from "@/api/admin/index";
                 })
                 .then(() => {
                     deleteDiscuss({ discussId: value}).then((result) => {
-                        console.log(result);
+                        // console.log(result);
                         if (result.status == 200) {
                         this.$message({
                             type: "success",

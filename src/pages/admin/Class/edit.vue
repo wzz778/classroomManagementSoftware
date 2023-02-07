@@ -47,7 +47,7 @@ export default {
         if (valid) {
           createGrade({className:this.form.title})
           .then((result) => {
-            console.log(result);
+            // console.log(result);
             if(result.status==200){
             this.$alert(`课程码：${result.data}`, '创建成功', {
               confirmButtonText: '复制课程码',
@@ -69,7 +69,7 @@ export default {
             }
           })
           .catch((err) => {
-            console.log(err);
+            // console.log(err);
               this.$message({
                 type: "warning",
                 message: "操作失败",

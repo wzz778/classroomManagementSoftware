@@ -189,7 +189,7 @@ export default {
           }
         })
         .catch((err) => {
-          console.log(err);
+          // console.log(err);
           Message.error("网络异常，获取用户信息失败！");
         });
     },

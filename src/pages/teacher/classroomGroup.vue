@@ -33,10 +33,10 @@
         ref="form"
       >
         <el-form-item label="按性别分组" prop="sex">
-           <el-switch v-model="form.sex"></el-switch>
+           <el-switch v-model="resex"></el-switch>
         </el-form-item>
         <el-form-item label="按成绩表现分组" prop="performance">
-           <el-switch v-model="form.performance"></el-switch>
+           <el-switch v-model="reperformance"></el-switch>
         </el-form-item>
         <el-form-item label="分组数量" prop="performance">
          <el-input-number v-model="form.studentNums" :min="1" :max="10" label="描述文字"></el-input-number>
@@ -54,7 +54,7 @@
 
 <script>
 import {Empty ,Switch,InputNumber} from "element-ui";
-import { myCourse, groupingAnd, groupInfo } from "@/api/admin/index";
+import { myCourse, grouping, groupInfo } from "@/api/admin/index";
 import GroupList from "@/components/admin/GroupList";
 export default {
   name: "classroomDiscussion",
@@ -68,12 +68,14 @@ export default {
     return {
       courseArr: [],
       course: "",
+      reperformance:false,
+      resex:true,
       dialogFormVisible: false,
       isUserRouter:false,
       alltotal: 100,
       form: {
-        performance: false,
-        sex: true,
+        performance: 0,
+        sex: 1,
         courseId: '',
         studentNums:1
       },
@@ -93,13 +95,13 @@ export default {
           this.chagepage();
         })
         .catch((err) => {
-          console.log(err);
+          // console.log(err);
         });
     },
     chagepage() {
       groupInfo({courseId:this.course})
         .then((data) => {
-            console.log(data);
+            // console.log(data);
             if (data.status == 200) {
             let req = data.data;
             this.tableDate=[];
@@ -116,7 +118,7 @@ export default {
           }
         })
         .catch((error) => {
-          console.log(error);
+          // console.log(error);
         });
       // console.log(this.tableDate);
     },
@@ -130,9 +132,10 @@ export default {
             message: "分组数量不能超过10个",
           });
       }
-      groupingAnd(this.form)
+      // console.log(this.form);
+      grouping(this.form)
         .then((result) => {
-          console.log(result);
+          // console.log(result);
           if (result.status == 200) {
             this.$message({
               message: "创建成功",
@@ -140,7 +143,13 @@ export default {
             });
             this.dialogFormVisible = false;
             this.chagepage()
-          } else {
+          }else if(result.status == 555){
+            this.$message({
+              type: "warning",
+              message: "分组人数不能超过在课堂的人数",
+            });
+          }
+          else {
             this.$message({
               type: "warning",
               message: "操作失败",
@@ -148,7 +157,7 @@ export default {
           }
         })
         .catch((err) => {
-          console.log(err);
+          // console.log(err);
         });
     },
     resetForm(formName) {
@@ -156,9 +165,20 @@ export default {
     },
   },
   watch: {
-  },
-  
-  computed:{
+    reperformance(newvalue){
+      if(newvalue){
+        this.form.performance=1;
+      }else{
+        this.form.performance=0;
+      }
+    },
+    resex(newvalue){
+      if(newvalue){
+        this.form.sex=1;
+      }else{
+        this.form.sex=0;
+      }
+    }
   },
   created(){
 

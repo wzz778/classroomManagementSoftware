@@ -18,7 +18,8 @@
         </el-table-column>
         <el-table-column
         prop="courseCode"
-        label="课堂码">
+        label="课堂码"
+        width="120">
         </el-table-column>
         <el-table-column
         prop="cover"
@@ -38,20 +39,23 @@
         </el-table-column>
         <el-table-column
         prop="isDeleted"
-        label="状态">
+        label="状态"
+        width="70">
           <template slot-scope="scope">
             <el-tag :type="scope.row.isDeleted?'warning' : 'success'">{{scope.row.isDeleted|toch()}}</el-tag>
           </template>
         </el-table-column>
         <el-table-column
         prop="creatorId"
-        label="创建人ID">
+        label="创建人ID"
+        width="60">
         </el-table-column>
         <el-table-column
         fixed="right"
         label="操作">
         <template slot-scope="scope">
             <el-button @click="watchClick(scope.row)" type="text" size="small">人员</el-button>
+            <el-button @click="watchFileClick(scope.row)" type="text" size="small">附件</el-button>
             <el-button @click="editClick(scope.row)" type="text" size="small">编辑</el-button>
             <el-button @click="deleteClick(scope.row.id)" type="text" size="small">禁用</el-button>
         </template>
@@ -153,15 +157,26 @@ export default {
         this.dialogFormVisible=false;
       },
       watchClick(row) {
-        console.log(row);
+        // console.log(row);
         this.$router.replace({
             path:"userlist",
         })
         sessionStorage.setItem("subjectListSearch",JSON.stringify(this.searchform))
         sessionStorage.setItem("AdminClassMessage",JSON.stringify(row))
       },
+      watchFileClick(row) {
+        // console.log(row);
+        this.$router.replace({
+            path:"attachmentList",
+            query:{
+              id:row.id
+            }
+        })
+        sessionStorage.setItem("subjectListSearch",JSON.stringify(this.searchform))
+        // sessionStorage.setItem("AdminClassMessage",JSON.stringify(row))
+      },
       editClick(row) {
-        console.log(row);
+        // console.log(row);
         this.dialogFormVisible=true;
         this.editid=row.id;
         this.detail=row.details
@@ -194,7 +209,7 @@ export default {
             message: "已取消删除",
           });
         });
-        console.log(row);
+        // console.log(row);
       },
       //显示功能
       //主键页数的处理
@@ -214,7 +229,7 @@ export default {
       chagepage() {
         getHerCourse(this.searchform)
         .then(data=>{
-          console.log(data);
+          // console.log(data);
           if(data.status==200){
             let req=data.data;
             this.tableData=req.records;
@@ -230,13 +245,13 @@ export default {
           }
         })
         .catch(error=>{
-            console.log(error);
+            // console.log(error);
         })
       },
       //课堂的编辑功能
       handelChange(file, fileList) {
-        console.log(file);
-        console.log(fileList);
+        // console.log(file);
+        // console.log(fileList);
         let f = new FileReader();
         f.readAsDataURL(file.raw);
         f.onload = () => {
@@ -246,7 +261,7 @@ export default {
         this.fileList = fileList;
       },
       handleRemove(file, fileList) {
-        console.log(fileList);
+        // console.log(fileList);
         this.fileList = fileList;
         this.picSrc = "";
       },
@@ -281,7 +296,7 @@ export default {
             //   这里需要判断一下文件大小或者类型
             //   自定义上传就需要我们使用fromdata对象来上传文件
             let formdata = new FormData();
-            console.log(this.fileList);
+            // console.log(this.fileList);
             for (let i = 0; i < this.fileList.length; i++) {
               // 我们上传的文件保存在每个文件对象的raw里边
               formdata.append("newCover", this.fileList[i].raw);
@@ -307,10 +322,10 @@ export default {
                     message: "操作失败",
                   });
                 }
-                console.log(result);
+                // console.log(result);
               })
               .catch((err) => {
-                console.log(err);
+                // console.log(err);
               });
 
     },

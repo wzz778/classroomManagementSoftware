@@ -251,7 +251,7 @@ export default {
       chagepage() {
         getAllUser(this.searchform)
         .then(data=>{
-          console.log(data);
+          // console.log(data);
           if(data.status==200){
             let req=data.data;
             this.tableData=req.records;
@@ -267,7 +267,7 @@ export default {
           }
         })
         .catch(error=>{
-            console.log(error);
+            // console.log(error);
         })
       },
     },

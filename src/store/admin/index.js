@@ -17,7 +17,7 @@ const mutations = {
         state.deleteTopicid=value;
     },
     deleteDiscuss(state,value){
-        console.log(value);
+        // console.log(value);
         state.deleteDiscussid=value;
     },
     setDiscussForm(state,value){

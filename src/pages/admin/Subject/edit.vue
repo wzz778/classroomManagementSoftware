@@ -75,7 +75,7 @@ export default {
   },
   methods: {
     onSubmit() {
-      console.log("submit!");
+      // console.log("submit!");
     },
     resetForm(formName) {
       this.$refs[formName].resetFields();
@@ -83,8 +83,8 @@ export default {
       this.picSrc = "";
     },
     handelChange(file, fileList) {
-      console.log(file);
-      console.log(fileList);
+      // console.log(file);
+      // console.log(fileList);
       let f = new FileReader();
       f.readAsDataURL(file.raw);
       f.onload = () => {
@@ -94,7 +94,7 @@ export default {
       this.fileList = fileList;
     },
     handleRemove(file, fileList) {
-      console.log(fileList);
+      // console.log(fileList);
       this.fileList = fileList;
       this.picSrc = "";
     },
@@ -112,7 +112,7 @@ export default {
           //   这里需要判断一下文件大小或者类型
           //   自定义上传就需要我们使用fromdata对象来上传文件
           let formdata = new FormData();
-          console.log(this.fileList);
+          // console.log(this.fileList);
           for (let i = 0; i < this.fileList.length; i++) {
             // 我们上传的文件保存在每个文件对象的raw里边
             formdata.append("cover0", this.fileList[i].raw);
@@ -139,10 +139,10 @@ export default {
               }
             })
             .catch((err) => {
-              console.log(err);
+              // console.log(err);
             });
         }else{
-          console.log("error");
+          // console.log("error");
         }
         })
     },

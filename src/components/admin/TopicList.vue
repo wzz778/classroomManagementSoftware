@@ -48,7 +48,7 @@ export default {
       })
         .then(() => {
           deleteTopic({ topicId: this.form.topic.id }).then((result) => {
-            console.log(result);
+            // console.log(result);
             if (result.status == 200) {
               this.$message({
                 type: "success",
