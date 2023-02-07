@@ -23,7 +23,7 @@
                 <li>课程码：{{ lesson.cord }}</li>
                 <li>创建时间：{{ lesson.beginTime }}</li>
               </ul>
-              <myLive v-show="user.identity=='1'" />
+              <myLive v-show="user.identity=='1'||user.identity=='2'" />
             </div>
           </div>
         </div>
