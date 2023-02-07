@@ -205,7 +205,6 @@ export default {
       });
     },
     changeMsg(text, value) {
-      console.log(text, value);
       this.check = value;
     },
     jusp(value, state, zuo) {
@@ -257,7 +256,6 @@ export default {
             });
           } else {
             for (let i = 0; i < result.data.list.length; i++) {
-              console.log("课程任务", result.data.list[i]);
               if (new Date(result.data.list[i].task.beginTime) > new Date()) {
                 let obj = result.data.list[i];
                 obj["sta"] = "未开始";
@@ -298,7 +296,6 @@ export default {
         type: 1,
       };
       ZgetMessage(da).then((result) => {
-        console.log("取出签到信息", result);
         if (result.msg == "OK") {
           for (let i = 0; i < result.data.length; i++) {
             let obje = result.data[i];

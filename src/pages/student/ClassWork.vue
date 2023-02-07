@@ -145,7 +145,6 @@ export default {
         size: this.limit,
       };
       ZgetHomework(data).then((result) => {
-        console.log("取出课程作业", result);
         if (result.msg == "OK") {
           if (result.data.total == 0) {
             this.$message({

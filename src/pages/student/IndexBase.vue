@@ -69,7 +69,6 @@ export default {
             this.adatar = response.data.total;
             this.sarr = response.data.records;
             for (let q = 0; q < response.data.records.length; q++) {
-              console.log("猜想：" + response.data.records[q] + this.sarr[q]);
               this.getAllclass(this.sarr[q]);
             }
           } else {
