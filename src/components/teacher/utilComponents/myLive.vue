@@ -254,8 +254,7 @@ export default {
         },
       };
       publishQuestion(obj)
-        .then((result) => {
-          console.log("发布问题", result);
+        .then(() => {
           console.log(this.union);
           window.localStorage.union = this.union;
           this.dialogVisible = false;
