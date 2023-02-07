@@ -401,7 +401,7 @@ export default {
                 "请注意：签到开始时间为：" +
                 JSON.parse(result.data[h].content).createTime +
                 "；结束时间为：" +
-                JSON.parse(result.data[h].content).createTime +
+                JSON.parse(result.data[h].content).endTime +
                 "。";
             } else if (result.data[h].type == 2) {
               atype = "课程通知";
