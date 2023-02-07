@@ -6,6 +6,7 @@
         v-if="!livePusher || !livePusher.isPushing()"
         type="primary"
         @click="liveInit"
+        :disabled="isShow"
         >开启直播</el-button
       >
       <template v-if="livePusher && livePusher.isPushing()">
@@ -108,10 +109,12 @@ export default {
       trueOptions: "",
       bizid: "",
       union: "",
+      isShow: false,
     };
   },
   methods: {
     liveInit() {
+      this.isShow = true;
       // 获取推流地址
       createPushUrl()
         .then((result) => {
@@ -119,13 +122,6 @@ export default {
           this.pushUrl = result.data.address.replace("rtmp", "webrtc");
           this.livePusher = new TXLivePusher();
           this.startLive();
-          return addMessage({
-            content: this.bizid,
-            courseId: this.$route.query.id,
-            type: 5,
-          });
-        })
-        .then(() => {
         })
         .catch((err) => {
           console.log(err);
@@ -139,10 +135,23 @@ export default {
       Promise.all([
         this.livePusher.startScreenCapture(),
         this.livePusher.startMicrophone(),
-      ]).then(() => {
-        this.livePusher.startPush(this.pushUrl).then(() => {
+      ])
+        .then(() => {
+          this.isShow = false;
+          this.livePusher.startPush(this.pushUrl).then(() => {});
+          return addMessage({
+            content: this.bizid,
+            courseId: this.$route.query.id,
+            type: 5,
+          });
+        })
+        .then(() => {})
+        .catch(() => {
+          this.isShow = false;
+          this.livePusher.stopPush();
+          this.livePusher.stopMicrophone();
+          this.livePusher.stopScreenCapture();
         });
-      });
     },
     stopLive() {
       this.$confirm("大量观众正在路上, 是否确定关闭直播?", "提示", {
@@ -249,7 +258,7 @@ export default {
         }),
         params: {
           answer: this.trueOptions,
-          time: this.getTime()+600,
+          time: this.getTime() + 600,
           union: this.getUnion(),
         },
       };
