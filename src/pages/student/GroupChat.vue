@@ -6,7 +6,7 @@
           <div
             class="othersMsgBox"
             v-if="info.userInfo.studentId != userInfo.studentId"
-            :id="index == 0 ? 'first' : 'normal'"
+            :id="index == dataInfoNum ? 'first' : 'normal'"
           >
             <div
               class="otherHeadPic"
@@ -22,7 +22,7 @@
           <div
             class="myMsgBox"
             v-else-if="info.userInfo.studentId == userInfo.studentId"
-            :id="index == 0 ? 'first' : 'normal'"
+            :id="index == dataInfoNum ? 'first' : 'normal'"
           >
             <div
               class="myHeadPic"
@@ -38,7 +38,7 @@
         <el-button type="success" plain class="sendBtn" @click="sendChat"
           >发送</el-button
         >
-        <div class="editor">
+        <div class="editor" style="flex:1">
           <div ref="editor" class="textNeirong"></div>
         </div>
         <!-- <el-input
@@ -57,13 +57,13 @@
       <div class="groupMembers">
         <div class="memberNum">小组成员（{{ members.length }}）</div>
         <ul class="memberItems">
-          <li class="memberItem" v-for="(m, index) in members" :key="index">
-            <div
+          <li class="memberItem" v-for="(m, index) in members" :key="index" style="width:90%;margin-left:5%;border-bottom:1px solid rgb(153 153 153 / 27%)">
+            <!-- <div
               class="memberHeadPic"
               :style="{ backgroundImage: `url(${m.photo})` }"
-            ></div>
+            ></div> -->
             <span style="margin-left: 10px">{{ m.name }}</span>
-            <span>(计科211)</span>
+            <!-- <span>({{m.userName}})</span> -->
           </li>
         </ul>
       </div>
@@ -106,8 +106,11 @@ export default {
       socket: null,
       haveGroup: false,
       nodePage: 1,
+      pageSize:15,
       pages: 1,
-      isNewInfo:false
+      isNewInfo:false,
+      wsInfo:0,
+      dataInfoNum:0
     };
   },
   model: {
@@ -148,20 +151,31 @@ export default {
     this.getUserInfoFun();
   },
   updated() {
-    if (this.chatInfo.length != 0&&this.isNewInfo==false||this.nodePage==1) {
+    if(this.isNewInfo==false){
+      document
+        .querySelector(".msgViewArea")
+        .querySelector('#first').scrollIntoView(false);
+    }
+    if ((this.chatInfo.length != 0&&this.isNewInfo==true&&this.nodePage!=this.pageSize)) {
       document
         .querySelector(".msgViewArea")
         .lastElementChild.scrollIntoView(false);
     }
   },
   methods: {
+    /**滚动事件 */
     scrollLoadMore() {
       if (document.querySelector("#msgViewArea").scrollTop <= 0) {
         if (this.nodePage == this.pages) {
           Message.warning("已获取全部历史消息");
         } else {
-          this.nodePage++;
-          this.getHistoryChatFun();
+          // this.nodePage++;
+          if(this.wsInfo%this.pageSize==0){
+            this.nodePage+=this.wsInfo%this.pageSize+1;
+          }else{
+            this.nodePage+=Math.ceil(this.wsInfo/this.pageSize)
+          }
+          this.getHistoryChatFun(this.nodePage,this.wsInfo%this.pageSize);
         }
       }
     },
@@ -220,7 +234,7 @@ export default {
         "justify", // 对齐方式
         "quote", // 引用
         "emoticon", // 表情
-        // "image", // 插入图片
+        "image", // 插入图片
         // "table", // 表格
         "code", // 插入代码
         "undo", // 撤销
@@ -233,7 +247,32 @@ export default {
         // console.log(html);
         this.chatText = html; // 绑定当前逐渐地值
       };
-
+ // 配置上传图片
+      this.editor.config.uploadImgShowBase64 = true; // base 64 存储图片
+      this.editor.config.uploadImgServer = "/api/homework/addPicture";
+      // 配置服务器端地址(这里的this.$api.getJavaEndPoint()是自己定义的一个地址前缀)
+      this.editor.config.uploadFileName = "file"; // 后端接受上传文件的参数名
+      this.editor.config.uploadImgHeaders = {
+        token: store.state.token, // 设置请求头
+      };
+      this.editor.config.uploadImgHooks = {
+        fail: function () {
+          this.$message({
+            message: "图片上传失败",
+            type: "warning",
+          });
+        },
+        error: function () {
+          this.$message.error("图片上传出错");
+        },
+        success: (xhr, editor, result) => {
+          // 图片上传成功回调
+          console.log("成功", result);
+        },
+        customInsert: (insertImg, result, editor) => {
+          insertImg(result.data);
+        },
+      };
       // 创建富文本编辑器
 
       this.editor.create();
@@ -308,13 +347,13 @@ export default {
         if (res.status == 200) {
           this.haveGroup = true;
           Object.keys(res.data).forEach((key) => {
-            // console.log(res.data[key]); // foo
             for (let i = 0; i < res.data[key].length; i++) {
               if (
                 res.data[key][i].userName ==
                 jwt_decode(this.$store.state.token).username
               ) {
                 this.members = res.data[key];
+                console.log(this.members);
                 this.groupName = "第" + key.substr(5) + "组";
                 this.groupId = key;
                 this.sever += this.$route.query.id + key;
@@ -326,7 +365,7 @@ export default {
                 this.socket.onopen = this.OnOpen;
                 this.socket.onerror = this.OnError;
                 this.socket.onclose = this.OnClose;
-                this.getHistoryChatFun();
+                this.getHistoryChatFun(1,0);
               }
             }
           });
@@ -349,7 +388,8 @@ export default {
       let info = JSON.parse(e.data);
       info.userInfo = JSON.parse(info.userInfo);
       this.chatInfo.push(info);
-      console.log("总消息", this.chatInfo);
+      this.wsInfo++;
+      this.isNewInfo=true;
     },
 
     /**
@@ -357,8 +397,8 @@ export default {
      */
     sendMessageFun(data) {
       sendMessage(data).then((res) => {
-        if(res.status!=200){
-          Message.error("发送失败！,请重试");
+        if(res.status==200){
+          this.isNewInfo=true;
         }
       }).catch(err=>{
         console.log(err);
@@ -368,15 +408,22 @@ export default {
     /**
      * 获取历史消息
      */
-    getHistoryChatFun() {
+    getHistoryChatFun(page,sliceNum) {
+      if(page==1){
+        this.isNewInfo=true;
+      }else{
+        this.isNewInfo=false;
+      }
       let data = {
         courseId: this.$route.query.id,
         groupId: this.groupId,
-        nodePage: this.nodePage,
-        pageSize: 20,
+        nodePage: page,
+        pageSize: this.pageSize,
       };
       getHistoryChat(data).then((res) => {
         this.pages = res.data.pages;
+        res.records=res.data.records.slice(sliceNum-1);
+        this.dataInfoNum=res.data.records.length;
         for (let i = 0; i < res.data.records.length; i++) {
           res.data.records[i].content = JSON.parse(res.data.records[i].content);
           res.data.records[i].content.userInfo = JSON.parse(
@@ -403,7 +450,7 @@ export default {
   display: flex;
   height: 100%;
   justify-content: space-between;
-  overflow: auto;
+  // overflow: auto;
 }
 
 .msgViewArea {
@@ -411,7 +458,6 @@ export default {
   flex-direction: column;
   width: 100%;
   height: 75%;
-  min-height: 400px;
   margin-bottom: 20px;
   background-color: #fff;
   border-radius: 10px;
@@ -499,23 +545,15 @@ export default {
 }
 .sendWords {
   width: 100%;
-  height: auto;
+  height: 25%;
   margin-bottom: 50px;
   position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   .sendBtn {
-    // display: inline-block;
     width: 80px;
     height: 36px;
-    // text-align: center;
-    // border: 1px solid #b3d8ff;
-    // background-color: #ecf5ff;
-    // color: #409eff;
-    // border-radius: 3px;
-    // cursor: pointer;
-    // transition: all 0.2s;
     z-index: 1000;
   }
 }

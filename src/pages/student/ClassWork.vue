@@ -1,7 +1,7 @@
 <template>
   <div class="work">
     <div class="workTop">
-      <span>高等数学</span>
+      <span>{{ name }}</span>
     </div>
     <div class="state">
       <span>筛选</span>
@@ -95,7 +95,7 @@
 
 <script>
 import { Radio, Card } from "element-ui";
-import { ZgetHomework } from "@/api/user/index";
+import { ZgetHomework,ZgetOneCourse } from "@/api/user/index";
 export default {
   name: "ClassWork",
   data() {
@@ -109,6 +109,7 @@ export default {
       enter: [],
       limit: 5,
       currentPage: 1,
+      name:""
     };
   },
   components: {
@@ -117,8 +118,19 @@ export default {
   },
   mounted: function () {
     this.handleCurrentChange();
+    this.getAllclass();
   },
   methods: {
+      getAllclass() {
+      let cid = {
+        id: this.cid,
+      };
+      ZgetOneCourse(cid).then((result) => {
+        if (result.msg == "OK") {
+          this.name = result.data.courseName;
+        }
+      });
+    },
     //默认查询第一页
     handleCurrentChange(pager = 1) {
       this.endc = [];
