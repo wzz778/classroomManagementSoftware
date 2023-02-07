@@ -125,8 +125,7 @@ export default {
             type: 5,
           });
         })
-        .then((result) => {
-          console.log("发布信息", result);
+        .then(() => {
         })
         .catch((err) => {
           console.log(err);
@@ -142,7 +141,6 @@ export default {
         this.livePusher.startMicrophone(),
       ]).then(() => {
         this.livePusher.startPush(this.pushUrl).then(() => {
-          console.log("pushing");
         });
       });
     },
@@ -177,7 +175,6 @@ export default {
     },
     getRandomName() {
       randomName({ id: this.$route.query.id }).then((result) => {
-        console.log(result);
         this.$confirm(
           `账号：${result.data.userName}，姓名：${result.data.name}`,
           "提示",
