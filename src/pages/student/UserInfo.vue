@@ -34,7 +34,7 @@ export default {
     ChangePassword,
   },
   mounted(){
-    console.log("tokentoken:",this.$store.state.token);
+    // console.log("tokentoken:",this.$store.state.token);
   }
   
 };
