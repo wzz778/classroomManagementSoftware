@@ -274,7 +274,9 @@ export default {
               }
             } else {
               Message.warning("该用户还未提交作业！");
-              this.$router.go(-1);
+              setTimeout(()=>{
+                this.$router.go(-1);
+              },1000)
             }
           } else {
             Message.error("网络异常，获取试卷失败！");
