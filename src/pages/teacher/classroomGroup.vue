@@ -18,7 +18,7 @@
         ><i class="el-icon-plus"></i> 点击分组</el-button
       >
     </div>
-    <!-- <el-empty v-if="tableDate.length==0" description="暂无回复内容"></el-empty> -->
+    <el-empty v-if="tableDate.length==0" description="暂无分组内容"></el-empty>
     <GroupList v-for="(p,index) in tableDate" :key="p.groupName" :jsonText='JSON.stringify(p)' :groupIndex="index+1" />
     <el-dialog
       style="z-index: 2001"
@@ -33,16 +33,16 @@
         ref="form"
       >
         <el-form-item label="按性别分组" prop="sex">
-           <el-switch v-model="resex"></el-switch>
+           <el-switch v-model="form.sex"></el-switch>
         </el-form-item>
         <el-form-item label="按成绩表现分组" prop="performance">
-           <el-switch v-model="reperformance"></el-switch>
+           <el-switch v-model="form.performance"></el-switch>
         </el-form-item>
-        <el-form-item label="分组数量" prop="performance">
+        <el-form-item label="每组人数" prop="performance">
          <el-input-number v-model="form.studentNums" :min="1" :max="10" label="描述文字"></el-input-number>
         </el-form-item>
-
-        <el-form-item>
+        <span style="color:red;font-size:16px;margin-left:60px;">注：</span>课程中的人员要添加完成绩才能正常按照成绩表现分组
+        <el-form-item style="margin-top:10px;">
           <el-button type="primary" @click="submitForm('form')"
             >确认分组</el-button
           >
@@ -54,7 +54,7 @@
 
 <script>
 import {Empty ,Switch,InputNumber} from "element-ui";
-import { myCourse, grouping, groupInfo } from "@/api/admin/index";
+import { myCourse, groupingAnd, groupInfo } from "@/api/admin/index";
 import GroupList from "@/components/admin/GroupList";
 export default {
   name: "classroomDiscussion",
@@ -68,14 +68,12 @@ export default {
     return {
       courseArr: [],
       course: "",
-      reperformance:false,
-      resex:true,
       dialogFormVisible: false,
       isUserRouter:false,
       alltotal: 100,
       form: {
-        performance: 0,
-        sex: 1,
+        performance: false,
+        sex: true,
         courseId: '',
         studentNums:1
       },
@@ -101,7 +99,7 @@ export default {
     chagepage() {
       groupInfo({courseId:this.course})
         .then((data) => {
-            // console.log(data);
+            console.log(data);
             if (data.status == 200) {
             let req = data.data;
             this.tableDate=[];
@@ -133,9 +131,9 @@ export default {
           });
       }
       // console.log(this.form);
-      grouping(this.form)
+      groupingAnd(this.form)
         .then((result) => {
-          // console.log(result);
+          console.log(result);
           if (result.status == 200) {
             this.$message({
               message: "创建成功",
@@ -164,20 +162,9 @@ export default {
       this.$refs[formName].resetFields();
     },
   },
-  watch: {
-    reperformance(newvalue){
-      if(newvalue){
-        this.form.performance=1;
-      }else{
-        this.form.performance=0;
-      }
-    },
-    resex(newvalue){
-      if(newvalue){
-        this.form.sex=1;
-      }else{
-        this.form.sex=0;
-      }
+  watch:{
+    course(newValue){
+      this.form.courseId=newValue;
     }
   },
   created(){
