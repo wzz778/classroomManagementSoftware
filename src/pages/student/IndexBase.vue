@@ -65,7 +65,6 @@ export default {
           pageSize: "1000",
         };
         ZgetEntered(data).then((response) => {
-          console.log("取出学生的课程", response);
           if (response.msg == "OK") {
             this.adatar = response.data.total;
             this.sarr = response.data.records;
@@ -84,23 +83,21 @@ export default {
         id: se.courseId,
       };
       ZgetOneCourse(cid).then((result) => {
-        console.log("取出课程信息", result);
         if (result.msg == "OK") {
           var obj = result.data;
           let tid = {
             id: result.data.creatorId,
           };
           ZgetTeacherInfo(tid).then((response) => {
-            console.log("取出教师信息", response);
             if (response.msg == "OK") {
               obj["teacher"] = response.data.name;
               this.carr.push(obj);
             } else {
-              this.$message.error("获取教师信息失败");
+            //
             }
           });
         } else {
-          this.$message.error("获取课程信息失败");
+          //
         }
       });
     },
