@@ -19,7 +19,7 @@
         <div class="name">
           <img :src="o.photo ? o.photo : require('@/assets/01.jpg')" />
         </div>
-        <div class="name">{{ o.userName }}{{ o.name }}</div>
+        <div class="name">{{ o.name }}</div>
         <div class="creatTime">进班时间：{{ o.createTime }}</div>
       </div>
     </el-card>
