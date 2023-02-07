@@ -157,7 +157,7 @@ export default {
         this.dialogFormVisible=false;
       },
       watchClick(row) {
-        console.log(row);
+        // console.log(row);
         this.$router.replace({
             path:"userlist",
         })
@@ -165,7 +165,7 @@ export default {
         sessionStorage.setItem("AdminClassMessage",JSON.stringify(row))
       },
       watchFileClick(row) {
-        console.log(row);
+        // console.log(row);
         this.$router.replace({
             path:"attachmentList",
             query:{
@@ -176,7 +176,7 @@ export default {
         // sessionStorage.setItem("AdminClassMessage",JSON.stringify(row))
       },
       editClick(row) {
-        console.log(row);
+        // console.log(row);
         this.dialogFormVisible=true;
         this.editid=row.id;
         this.detail=row.details
@@ -209,7 +209,7 @@ export default {
             message: "已取消删除",
           });
         });
-        console.log(row);
+        // console.log(row);
       },
       //显示功能
       //主键页数的处理
@@ -229,7 +229,7 @@ export default {
       chagepage() {
         getHerCourse(this.searchform)
         .then(data=>{
-          console.log(data);
+          // console.log(data);
           if(data.status==200){
             let req=data.data;
             this.tableData=req.records;
@@ -245,13 +245,13 @@ export default {
           }
         })
         .catch(error=>{
-            console.log(error);
+            // console.log(error);
         })
       },
       //课堂的编辑功能
       handelChange(file, fileList) {
-        console.log(file);
-        console.log(fileList);
+        // console.log(file);
+        // console.log(fileList);
         let f = new FileReader();
         f.readAsDataURL(file.raw);
         f.onload = () => {
@@ -261,7 +261,7 @@ export default {
         this.fileList = fileList;
       },
       handleRemove(file, fileList) {
-        console.log(fileList);
+        // console.log(fileList);
         this.fileList = fileList;
         this.picSrc = "";
       },
@@ -296,7 +296,7 @@ export default {
             //   这里需要判断一下文件大小或者类型
             //   自定义上传就需要我们使用fromdata对象来上传文件
             let formdata = new FormData();
-            console.log(this.fileList);
+            // console.log(this.fileList);
             for (let i = 0; i < this.fileList.length; i++) {
               // 我们上传的文件保存在每个文件对象的raw里边
               formdata.append("newCover", this.fileList[i].raw);
@@ -322,10 +322,10 @@ export default {
                     message: "操作失败",
                   });
                 }
-                console.log(result);
+                // console.log(result);
               })
               .catch((err) => {
-                console.log(err);
+                // console.log(err);
               });
 
     },

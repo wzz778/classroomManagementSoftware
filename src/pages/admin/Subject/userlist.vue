@@ -113,7 +113,7 @@ export default {
   },
   methods: {
     editclick(row) {
-      console.log(row);
+      // console.log(row);
       sessionStorage.setItem("formmessage", JSON.stringify(row));
       this.$router.replace({
         path: "edit",
@@ -123,10 +123,10 @@ export default {
       });
     },
     watchClick(row) {
-      console.log(row);
+      // console.log(row);
     },
     editClick(row) {
-      console.log(row);
+      // console.log(row);
     },
     deleteClick(row) {
       this.$confirm("确定要删除课程吗?", "提示", {
@@ -156,7 +156,7 @@ export default {
             message: "已取消删除",
           });
         });
-      console.log(row);
+      // console.log(row);
     },
     handleSizeChange(val) {
       this.searchform.pageSize = val;
@@ -173,7 +173,7 @@ export default {
     chagepage() {
       courseStudents(this.searchform)
         .then((data) => {
-          console.log(data);
+          // console.log(data);
           if (data.status == 200) {
             let req = data.data;
             this.tableData = req.records;
@@ -189,7 +189,7 @@ export default {
           }
         })
         .catch((error) => {
-          console.log(error);
+          // console.log(error);
         });
     },
   },

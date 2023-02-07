@@ -105,13 +105,13 @@ export default {
           this.chagepage();
         })
         .catch((err) => {
-          console.log(err);
+          // console.log(err);
         });
     },
     chagepage(){
         getAllDiscuss(this.searchform)
         .then((data) => {
-          console.log(data);
+          // console.log(data);
           if (data.status == 200) {
             let req = data.data;
             this.discussionDate = req.list;
@@ -127,7 +127,7 @@ export default {
           }
         })
         .catch((error) => {
-          console.log(error);
+          // console.log(error);
         });
 
     },
@@ -163,7 +163,7 @@ export default {
             }
           })
           .catch((err) => {
-            console.log(err);
+            // console.log(err);
           });
     },
     resetForm(formName) {

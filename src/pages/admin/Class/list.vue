@@ -126,12 +126,12 @@ export default {
     },
     methods:{
       editclick(row) {
-        console.log(row);
+        // console.log(row);
         this.dialogFormVisible=true;
         this.form=row;
       },
       watchClick(row) {
-        console.log(row);
+        // console.log(row);
         this.$router.replace({
             name:"UsersList",
         })
@@ -153,7 +153,7 @@ export default {
         .then(() => {
           deleteGrade({ gradeId:row })
           .then((result) => {
-            console.log(result);
+            // console.log(result);
             if(result.status==200){
               this.$message({
                 type: "success",
@@ -190,7 +190,7 @@ export default {
       chagepage() {
         getGrade({beginIndex:this.searchform.nodePage,size:this.searchform.pageSize})
         .then(data=>{
-          console.log(data);
+          // console.log(data);
           if(data.status==200){
             let req=data.data;
             this.tableData=req.records;
@@ -206,14 +206,14 @@ export default {
           }
         })
         .catch(error=>{
-            console.log(error);
+            // console.log(error);
         })
       },
       handelSend() {
-        console.log(this.form);
+        // console.log(this.form);
         updateGrade(this.form)
         .then(data=>{
-          console.log(data);
+          // console.log(data);
           if(data.status==200){
               this.chagepage()
               this.$message({
@@ -229,7 +229,7 @@ export default {
           }
         })
         .catch(error=>{
-            console.log(error);
+            // console.log(error);
         })
       },
     },

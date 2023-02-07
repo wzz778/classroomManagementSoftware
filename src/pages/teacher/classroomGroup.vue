@@ -95,13 +95,13 @@ export default {
           this.chagepage();
         })
         .catch((err) => {
-          console.log(err);
+          // console.log(err);
         });
     },
     chagepage() {
       groupInfo({courseId:this.course})
         .then((data) => {
-            console.log(data);
+            // console.log(data);
             if (data.status == 200) {
             let req = data.data;
             this.tableDate=[];
@@ -118,7 +118,7 @@ export default {
           }
         })
         .catch((error) => {
-          console.log(error);
+          // console.log(error);
         });
       // console.log(this.tableDate);
     },
@@ -132,10 +132,10 @@ export default {
             message: "分组数量不能超过10个",
           });
       }
-      console.log(this.form);
+      // console.log(this.form);
       grouping(this.form)
         .then((result) => {
-          console.log(result);
+          // console.log(result);
           if (result.status == 200) {
             this.$message({
               message: "创建成功",
@@ -157,7 +157,7 @@ export default {
           }
         })
         .catch((err) => {
-          console.log(err);
+          // console.log(err);
         });
     },
     resetForm(formName) {

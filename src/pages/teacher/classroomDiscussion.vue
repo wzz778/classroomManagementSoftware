@@ -144,13 +144,13 @@ export default {
           this.chagepage();
         })
         .catch((err) => {
-          console.log(err);
+          // console.log(err);
         });
     },
     chagepage() {
       getTopic(this.searchform)
         .then((data) => {
-          console.log(data);
+          // console.log(data);
           if (data.status == 200) {
             let req = data.data;
             this.tableDate = req.list;
@@ -166,7 +166,7 @@ export default {
           }
         })
         .catch((error) => {
-          console.log(error);
+          // console.log(error);
         });
       // console.log(this.tableDate);
     },
@@ -174,7 +174,7 @@ export default {
       this.dialogFormVisible = true;
     },
     deleteTopic(id) {
-      console.log(id);
+      // console.log(id);
     },
 
     submitForm(formName) {
@@ -200,10 +200,10 @@ export default {
               }
             })
             .catch((err) => {
-              console.log(err);
+              // console.log(err);
             });
         } else {
-          console.log("error submit!!");
+          // console.log("error submit!!");
           return false;
         }
       });
@@ -225,7 +225,7 @@ export default {
   
   created(){
     let patharr=this.$route.path.toString().split("/")
-    console.log(patharr);
+    // console.log(patharr);
     if(patharr[1]=="student"){
       this.isUserRouter=true;
     }
