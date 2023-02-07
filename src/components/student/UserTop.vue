@@ -10,13 +10,10 @@
       active-text-color="#ffd04b"
     >
       <el-submenu index="1">
-        <template slot="title">{{username}}</template>
-        <router-link to="/user/UserInfo" style="color: white"
-            >
-        <el-menu-item index="2-1"
-          >账号管理</el-menu-item
-        ></router-link
-          >
+        <template slot="title">{{ username }}</template>
+        <router-link to="/user/UserInfo" style="color: white">
+          <el-menu-item index="2-1">账号管理</el-menu-item></router-link
+        >
         <el-menu-item index="2-2" @click="logout">退出登录</el-menu-item>
       </el-submenu>
       <el-menu-item index="2"
@@ -58,19 +55,18 @@ export default {
       activeIndex: "4",
       urlp: "/user/IndexBase",
       msg: 1,
-      username:"",
+      username: "",
     };
   },
   mounted: function () {
-  this.getName()
+    this.getName();
   },
   methods: {
-  getName(){
-            ZgetUserInfo().then((result) => {
-            console.log("用户信息", result);
-            this.username=result.data.user.name
-          });
-  },
+    getName() {
+      ZgetUserInfo().then((result) => {
+        this.username = result.data.user.name;
+      });
+    },
     open() {
       this.$prompt("请输入课程邀请码", "提示", {
         confirmButtonText: "确定",
@@ -84,7 +80,6 @@ export default {
             code: value,
           };
           ZgetUserInfo().then((result) => {
-            console.log("用户信息", result);
             if (result.data.user.gradeId == "0") {
               this.$message({
                 type: "success",
@@ -92,7 +87,6 @@ export default {
               });
             } else {
               ZaddGrade(data).then((result) => {
-                console.log("加入课程", result);
                 if (result.data == "已加入") {
                   this.$message({
                     type: "success",
@@ -123,7 +117,6 @@ export default {
     },
     logout() {
       ZlogOut().then((result) => {
-        console.log("退出登录", result);
         if ((result.data = "已退出")) {
           this.$message({
             type: "success",
