@@ -6,6 +6,7 @@
       :seletcInfoObjOne="myTopConfiguration.seletcInfoObjOne"
       :getInfo="getInfo"
       :buttonInfo="myTopConfiguration.buttonInfo"
+      :termObj="true"
     ></myTop>
     <!-- 列表 -->
     <myList
@@ -31,6 +32,17 @@
             :max="100"
             label="描述文字"
           ></el-input-number>
+        </el-form-item>
+        <el-form-item label="学期">
+          <el-select v-model="term" placeholder="请选择学期">
+            <el-option
+              v-for="item in termArr"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            >
+            </el-option>
+          </el-select>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -130,6 +142,9 @@ export default {
       num: 1,
       courseId: "",
       userId: "",
+      termArr: [],
+      term: "",
+      termId: "",
     };
   },
   methods: {
@@ -187,7 +202,8 @@ export default {
         });
     },
     searchFn(obj) {
-      this.searchObj = obj;
+      this.termId = obj.id;
+      this.getInfo(this.classId);
     },
     getInfo(id) {
       this.classId = id;
@@ -199,8 +215,7 @@ export default {
     getScope(obj) {
       return new Promise((resolve, resject) => {
         getMyPerformanceByUserId({
-          afterTime: this.beginTime,
-          beforeTime: this.endTime,
+          termId: this.termId,
           userId: obj.studentId,
           courseId: this.classId,
         })
@@ -226,11 +241,13 @@ export default {
         .then((result) => {
           this.myListConfiguration.tableData = result.data.records;
           this.allNums = result.data.total;
-          return getTerm();
+          return getTerm({});
         })
         .then((result) => {
-          this.beginTime = result.data[0].beginTime;
-          this.endTime = result.data[0].endTime;
+          this.termArr = result.data;
+          if (this.termId == "") {
+            this.termId = result.data[0].id;
+          }
           let arr = [];
           for (let i = 0; i < this.myListConfiguration.tableData.length; i++) {
             arr.push(this.getScope(this.myListConfiguration.tableData[i]));
@@ -252,10 +269,15 @@ export default {
       this.dialogVisible = false;
     },
     addPerformanceFn() {
+      if (this.term == "") {
+        this.$message.error("请选择学期");
+        return;
+      }
       addPerformance({
         courseId: this.classId,
         performance: this.num,
         userId: this.userId,
+        termId: this.term,
       })
         .then(() => {
           this.clearAll();
