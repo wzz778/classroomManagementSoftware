@@ -290,6 +290,7 @@ export default {
     submitCorrect() {
       let correct = this.correct;
       correct.deScore = this.num;
+      correct.allScore=0;
       for (let i = 0; i < this.num.length; i++) {
         correct.allScore += this.num[i].score;
       }
@@ -318,6 +319,7 @@ export default {
             });
         })
         .catch(() => {
+          correct.allScore=0;
           this.$message({
             type: "info",
             message: "已取消提交",
