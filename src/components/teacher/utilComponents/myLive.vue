@@ -114,7 +114,7 @@ export default {
   },
   methods: {
     liveInit() {
-      if (typeof navigator.getDisplayMedia == "undefined") {
+      if (typeof navigator.mediaDevices == "undefined") {
         this.$confirm(
           "因为域名原因无法直接开启直播，是否打开网页看操作内容, 是否继续?",
           "提示",
@@ -125,7 +125,7 @@ export default {
           }
         )
           .then(() => {
-            window.open("http://t.csdn.cn/057b8");
+            window.open("http://t.csdn.cn/RoEUf");
           })
           .catch(() => {
             this.$message({
