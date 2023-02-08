@@ -115,3 +115,14 @@ export const getHistoryChat=async(data)=>requests({
     method:'GET',
     params:data
 })
+
+export const getTerm=async()=>requests({
+    url:'user/getTerm',
+    method:'GET'
+})
+
+export const getPerformance=async(data)=>requests({
+    url:'user/getMyPerformanceByUserId',
+    method:'GET',
+    params:data
+})

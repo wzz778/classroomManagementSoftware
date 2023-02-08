@@ -6,7 +6,7 @@ import ClassWork from '@/pages/student/ClassWork'
 import StudyGroup from '@/pages/student/StudyGroup'
 import classroomDiscussion from '@/pages/teacher/classroomDiscussion'
 import ShareData from '@/pages/teacher/attachmentList'
-// import LearnDaily from '@/pages/student/LearnDaily'
+import Achievement from '@/pages/student/Achievement'
 // import ClassStudents from '@/pages/student/ClassStudents'
 import IndexCourse from '@/pages/student/IndexCourse'
 import DoPaper from '@/pages/student/DoPaper'
@@ -65,13 +65,13 @@ export default [
                     title: "共享资料"
                 },
             },
-            // {
-            //     path:'learnDaily',
-            //     component:LearnDaily,
-            //     meta: {
-            //         title: "学习情况"
-            //     },
-            // },
+            {
+                path:'achievement',
+                component:Achievement,
+                meta: {
+                    title: "学习成绩"
+                },
+            },
             {
                 path:'classStudents',
                 component:ClassMembers,
