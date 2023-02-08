@@ -206,7 +206,7 @@ export default {
         })
           .then((result) => {
             if (result.msg == "OK") {
-              obj.identity = result.data[0].performance;
+              obj.identity = result.data[result.data.length - 1].performance;
             } else {
               obj.identity = 0;
             }
@@ -244,7 +244,6 @@ export default {
     },
     achievement(obj) {
       this.dialogVisible = true;
-      console.log(obj);
       this.userId = obj.studentId;
       this.courseId = obj.courseId;
     },
