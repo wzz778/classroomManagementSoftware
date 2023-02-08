@@ -26,9 +26,23 @@
           </el-form-item>
         </el-form>
       </el-col>
+      <el-col :span="5" v-if="termObj">
+        <el-form label-width="80px">
+          <el-form-item label="学期">
+            <el-select v-model="term" placeholder="请选择">
+              <el-option
+                v-for="(item, index) in tremArr"
+                :key="item.id"
+                :label="item.name"
+                :value="index"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+        </el-form>
+      </el-col>
       <el-col :span="5">
         <el-form label-width="80px">
-          <el-button type="primary" v-if="inputInfoObj" @click="sureSerach"
+          <el-button type="primary" v-if="searchFn" @click="sureSerach"
             >查询</el-button
           >
           <template v-if="buttonInfo">
@@ -49,7 +63,8 @@
 
 <script>
 import { Col, Row, Dropdown, DropdownMenu, DropdownItem } from "element-ui";
-import { getGrade, myCourse } from "@/api/teacher";myCourse
+import { getGrade, myCourse, getTerm } from "@/api/teacher";
+myCourse;
 
 export default {
   name: "myTop",
@@ -65,6 +80,7 @@ export default {
     "buttonInfo",
     "seletcInfoObjOne",
     "getInfo",
+    "termObj",
   ],
   components: {
     [Col.name]: Col,
@@ -80,6 +96,8 @@ export default {
       value1: "",
       gradeArr: [],
       timeer: null,
+      tremArr: [],
+      term: "",
     };
   },
   computed: {
@@ -91,8 +109,7 @@ export default {
   },
   methods: {
     sureSerach() {
-      let tempObj = {};
-      this.searchFn(tempObj);
+      this.searchFn(this.tremArr[this.term]);
     },
     getAllGradeFn() {
       getGrade({
@@ -123,9 +140,21 @@ export default {
           console.log(err);
         });
     },
+    getAllTrem() {
+      getTerm({})
+        .then((result) => {
+          console.log(result);
+          this.tremArr = result.data;
+          this.term = 0;
+        })
+        .catch(() => {});
+    },
     getAll() {
       if (this.seletcInfoObjOne) {
         this[this.seletcInfoObjOne.type]();
+      }
+      if (this.termObj) {
+        this.getAllTrem();
       }
     },
   },

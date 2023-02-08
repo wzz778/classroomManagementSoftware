@@ -114,6 +114,26 @@ export default {
   },
   methods: {
     liveInit() {
+      if (typeof navigator.mediaDevices == "undefined") {
+        this.$confirm(
+          "因为域名原因无法直接开启直播，是否打开网页看操作内容, 是否继续?",
+          "提示",
+          {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning",
+          }
+        )
+          .then(() => {
+            window.open("http://t.csdn.cn/RoEUf");
+          })
+          .catch(() => {
+            this.$message({
+              type: "info",
+              message: "已取消跳转",
+            });
+          });
+      }
       this.isShow = true;
       // 获取推流地址
       createPushUrl()
@@ -137,7 +157,6 @@ export default {
         this.livePusher.startMicrophone(),
       ])
         .then(() => {
-          this.isShow = false;
           this.livePusher.startPush(this.pushUrl).then(() => {});
           return addMessage({
             content: this.bizid,
@@ -146,7 +165,8 @@ export default {
           });
         })
         .then(() => {})
-        .catch(() => {
+        .catch((err) => {
+          console.log(err);
           this.isShow = false;
           this.livePusher.stopPush();
           this.livePusher.stopMicrophone();
@@ -163,6 +183,7 @@ export default {
           this.livePusher.stopPush();
           this.livePusher.stopMicrophone();
           this.livePusher.stopScreenCapture();
+          this.isShow = false;
           this.$message({
             type: "info",
             message: "已关闭",

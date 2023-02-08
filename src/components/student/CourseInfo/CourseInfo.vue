@@ -79,20 +79,20 @@
               <span slot="title"><i class="el-icon-share"></i>共享资料</span>
             </el-menu-item>
           </router-link>
-          <!-- <router-link
+          <router-link
             :to="{
-              path: '/student/learnDaily',
+              path: '/student/achievement',
               query: {
                 id: this.courid,
               },
             }"
           >
-            <el-menu-item index="/student/learnDaily">
+            <el-menu-item index="/student/achievement">
               <span slot="title"
-                ><i class="el-icon-notebook-2"></i>学习情况</span
+                ><i class="el-icon-notebook-2"></i>学习成绩</span
               >
             </el-menu-item>
-          </router-link> -->
+          </router-link>
           <router-link
             :to="{
               path: '/student/ClassMembers',

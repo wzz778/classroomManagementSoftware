@@ -274,7 +274,9 @@ export default {
               }
             } else {
               Message.warning("该用户还未提交作业！");
-              this.$router.go(-1);
+              setTimeout(()=>{
+                this.$router.go(-1);
+              },1000)
             }
           } else {
             Message.error("网络异常，获取试卷失败！");
@@ -288,6 +290,7 @@ export default {
     submitCorrect() {
       let correct = this.correct;
       correct.deScore = this.num;
+      correct.allScore=0;
       for (let i = 0; i < this.num.length; i++) {
         correct.allScore += this.num[i].score;
       }
@@ -316,6 +319,7 @@ export default {
             });
         })
         .catch(() => {
+          correct.allScore=0;
           this.$message({
             type: "info",
             message: "已取消提交",
