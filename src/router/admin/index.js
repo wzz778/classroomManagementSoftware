@@ -109,4 +109,22 @@ export default [
             },
         ]
     },
+    {
+        path:'/admin/term',
+        name:'Layout',
+        component: () => import('@/components/admin/layout.vue'),
+        meta:{
+            title:"学期管理"
+        },
+        children:[
+            {
+                path:'list', 
+                component: () => import('@/pages/admin/Term/list.vue'),
+                name:"TermList",
+                meta:{
+                    title:"班级列表"
+                }
+            },
+        ]
+    },
 ]

@@ -44,11 +44,10 @@
           <el-menu-item index="/admin/subject/list">课堂列表</el-menu-item>
           <el-menu-item index="/admin/subject/edit">课堂创编</el-menu-item>
         </el-submenu>
-
-        <!-- <el-menu-item index="/admin/journal/list">
+        <el-menu-item index="/admin/term/list">
           <i class="el-icon-date"></i>
-          <span slot="title">日志中心</span>
-        </el-menu-item> -->
+          <span slot="title">学期管理</span>
+        </el-menu-item>
       </el-menu>
     </div>
     <div id="head" :class="rehead">
@@ -269,7 +268,7 @@ export default {
   created(){
      let obj = jwtDecode(this.$store.state.token);
      this.userName=obj.username;
-     console.log(obj);
+    //  console.log(obj);
   },
   mounted(){
     // console.log(this.$store.state.admin.editableTabs);

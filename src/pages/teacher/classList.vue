@@ -156,7 +156,7 @@ export default {
               this.judgePrevious();
             })
             .catch((err) => {
-              console.log(err);
+              // console.log(err);
             });
         })
         .catch(() => {
@@ -192,7 +192,7 @@ export default {
           this.getInfo();
         })
         .catch((err) => {
-          console.log(err);
+          // console.log(err);
         });
     },
     handleClose(done) {
@@ -240,7 +240,7 @@ export default {
           });
         })
         .catch((err) => {
-          console.log(err);
+          // console.log(err);
         });
     },
     // 获取信息
@@ -254,7 +254,7 @@ export default {
           this.myListConfiguration.tableData = result.data.records;
         })
         .catch((err) => {
-          console.log(err);
+          // console.log(err);
         });
     },
   },

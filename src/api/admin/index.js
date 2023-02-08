@@ -46,3 +46,7 @@ export const deleteDiscuss = async (params) => requests({url: "/discuss/deleteDi
 export const groupingAnd = async (params) => requests({url: "/teacher/groupingAnd",method: "GET",params})
 //获取分组信息
 export const groupInfo = async (params) => requests({url: "/chatGroup/groupInfo",method: "GET",params})
+//获取学期信息
+export const getTerm = async () => requests({url: "/user/getTerm",method: "GET"})
+//获取学期添加
+export const addTerm = async (params) => requests({url: "/admin/addTerm",method: "POST",params})
