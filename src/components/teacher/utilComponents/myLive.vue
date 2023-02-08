@@ -114,24 +114,26 @@ export default {
   },
   methods: {
     liveInit() {
-      this.$confirm(
-        "因为域名原因无法直接开启直播，是否打开网页看操作内容, 是否继续?",
-        "提示",
-        {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning",
-        }
-      )
-        .then(() => {
-          window.open("https://www.cnblogs.com/zqblog1314/p/13233160.html");
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消跳转",
+      if (typeof navigator.getDisplayMedia == "undefined") {
+        this.$confirm(
+          "因为域名原因无法直接开启直播，是否打开网页看操作内容, 是否继续?",
+          "提示",
+          {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning",
+          }
+        )
+          .then(() => {
+            window.open("http://t.csdn.cn/057b8");
+          })
+          .catch(() => {
+            this.$message({
+              type: "info",
+              message: "已取消跳转",
+            });
           });
-        });
+      }
       this.isShow = true;
       // 获取推流地址
       createPushUrl()
