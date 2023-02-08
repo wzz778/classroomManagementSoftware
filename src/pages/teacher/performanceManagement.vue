@@ -57,7 +57,7 @@ export default {
       scope: [
         {
           value: 0,
-          name: "没有成绩",
+          name: "没有成绩或有同学未提交作业",
         },
       ],
     };
