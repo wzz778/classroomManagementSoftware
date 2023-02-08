@@ -157,7 +157,6 @@ export default {
         this.livePusher.startMicrophone(),
       ])
         .then(() => {
-          this.isShow = false;
           this.livePusher.startPush(this.pushUrl).then(() => {});
           return addMessage({
             content: this.bizid,
@@ -184,6 +183,7 @@ export default {
           this.livePusher.stopPush();
           this.livePusher.stopMicrophone();
           this.livePusher.stopScreenCapture();
+          this.isShow = false;
           this.$message({
             type: "info",
             message: "已关闭",
