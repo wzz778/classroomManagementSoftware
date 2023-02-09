@@ -160,11 +160,11 @@ export default {
   methods: {
     pageChangeFn(val) {
       this.nowPage = val;
-      this.getSignInfo();
+      this.getInfo(this.classId);
     },
     sizeChangeFn(val) {
       this.pageSize = val;
-      this.getSignInfo();
+      this.getInfo(this.classId);
     },
     deleteFn(obj) {
       this.$confirm("确定要删除签到信息吗?", "提示", {
@@ -199,6 +199,7 @@ export default {
         path: "/teacher/signDetails",
         query: {
           id: obj.id,
+          courseId: this.classId,
         },
       });
     },

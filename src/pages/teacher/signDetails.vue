@@ -234,7 +234,7 @@ export default {
     },
     getGradeFn() {
       getGradeByCourse({
-        courseId: this.course,
+        courseId: this.$route.query.courseId,
       })
         .then((result) => {
           this.gradeArr = result.data;
