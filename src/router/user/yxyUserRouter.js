@@ -66,7 +66,7 @@ export default [
                 },
             },
             {
-                path:'achievement',
+                path:'/achievement',
                 component:Achievement,
                 meta: {
                     title: "学习成绩"
