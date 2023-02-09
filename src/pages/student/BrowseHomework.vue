@@ -451,6 +451,7 @@ html {
 }
 .topicTitle {
   display: flex;
+  line-height: 30px;
   word-break: break-all;
   p {
     display: inline-block;

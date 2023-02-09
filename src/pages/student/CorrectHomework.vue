@@ -44,10 +44,7 @@
                 index +
                 1 +
                 '、' +
-                topic.questionContent.topicInfo +
-                '(' +
-                topic.score +
-                '分)'
+                topic.questionContent.topicInfo 
               "
             ></div>
             <!-- 单选 、判断-->
@@ -533,10 +530,8 @@ html {
 }
 .topicTitle {
   display: flex;
+  line-height: 30px;
   word-break: break-all;
-  p {
-    display: inline-block;
-  }
 }
 #goBack {
   font-size: 17px;
