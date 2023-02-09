@@ -171,6 +171,9 @@
 
 <script>
 import { getHomeworkById, submitCorrect } from "@/api/student/yxyAxios";
+import store from "@/store"
+import router from "@/router"
+import jwt_decode from "jwt-decode";
 import {
   Container,
   Main,
@@ -274,9 +277,9 @@ export default {
               }
             } else {
               Message.warning("该用户还未提交作业！");
-              setTimeout(()=>{
+              setTimeout(() => {
                 this.$router.go(-1);
-              },1000)
+              }, 1000);
             }
           } else {
             Message.error("网络异常，获取试卷失败！");
@@ -290,7 +293,7 @@ export default {
     submitCorrect() {
       let correct = this.correct;
       correct.deScore = this.num;
-      correct.allScore=0;
+      correct.allScore = 0;
       for (let i = 0; i < this.num.length; i++) {
         correct.allScore += this.num[i].score;
       }
@@ -319,7 +322,7 @@ export default {
             });
         })
         .catch(() => {
-          correct.allScore=0;
+          correct.allScore = 0;
           this.$message({
             type: "info",
             message: "已取消提交",
@@ -327,8 +330,14 @@ export default {
         });
     },
   },
-  mounted() {
-    this.getHomework();
+  beforeRouteEnter(to, from, next) {
+    if (jwt_decode(store.state.token).power != 0) {
+      //判断当前路由是否需要进行权限控制
+      next();
+    } else {
+      Message.warning("您暂无权限访问");
+      router.go(-1)
+    }
   },
 };
 </script>
