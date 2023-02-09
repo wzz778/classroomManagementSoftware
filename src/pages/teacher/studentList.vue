@@ -106,7 +106,7 @@ export default {
           },
           {
             dateType: "identity",
-            showName: "上学期成绩",
+            showName: "学期成绩",
           },
         ],
         //   函数
