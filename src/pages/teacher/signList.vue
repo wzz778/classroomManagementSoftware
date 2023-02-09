@@ -176,8 +176,7 @@ export default {
           deleteRecords({
             ids: obj.id,
           })
-            .then((result) => {
-              console.log(result);
+            .then(() => {
               this.$message({
                 message: "删除成功",
                 type: "success",
