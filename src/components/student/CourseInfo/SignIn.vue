@@ -42,7 +42,7 @@
             ></i>
           </div>
           <div style="margin-top: 15px">签到未开始</div>
-          <div>开始时间：当前时间：{{time}}</div>
+          <div>开始时间:{{ time }}</div>
         </div>
       </div>
       <div class="detailed" v-show="meet == '签到中'">
@@ -59,7 +59,7 @@
             ></i>
           </div>
           <div style="margin-top: 15px">尚未签到</div>
-          <div>当前时间：{{time}}</div>
+          <div>当前时间：{{ endtime }}</div>
         </div>
         <div class="endq" v-show="adatar == '已签到'">
           <div>
@@ -74,7 +74,7 @@
             ></i>
           </div>
           <div style="margin-top: 15px">按时签到</div>
-          <div>当前时间：{{time}}</div>
+          <div>当前时间：{{ endtime }}</div>
         </div>
       </div>
       <div class="edetailed" v-show="meet == '签到结束'">
@@ -91,7 +91,7 @@
             ></i>
           </div>
           <div style="margin-top: 15px">签到已结束</div>
-          <div>当前时间：{{time}}</div>
+          <div>当前时间：{{ endtime }}</div>
         </div>
       </div>
     </div>
@@ -114,7 +114,9 @@ export default {
       text: "我是子组件传递的数据，我要发送给父组件",
       jiao: "任务",
       sid: this.$route.query.id,
-      time: this.getDate(),
+      singid: "",
+      time: "",
+      endtime: "",
     };
   },
   mounted: function () {
@@ -137,21 +139,13 @@ export default {
       var minutes =
         date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
       // 拼接
-      return (
-        year +
-        "-" +
-        month +
-        "-" +
-        day +
-        " " +
-        hours +
-        ":" +
-        minutes
-      );
+      return year + "-" + month + "-" + day + " " + hours + ":" + minutes;
     },
+    //改变签到状态
     postChange() {
       let data = {
         courseId: this.sid,
+        signId: this.singid,
       };
       Zsign(data).then((result) => {
         if (result.msg == "OK") {
@@ -160,20 +154,23 @@ export default {
             type: "success",
             message: "签到成功",
           });
-        }else if(result.msg=="签到时间已过"){
-        this.$message({
+        } else if (result.msg == "签到时间已过") {
+          this.$message({
             type: "success",
             message: "签到时间已过",
           });
-        }else{
-        this.$message.error("签到失败");
+        } else {
+          this.$message.error("签到失败");
         }
       });
     },
     changeFatherData() {
       this.$emit("changeMsg", this.text, this.jiao);
     },
-    just() {
+    //进入签到页面判断签到状态
+    just(value, time) {
+      this.singid = value;
+      this.endtime = time;
       let data = {
         courseId: this.sid,
       };
@@ -184,6 +181,13 @@ export default {
           this.adatar = "未签到";
         }
       });
+    },
+    //进入签到页面赋值截至时间
+    jtime(value) {
+      this.endtime = value;
+    },
+    jsta(value) {
+      this.time = value;
     },
   },
   components: {

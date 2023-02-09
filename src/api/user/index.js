@@ -87,3 +87,9 @@ export const ZgetHomeworkById= async (data) =>requests({
     method:'get',
     params:data,
 });
+//获取签到记录（已使用）
+export const ZgetSignRecords= async (data) =>requests({
+    url:'course/getSignRecords',
+    method:'get',
+    params:data,
+});

@@ -89,7 +89,7 @@
               v-for="o in saginnotStart"
               :key="o.id"
               class="text item"
-              @click="check = '签到未开始'"
+              @click="notifysta(o.createTime)"
             >
               <div class="name">
                 <img
@@ -98,7 +98,7 @@
               </div>
               <div class="name">
                 <span> 签到</span>
-                <span class="tasktime">开始时间：{{ o.time.createTime }}</span>
+                <span class="tasktime">开始时间：{{ o.createTime }}</span>
               </div>
             </div>
           </el-card>
@@ -112,7 +112,7 @@
               v-for="o in saginprogress"
               :key="o.id"
               class="text item"
-              @click="notify"
+              @click="notify(o.id, o.time)"
             >
               <div class="name">
                 <img
@@ -121,7 +121,7 @@
               </div>
               <div class="name">
                 <span> 签到</span>
-                <span class="tasktime">截至时间：{{ o.time.endTime }}</span>
+                <span class="tasktime">截至时间：{{ o.time }}</span>
               </div>
             </div>
           </el-card>
@@ -135,7 +135,7 @@
               v-for="o in saginend"
               :key="o.id"
               class="text item"
-              @click="check = '签到结束'"
+              @click="notifyend(o.time)"
             >
               <div class="name">
                 <img
@@ -144,7 +144,7 @@
               </div>
               <div class="name">
                 <span> 签到</span>
-                <span class="tasktime">截止时间：{{ o.time.endTime }}</span>
+                <span class="tasktime">截止时间：{{ o.time }}</span>
               </div>
             </div>
           </el-card>
@@ -164,7 +164,7 @@
 
 <script>
 import { Card, Radio } from "element-ui";
-import { ZgetTask, ZgetMessage, ZgetOneCourse } from "@/api/user/index";
+import { ZgetTask, ZgetOneCourse, ZgetSignRecords } from "@/api/user/index";
 import SignIn from "@/components/student/CourseInfo/SignIn";
 export default {
   name: "ClassTask",
@@ -194,6 +194,7 @@ export default {
     this.getAllclass();
   },
   methods: {
+    //课程名字
     getAllclass() {
       let cid = {
         id: this.cid,
@@ -204,9 +205,11 @@ export default {
         }
       });
     },
+    //改变状态跳转签到页面
     changeMsg(text, value) {
       this.check = value;
     },
+    //根据作业决定跳转到浏览试卷页面还是做题页面
     jusp(value, state, zuo) {
       this.check = "任务";
       if (state == "已结束") {
@@ -234,10 +237,41 @@ export default {
         }
       }
     },
-    notify: function () {
+    //签到进行中：点击进入签到页面，并传递签到id
+    notify: function (value, time) {
       this.check = "签到中";
-      this.$refs.child.just();
+      this.$refs.child.just(value, time);
     },
+    //签到已结束：点击进入签到页面，并传递签到截止时间
+    notifyend: function (value) {
+      this.check = "签到结束";
+      this.$refs.child.jtime(value);
+    },
+    //签到未开始：点击进入签到页面，并传递签到截止时间
+    notifysta: function (value) {
+      this.check = "签到未开始";
+      this.$refs.child.jsta(value);
+    },
+    //日期转化
+    getDate(value) {
+      const date = value;
+      var year = date.getFullYear();
+      /* 在日期格式中，月份是从0开始的，因此要加0
+       * 使用三元表达式在小于10的前面加0，以达到格式统一  如 09:11:05
+       * */
+      var month =
+        date.getMonth() + 1 < 10
+          ? "0" + (date.getMonth() + 1)
+          : date.getMonth() + 1;
+      var day = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+      var hours =
+        date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
+      var minutes =
+        date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+      // 拼接
+      return year + "-" + month + "-" + day + " " + hours + ":" + minutes;
+    },
+    //获取作业
     getTask() {
       this.end = [];
       this.notStart = [];
@@ -285,6 +319,7 @@ export default {
         }
       });
     },
+    //获取签到
     GetInfo() {
       this.saginend = [];
       this.saginnotStart = [];
@@ -293,24 +328,29 @@ export default {
         courseId: this.cid,
         nodePage: "1",
         pageSize: "1000",
-        type: 1,
       };
-      ZgetMessage(da).then((result) => {
+      ZgetSignRecords(da).then((result) => {
         if (result.msg == "OK") {
-          for (let i = 0; i < result.data.length; i++) {
-            let obje = result.data[i];
-            let time = JSON.parse(result.data[i].content);
-            obje["time"] = time;
-            if (new Date(time.createTime) > new Date()) {
-              this.saginnotStart.push(obje);
-            } else if (new Date(time.endTime) < new Date()) {
-              this.saginend.push(obje);
-            } else {
-              this.saginprogress.push(obje);
+          if (result.data.total == 0) {
+            this.$message.error("暂无数据");
+          } else {
+            for (let i = 0; i < result.data.records.length; i++) {
+              let obje = result.data.records[i];
+              let tim = this.getDate(new Date(result.data.records[i].endTime));
+              obje["time"] = tim;
+              if (new Date(result.data.records[i].createTime) > new Date()) {
+                this.saginnotStart.push(obje);
+              } else if (
+                new Date(result.data.records[i].endTime) < new Date()
+              ) {
+                this.saginend.push(obje);
+              } else {
+                this.saginprogress.push(obje);
+              }
             }
           }
         } else {
-          this.$message.error("暂无数据");
+          this.$message.error("获取失败");
         }
       });
     },
