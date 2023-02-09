@@ -329,7 +329,6 @@ export default {
   },
   beforeRouteEnter(to, from, next) {
     if (jwt_decode(store.state.token).power != 0) {
-      //判断当前路由是否需要进行权限控制
       next();
     } else {
       Message.warning("您暂无权限访问");
