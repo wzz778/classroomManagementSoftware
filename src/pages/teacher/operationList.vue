@@ -395,6 +395,8 @@ export default {
           this.choiceCourse = [];
           this.taskName = "";
           this.taskYn = false;
+          this.startTime = "";
+          this.endTime = "";
           return Promise.all(messageArr);
         })
         .then(() => {
