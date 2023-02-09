@@ -111,7 +111,7 @@ export const deleteHomework = async (data) => requests({
 })
 
 export const uploadFile = async (data) => requests({
-    url: "/teacher/uploadFile",
+    url: "/user/uploadFile",
     method: "POST",
     data: data
 })
