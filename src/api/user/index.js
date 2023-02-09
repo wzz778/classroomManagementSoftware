@@ -7,7 +7,7 @@ export const ZaddGrade= async (data) =>requests({
 });
 //查看课程的所有成员（已使用）
 export const ZourseStudents= async (data) =>requests({
-    url:'teacher/courseStudents',
+    url:'user/courseStudents',
     method:'get',
     params:data,
 });
