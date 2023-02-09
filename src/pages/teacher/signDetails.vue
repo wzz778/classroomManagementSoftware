@@ -60,7 +60,7 @@
           <div class="studentItem" v-for="item in unSignUser" :key="item.id">
             <span class="studentInfo">
               <img :src="item.photo" alt="" />
-              <span>{{ item.userName }}</span>
+              <span>姓名：{{ item.name }}--学号：{{ item.userName }}</span>
             </span>
           </div>
         </div>
