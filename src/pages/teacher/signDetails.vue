@@ -3,7 +3,7 @@
     <!-- 显示班级 -->
     <el-form label-width="80px">
       <el-row>
-        <el-col :span="6">
+        <!-- <el-col :span="6">
           <el-form-item label="课程">
             <el-select v-model="course" placeholder="请选择">
               <el-option
@@ -14,7 +14,7 @@
               ></el-option>
             </el-select>
           </el-form-item>
-        </el-col>
+        </el-col> -->
         <el-col :span="8">
           <el-form-item label="班级:">
             <el-select v-model="className" clearable placeholder="请选择班级">
@@ -29,7 +29,7 @@
             <el-button type="primary" @click="searchFn">查询</el-button>
           </el-form-item>
         </el-col>
-        <el-col :span="3">
+        <el-col :span="3" v-if="false">
           <span style="margin-left: 30px"></span>
           <el-button type="success" @click="addFn">添加</el-button>
         </el-col>
@@ -46,7 +46,7 @@
           <div class="studentItem" v-for="item in signedUser" :key="item.id">
             <span class="studentInfo">
               <img :src="item.photo" alt="" />
-              <span>{{ item.userName }}</span>
+              <span>姓名：{{ item.name }}--学号：{{ item.userName }}</span>
             </span>
           </div>
         </div>
@@ -261,12 +261,13 @@ export default {
     },
     searchFn() {
       let obj = {
-        courseId: this.course,
+        signId: this.$route.query.id,
       };
       if (this.className) {
         obj.gradeId = this.className;
       }
       getCourseSignInfo(obj).then((result) => {
+        console.log(result);
         if (result.msg != "OK") {
           this.$message({
             message: "该班级没有学生",
@@ -276,8 +277,10 @@ export default {
           this.unSignUser = [];
           return;
         }
-        this.signedUser = result.data.signedUser ? result.data.signedUser : [];
-        this.unSignUser = result.data.unSignUser ? result.data.unSignUser : [];
+        this.signedUser = result.data.signUsers[0] ? result.data.signUsers : [];
+        this.unSignUser = result.data.unSignInfo[0]
+          ? result.data.unSignInfo
+          : [];
       });
     },
     getMessageInfo() {

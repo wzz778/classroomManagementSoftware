@@ -13,6 +13,8 @@ import attachmentList from '@/pages/teacher/attachmentList'
 // 作业详情
 import jobDetails from '@/pages/teacher/jobDetails'
 // 签到管理
+import signList from '@/pages/teacher/signList'
+// 签到管理
 import signDetails from '@/pages/teacher/signDetails'
 // 成绩管理
 import performanceManagement from '@/pages/teacher/performanceManagement'
@@ -87,7 +89,7 @@ export default [
                 path: "signDetails",
                 component: signDetails,
                 meta: {
-                    title: "签到管理"
+                    title: "签到详情"
                 }
             },
             {
@@ -133,10 +135,10 @@ export default [
                 }
             },
             {
-                path:'classroomGroup',
-                component:classroomGroup,
-                meta:{
-                    title:'分组管理'
+                path: 'classroomGroup',
+                component: classroomGroup,
+                meta: {
+                    title: '分组管理'
                 }
             },
             {
@@ -144,6 +146,13 @@ export default [
                 component: UserInfo,
                 meta: {
                     title: "修改信息"
+                }
+            },
+            {
+                path: "signList",
+                component: signList,
+                meta: {
+                    title: "签到列表"
                 }
             }
         ]

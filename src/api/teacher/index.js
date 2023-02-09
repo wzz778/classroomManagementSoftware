@@ -224,3 +224,15 @@ export const addPerformance = async (data) => requests({
     method: "POST",
     params: data
 })
+
+export const getSignRecords = async (data) => requests({
+    url: "/course/getSignRecords",
+    method: "GET",
+    params: data
+})
+
+export const deleteRecords = async (data) => requests({
+    url: "/course/deleteRecords",
+    method: "DELETE",
+    params: data
+})
