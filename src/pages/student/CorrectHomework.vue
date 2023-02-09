@@ -339,6 +339,9 @@ export default {
       router.go(-1)
     }
   },
+  mounted(){
+    this.getHomework();
+  }
 };
 </script>
 
