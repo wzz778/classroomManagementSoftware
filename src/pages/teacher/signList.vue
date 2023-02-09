@@ -2,7 +2,6 @@
   <div>
     <myTop
       :seletcInfoObjOne="myTopConfiguration.seletcInfoObjOne"
-      :searchFn="searchFn"
       :buttonInfo="myTopConfiguration.buttonInfo"
       :getInfo="getInfo"
     ></myTop>
@@ -74,7 +73,13 @@ import myPaging from "@/components/teacher/utilComponents/myPaging.vue";
 import myList from "@/components/teacher/utilComponents/myList.vue";
 import myTop from "@/components/teacher/utilComponents/myTop.vue";
 import { DatePicker, Switch } from "element-ui";
-import { myCourse, signCourse, getCourseSignInfo } from "@/api/teacher/";
+import {
+  myCourse,
+  signCourse,
+  getSignRecords,
+  addMessage,
+  deleteRecords,
+} from "@/api/teacher/";
 export default {
   name: "signList",
   components: {
@@ -105,20 +110,20 @@ export default {
             showName: "ID",
           },
           {
-            dateType: "grade",
-            showName: "班级名称",
+            dateType: "noSignedNums",
+            showName: "未签到人数",
           },
           {
-            dateType: "code",
-            showName: "班级口令",
-          },
-          {
-            dateType: "name",
-            showName: "班级人数",
+            dateType: "signedNums",
+            showName: "签到人数",
           },
           {
             dateType: "createTime",
             showName: "创建时间",
+          },
+          {
+            dateType: "time",
+            showName: "结束时间",
           },
         ],
         //   函数
@@ -126,7 +131,7 @@ export default {
           {
             type: "",
             callFn: this.editorFn,
-            showInfo: "编辑",
+            showInfo: "详情",
           },
           {
             type: "danger",
@@ -148,6 +153,8 @@ export default {
       endTime: "",
       classAll: "",
       options: [],
+      courseArr: [],
+      judgeEndTime: "",
     };
   },
   methods: {
@@ -160,13 +167,27 @@ export default {
       this.getSignInfo();
     },
     deleteFn(obj) {
-      console.log(obj);
-      this.$confirm("确定要删除班级吗?", "提示", {
+      this.$confirm("确定要删除签到信息吗?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       })
-        .then(() => {})
+        .then(() => {
+          deleteRecords({
+            ids: obj.id,
+          })
+            .then((result) => {
+              console.log(result);
+              this.$message({
+                message: "删除成功",
+                type: "success",
+              });
+              this.getInfo(this.classId);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        })
         .catch(() => {
           this.$message({
             type: "info",
@@ -175,13 +196,22 @@ export default {
         });
     },
     editorFn(obj) {
-      console.log(obj);
-    },
-    searchFn(obj) {
-      this.searchObj = obj;
+      this.$router.push({
+        path: "/teacher/signDetails",
+        query: {
+          id: obj.id,
+        },
+      });
     },
     getAllGradeFn() {},
     submitFn() {
+      if (Date.now() < this.judgeEndTime) {
+        this.$message({
+          message: "上次签到未结束",
+          type: "warning",
+        });
+        return;
+      }
       if (Date.parse(this.startTime) > Date.parse(this.endTime)) {
         this.$message({
           message: "结束时间不能先于开始时间",
@@ -196,16 +226,57 @@ export default {
         });
         return;
       }
-      signCourse({
-        createTime: this.startTime,
-        endTime: this.endTime,
-        id: this.classAll,
-      })
-        .then((result) => {
-          console.log(result);
+      this.$confirm(
+        "发布签到在该签到结束之前不能再次发布签到, 是否继续?",
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        }
+      )
+        .then(() => {
+          signCourse({
+            createTime: this.startTime,
+            endTime: this.endTime,
+            id: this.classAll,
+          })
+            .then((result) => {
+              if (result.msg == "OK") {
+                this.$message({
+                  type: "success",
+                  message: "已发布",
+                });
+                this.dialogVisible = false;
+                return addMessage({
+                  content: JSON.stringify({
+                    createTime: this.startTime,
+                    endTime: this.endTime,
+                  }),
+                  courseId: this.classAll,
+                  type: 1,
+                });
+              }
+              this.$message({
+                type: "warning",
+                message: result.msg,
+              });
+              this.dialogVisible = false;
+              this.clearAll();
+            })
+            .then(() => {
+              this.getInfo(this.classId);
+              this.clearAll();
+            })
+            .catch((err) => {
+              console.log(err);
+            });
         })
-        .catch((err) => {
-          console.log(err);
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消",
+          });
         });
     },
     handleClose(done) {
@@ -219,7 +290,6 @@ export default {
       this.dialogVisible = true;
     },
     getInfo(id) {
-      console.log("id", id);
       this.classId = id;
       this.pageSize = 10;
       this.allNums = 0;
@@ -227,21 +297,56 @@ export default {
       this.getSignInfo();
     },
     getSignInfo() {
-      getCourseSignInfo({
+      getSignRecords({
         courseId: this.classId,
+        nodePage: this.nowPage,
+        pageSize: this.pageSize,
       })
         .then((result) => {
-          console.log("签到信息", result);
+          for (let i = 0; i < result.data.records.length; i++) {
+            result.data.records[i].time = new Date(
+              result.data.records[i].endTime
+            )
+              .toLocaleString()
+              .replaceAll("/", "-");
+          }
+          this.myListConfiguration.tableData = result.data.records;
+          this.allNums = result.data.total;
         })
         .catch((err) => {
           console.log(err);
         });
     },
+    clearAll() {
+      this.startTime = "";
+      this.endTime = "";
+      this.classAll = "";
+    },
     getCourse() {
       myCourse({}).then((result) => {
-        console.log(result);
         this.options = result.data.records;
       });
+    },
+    getMessageInfo() {
+      getSignRecords({
+        courseId: this.classAll,
+        nodePage: 1,
+        pageSize: 1,
+      })
+        .then((result) => {
+          this.judgeEndTime = result.data.records[0].endTime;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+  },
+  watch: {
+    classAll(value) {
+      if (value == "") {
+        return;
+      }
+      this.getMessageInfo();
     },
   },
   mounted() {
