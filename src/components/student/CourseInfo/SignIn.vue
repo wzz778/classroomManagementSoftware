@@ -15,8 +15,18 @@
       </div>
       <div class="name">
         <p style="margin-top: 12px">签到</p>
-        <p class="nameTime">
+        <p class="nameTime" v-show="meet == '签到未开始'">
           {{ time }}
+          <span
+            ><i
+              class="el-icon-timer"
+              style="font-size: 16px; margin-right: 6px"
+            ></i
+            >{{ this.meet }}</span
+          >
+        </p>
+         <p class="nameTime" v-show="meet != '签到未开始'">
+          {{ endtime }}
           <span
             ><i
               class="el-icon-timer"

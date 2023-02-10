@@ -357,22 +357,6 @@ export default {
         }
       });
     },
-    // getAllclass(se) {
-    //   let cid = {
-    //     id: se.courseId,
-    //   };
-    //   ZgetOneCourse(cid).then((result) => {
-    //     if (result.msg == "OK") {
-    //       let obj = {};
-    //       obj["valueid"] = result.data.id;
-    //       obj["label"] = result.data.courseName;
-    //       this.lessons.push(obj);
-    //       this.className = this.lessons[0].label;
-    //     } else {
-    //       this.$message.error("暂无数据");
-    //     }
-    //   });
-    // },
     GetInfooo() {
       this.xin = 2;
       this.GetInfo();
@@ -408,10 +392,10 @@ export default {
               cont = "通知：请尽快查看问题并提交答案。";
             } else if (result.data[h].type == 3) {
               atype = "课程作业";
-              cont = "各位同学好：老师新发布了一份作业，请按时完成。";
+              cont = "各位同学好：老师新发布了一份作业，请前往课程页面查收并按时完成。";
             } else if (result.data[h].type == 4) {
               atype = "分组通知";
-              cont = "各位同学好：新的小组已经分配完成，请及时查看。";
+              cont = "各位同学好：新的小组已经分配完成，请前往课程分组页面及时查看。";
             } else if (result.data[h].type == 5) {
               atype = "直播通知";
               cont = "请进入房间" + result.data[h].content + "进行学习。";
