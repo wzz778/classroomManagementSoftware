@@ -41,7 +41,7 @@
         <el-form-item label="每组人数" prop="performance">
          <el-input-number v-model="form.studentNums" :min="1" :max="10" label="描述文字"></el-input-number>
         </el-form-item>
-        <span style="color:red;font-size:16px;margin-left:60px;">注：</span>课程中的人员要添加完成绩才能正常按照成绩表现分组
+        <span style="color:red;font-size:16px;margin-left:60px;">注：</span>课程中的人员要添加完成绩才能正常按照成绩表现分组，
         <el-form-item style="margin-top:10px;">
           <el-button type="primary" @click="submitForm('form')"
             >确认分组</el-button
@@ -75,7 +75,7 @@ export default {
         performance: false,
         sex: true,
         courseId: '',
-        studentNums:1
+        studentNums:2
       },
       tableDate: [],
       tableNameDate: [],

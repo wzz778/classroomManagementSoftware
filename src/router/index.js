@@ -85,7 +85,7 @@ router.beforeEach((to, from, next) => {
             return
         }
         if (obj.power == '2') {
-            console.log(obj.power);
+            // console.log(obj.power);
             // 管理员
             if (to.path.indexOf('/admin') != -1) {
                 // 放行
