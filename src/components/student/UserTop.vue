@@ -105,7 +105,7 @@ export default {
             }
           });
         })
-        .catch(() => {
+        .catch(() => { 
           this.$message({
             type: "info",
             message: "取消输入",

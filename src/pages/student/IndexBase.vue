@@ -9,7 +9,7 @@
               <div>
                 <router-link
                   :to="{
-                    path: '/student/ClassTask',
+                    path: '/student/classTask',
                     query: {
                       id: o.id,
                     },
