@@ -140,13 +140,13 @@ export default {
     },
     methods:{
       editClick(row) {
-        console.log(row);
+        // console.log(row);
         this.form.id=row.studentId
         this.form.power=row.identity
         this.dialogFormVisible=true;
       },
       watchClick(row) {
-        console.log(row);
+        // console.log(row);
       },
       deleteClick(row) {
         this.$confirm("确定要删除用户吗?", "提示", {
@@ -310,11 +310,5 @@ export default {
         width: 100%;
         min-height: 500px;
         background-color: #f8f8f8;
-        .panelbox{
-          width: 100%;
-          display: flex;
-          justify-content:space-around;
-          flex-wrap: wrap;
-        }
     }
 </style>

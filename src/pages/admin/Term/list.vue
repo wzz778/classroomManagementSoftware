@@ -38,7 +38,7 @@
         </template>
         </el-table-column>
     </el-table>
-    共  {{alltotal}}  个课程
+    <span class="pageSpan"> 共  {{alltotal}}  个课程</span>
     <el-dialog style="z-index:2001;" title="学年添加" append-to-body :visible.sync="dialogFormVisible">
       <el-form :model="form">
         <el-form-item label="班级名称" :label-width="formLabelWidth">
@@ -218,11 +218,10 @@ export default {
         width: 100%;
         min-height: 500px;
         background-color: #f8f8f8;
-        .panelbox{
-          width: 100%;
-          display: flex;
-          justify-content:space-around;
-          flex-wrap: wrap;
+        .pageSpan{
+          font-size: 13px;
+          font-weight: 400;
+          color: #606266;
         }
     }
 </style>

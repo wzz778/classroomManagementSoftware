@@ -172,7 +172,8 @@ export default {
         this.$router.push({
           path: "/login",
         });
-      });
+      }).catch(()=>{
+      })
     },
     tabClick(tab){
       // console.log(tab.name);
