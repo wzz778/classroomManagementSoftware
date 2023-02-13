@@ -178,7 +178,6 @@ export default {
       this.courseInfo = res.data;
     });
     this.getUserInfoFun();
-    
   },
 };
 </script>
