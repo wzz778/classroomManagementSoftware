@@ -3,7 +3,6 @@ import LoginPage from '@/pages/student/LoginPage'
 import CourseInfo from '@/components/student/CourseInfo/CourseInfo'
 import ClassTask from '@/pages/student/ClassTask'
 import ClassWork from '@/pages/student/ClassWork'
-import StudyGroup from '@/pages/student/StudyGroup'
 import classroomDiscussion from '@/pages/teacher/classroomDiscussion'
 import ShareData from '@/pages/teacher/attachmentList'
 import Achievement from '@/pages/student/Achievement'
@@ -49,13 +48,6 @@ export default [
                 ,
                 meta: {
                     title: "课程讨论"
-                },
-            },
-            {
-                path:'studyGroup',
-                component:StudyGroup,
-                meta: {
-                    title: "我的小组"
                 },
             },
             {
