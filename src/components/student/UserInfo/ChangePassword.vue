@@ -29,7 +29,7 @@
           v-model="changePasswordInfo.email"
           @keyup.native="judgeEmail"
         ></el-input>
-        <span class="tips">邮箱格式不正确</span>
+        <span class="tips" :style="emailStyle">邮箱格式不正确</span>
       </el-form-item>
       <div class="codeBox">
         <el-input
@@ -72,6 +72,9 @@ export default {
       surePasswordStyle: {
         height: 0,
       },
+      emailStyle:{
+        height:0,
+      }
     };
   },
   components:{
@@ -98,14 +101,10 @@ export default {
         this.surePassword !=
         this.changePasswordInfo.newPassword
       ) {
-        this.surePasswordStyle = {
-          height: "25px",
-        };
+        this.emailStyle.height= "25px";
         this.judgeSurePasswordRes = false;
       } else {
-        this.surePasswordStyle = {
-          height: "0",
-        };
+        this.emailStyle.height="0";
         this.judgeSurePasswordRes = true;
       }
     },
