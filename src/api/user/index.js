@@ -93,3 +93,9 @@ export const ZgetSignRecords= async (data) =>requests({
     method:'get',
     params:data,
 });
+//获取未读消息总数（已使用）
+export const ZunreadMessageNums= async (data) =>requests({
+    url:'message/unreadMessageNums',
+    method:'get',
+    params:data,
+});

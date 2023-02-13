@@ -165,7 +165,7 @@ export default {
         if (res.status == 200) {
           this.userInfo = res.data.user;
         } else {
-          console.log("error");
+          // console.log("error");
         }
       });
     },

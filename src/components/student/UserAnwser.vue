@@ -38,8 +38,8 @@ export default {
       let data = {
         union: "",
       };
-      ZQuestion(data).then((result) => {
-        console.log("获取课堂问题", result);
+      ZQuestion(data).then(() => {
+        // console.log("获取课堂问题");
       });
     },
     zanswer() {
@@ -48,8 +48,8 @@ export default {
         union: "",
         answer: "",
       };
-      ZAnswer(data).then((result) => {
-        console.log("提交课堂问题", result);
+      ZAnswer(data).then(() => {
+        // 
       });
     },
     handleClose(done) {
