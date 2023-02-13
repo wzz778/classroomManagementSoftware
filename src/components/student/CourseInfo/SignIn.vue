@@ -69,7 +69,7 @@
             ></i>
           </div>
           <div style="margin-top: 15px">尚未签到</div>
-          <div>当前时间：{{ endtime }}</div>
+          <div>截至时间：{{ endtime }}</div>
         </div>
         <div class="endq" v-show="adatar == '已签到'">
           <div>
@@ -84,7 +84,7 @@
             ></i>
           </div>
           <div style="margin-top: 15px">按时签到</div>
-          <div>当前时间：{{ endtime }}</div>
+          <div>截至时间：{{ endtime }}</div>
         </div>
       </div>
       <div class="edetailed" v-show="meet == '签到结束'">
@@ -101,7 +101,7 @@
             ></i>
           </div>
           <div style="margin-top: 15px">签到已结束</div>
-          <div>当前时间：{{ endtime }}</div>
+          <div>截至时间：{{ endtime }}</div>
         </div>
       </div>
     </div>
