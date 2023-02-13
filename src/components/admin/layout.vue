@@ -342,8 +342,10 @@ export default {
       color: white;
       height: 40px;
       overflow: hidden;
-      width: 100px;
+      width: 140px;
       border: none;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     #sidebarCollapse {
       border: none;
