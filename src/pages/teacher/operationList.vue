@@ -258,10 +258,6 @@ export default {
             showName: "作业名称",
           },
           {
-            dateType: "name",
-            showName: "未作人数",
-          },
-          {
             dateType: "createTime",
             showName: "创建时间",
           },
