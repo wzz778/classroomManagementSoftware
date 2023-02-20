@@ -7,7 +7,7 @@
       <div class="state">
         <span>筛选</span>
         <el-radio v-model="radio" label="1"
-          ><span @click="getTask">作业</span></el-radio
+          ><span @click="getTask" >作业</span></el-radio
         >
         <el-radio v-model="radio" label="2"
           ><span @click="GetInfo">签到</span></el-radio
