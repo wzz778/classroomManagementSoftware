@@ -235,6 +235,10 @@ export default {
   border-bottom: 1px solid #3a39392b;
 }
 
+.text:hover{
+cursor: pointer;
+}
+
 .box-card {
   width: 100%;
 }

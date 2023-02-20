@@ -57,7 +57,7 @@
       </div>
       <div class="detailed" v-show="meet == '签到中'">
         <div class="she" v-show="adatar == '未签到'">
-          <div @click="postChange">
+          <div>
             <i
               class="el-icon-timer"
               style="
@@ -68,7 +68,8 @@
               "
             ></i>
           </div>
-          <div style="margin-top: 15px">尚未签到</div>
+          <!-- <div style="margin-top: 15px">尚未签到</div> -->
+          <div class="weibtn"><el-button type="primary" round style="transition: all 0.3s;" @click="postChange">点击签到</el-button></div>
           <div>截至时间：{{ endtime }}</div>
         </div>
         <div class="endq" v-show="adatar == '已签到'">
@@ -158,6 +159,7 @@ export default {
         signId: this.singid,
       };
       Zsign(data).then((result) => {
+      console.log(result);
         if (result.msg == "OK") {
           this.adatar = "已签到";
           this.$message({
@@ -165,10 +167,7 @@ export default {
             message: "签到成功",
           });
         } else if (result.msg == "签到时间已过") {
-          this.$message({
-            type: "success",
-            message: "签到时间已过",
-          });
+          this.$message.error("签到时间已过");
         } else {
           this.$message.error("签到失败");
         }
@@ -333,5 +332,12 @@ i:hover {
 }
 span:hover {
   cursor: pointer;
+}
+.weibtn{
+margin-top: 25px;
+}
+.weibtn:hover button{
+background-color: aliceblue;
+color: rgb(0, 166, 255);
 }
 </style>
