@@ -1,11 +1,11 @@
 <template>
-  <div class="mainBox" >
+  <div class="mainBox">
     <el-form
       :label-position="labelPosition"
       label-width="80px"
       :model="changePasswordInfo"
     >
-      <el-form-item label="新密码:" style="margin-bottom=0;height:90px" >
+      <el-form-item label="新密码:" style="margin-bottom=0;height:90px">
         <el-input
           placeholder="8~15位且包含数字与字母"
           v-model="changePasswordInfo.newPassword"
@@ -36,22 +36,31 @@
           v-model="changePasswordInfo.code"
           placeholder="验证码"
           id="inputCode"
-          style="width: 200px;margin-top:20px"
+          style="width: 200px; margin-top: 20px"
         ></el-input>
-        <GetCode style="margin-top:20px" :judgeEmailRes=judgeEmailRes :email=changePasswordInfo.email></GetCode>
+        <GetCode
+          style="margin-top: 20px"
+          :judgeEmailRes="judgeEmailRes"
+          :email="changePasswordInfo.email"
+        ></GetCode>
         <!-- <el-button type="primary" size="mini" plain @click="getCode"
           >获取验证码</el-button
         > -->
       </div>
-      <el-button class="changePasswordBtn" type="primary" @click="updatePasswordFun">修改</el-button>
+      <el-button
+        class="changePasswordBtn"
+        type="primary"
+        @click="updatePasswordFun"
+        >修改</el-button
+      >
     </el-form>
   </div>
 </template>
 
 <script>
 import { Message } from "element-ui";
-import {updatePassword} from '@/api/student/yxyAxios'
-import GetCode from '@/components/student/GetCode/GetCode'
+import { updatePassword, logout } from "@/api/student/yxyAxios";
+import GetCode from "@/components/student/GetCode/GetCode";
 export default {
   name: "ChangePassword",
   data() {
@@ -72,13 +81,13 @@ export default {
       surePasswordStyle: {
         height: 0,
       },
-      emailStyle:{
-        height:0,
-      }
+      emailStyle: {
+        height: 0,
+      },
     };
   },
-  components:{
-    GetCode
+  components: {
+    GetCode,
   },
   methods: {
     judgePassword() {
@@ -97,14 +106,11 @@ export default {
       }
     },
     judgeSurePassword() {
-      if (
-        this.surePassword !=
-        this.changePasswordInfo.newPassword
-      ) {
-        this.emailStyle.height= "25px";
+      if (this.surePassword != this.changePasswordInfo.newPassword) {
+        this.surePasswordStyle.height = "25px";
         this.judgeSurePasswordRes = false;
       } else {
-        this.emailStyle.height="0";
+        this.surePasswordStyle.height = "0";
         this.judgeSurePasswordRes = true;
       }
     },
@@ -149,12 +155,19 @@ export default {
       } else if (this.judgeEmailRes == false) {
         Message.warning("邮箱不合规范！");
       } else {
-        let data=this.changePasswordInfo
+        let data = this.changePasswordInfo;
         updatePassword(data).then((res) => {
-          if(res.status==200){
-            Message.success("修改成功！")
-          }else{
-            Message.error("网络异常，修改失败！")
+          if (res.status == 200) {
+            // Message.success("修改成功！");
+            logout().then((res) => {
+              if (res.status == 200) {
+                localStorage.setItem("token", "");
+                this.$store.commit("DELTOKEN", "");
+                this.$router.push("/login");
+              }
+            });
+          } else {
+            Message.error("网络异常，修改失败！");
           }
         });
       }

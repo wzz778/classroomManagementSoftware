@@ -19,7 +19,7 @@ export default {
       time: "",
       countDown: null,
       btnText: "获取验证码",
-      isDisabled: '',
+      isDisabled: "",
     };
   },
   props: ["email", "judgeEmailRes"],
@@ -36,8 +36,8 @@ export default {
         let data = {
           email: this.email,
         };
+        this.isDisabled = true;
         getCode(data).then((res) => {
-          this.isDisabled = true;
           if (res.status == 200) {
             Message.success("获取成功！");
             this.countDownFun();
@@ -52,7 +52,7 @@ export default {
       this.countDown = setInterval(() => {
         if (this.time <= 0) {
           clearInterval(this.countDown);
-          sessionStorage.removeItem('countDownTime');
+          sessionStorage.removeItem("countDownTime");
           this.btnText = "获取验证码";
           this.time = 60;
           this.isDisabled = false;
@@ -67,10 +67,10 @@ export default {
   mounted() {
     sessionStorage.setItem("email", this.email);
     this.time = sessionStorage.getItem("countDownTime") || 60;
-    this.isDisabled=false;
+    this.isDisabled = false;
     if (this.time < 60) {
       this.countDownFun();
-      this.isDisabled=true;
+      this.isDisabled = true;
     }
   },
 };
