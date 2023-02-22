@@ -43,8 +43,12 @@
           <span>还没有已签到的人</span>
         </div>
         <div class="signStudent">
-          <div class="studentItem" v-for="item in signedUser" :key="item.id">
-            <span class="studentInfo">
+          <div
+            class="studentItem"
+            v-for="(item, index) in signedUser"
+            :key="index"
+          >
+            <span class="studentInfo" v-if="item">
               <img :src="item.photo" alt="" />
               <span>姓名：{{ item.name }}--学号：{{ item.userName }}</span>
             </span>
@@ -57,8 +61,12 @@
           <span>还没有未签到的人</span>
         </div>
         <div class="signStudent">
-          <div class="studentItem" v-for="item in unSignUser" :key="item.id">
-            <span class="studentInfo">
+          <div
+            class="studentItem"
+            v-for="(item, index) in unSignUser"
+            :key="index"
+          >
+            <span class="studentInfo" v-if="item">
               <img :src="item.photo" alt="" />
               <span>姓名：{{ item.name }}--学号：{{ item.userName }}</span>
             </span>
