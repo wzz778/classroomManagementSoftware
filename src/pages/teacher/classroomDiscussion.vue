@@ -148,6 +148,7 @@ export default {
         });
     },
     chagepage() {
+      console.log(this.searchform);
       getTopic(this.searchform)
         .then((data) => {
           // console.log(data);
@@ -220,6 +221,14 @@ export default {
         sessionStorage.setItem("Topicpage", this.searchform.beginIndex);
         // this.tableDate=this.numberArr.splice(index, 1, sum);
       },
+    },
+    course:{
+      immediate:true,
+      deep:true,
+      handler(newValue,oldValue){
+          this.searchform.courseId = newValue;
+          this.form.courseId =newValue;
+      }
     },
   },
   
