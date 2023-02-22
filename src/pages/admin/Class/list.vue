@@ -69,7 +69,7 @@
       layout="total, sizes, prev, pager, next, jumper"
       :total="alltotal">
     </el-pagination>
-    <el-dialog style="z-index:2001;" title="课堂封面更改" append-to-body :visible.sync="dialogFormVisible">
+    <el-dialog style="z-index:2001;" title="课堂信息修改" append-to-body :visible.sync="dialogFormVisible">
       <el-form :model="form">
         <el-form-item label="班级名称" :label-width="formLabelWidth">
           <el-input v-model="form.className" autocomplete="off"></el-input>
