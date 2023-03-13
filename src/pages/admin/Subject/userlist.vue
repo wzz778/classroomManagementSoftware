@@ -53,12 +53,12 @@
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button
+          <!-- <el-button
             @click="editclick(scope.row.studentId)"
             type="primary"
             size="small"
             >修改</el-button
-          >
+          > -->
           <el-button
             @click="deleteClick(scope.row.studentId)"
             type="danger"
@@ -129,7 +129,7 @@ export default {
       // console.log(row);
     },
     deleteClick(row) {
-      this.$confirm("确定要删除课程吗?", "提示", {
+      this.$confirm("确定要删除人员吗?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",

@@ -148,7 +148,7 @@ export default {
         });
     },
     chagepage() {
-      console.log(this.searchform);
+      // console.log(this.searchform);
       getTopic(this.searchform)
         .then((data) => {
           // console.log(data);

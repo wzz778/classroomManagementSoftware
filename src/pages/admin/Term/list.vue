@@ -41,7 +41,7 @@
     <span class="pageSpan"> 共  {{alltotal}}  个课程</span>
     <el-dialog style="z-index:2001;" title="学年添加" append-to-body :visible.sync="dialogFormVisible">
       <el-form :model="form">
-        <el-form-item label="班级名称" :label-width="formLabelWidth">
+        <el-form-item label="学年名称" :label-width="formLabelWidth">
           <el-input v-model="form.name" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="时间区间" :label-width="formLabelWidth">
