@@ -59,7 +59,7 @@
     <div class="main">
       <div class="header">
         <div class="title">
-          <span>课堂管理系统</span>
+          <span>易学堂</span>
         </div>
         <div class="userInfo">
           <el-dropdown>

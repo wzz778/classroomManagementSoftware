@@ -2,7 +2,7 @@
   <el-container class="content">
     <el-header class="header">
       <router-link to="/user/IndexBase" class="logoPic"
-        >课堂管理系统</router-link
+        >易学堂</router-link
       >
       <div class="myBox">
         <router-link to="/user/userInfo"
